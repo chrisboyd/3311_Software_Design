@@ -264,7 +264,6 @@ feature -- commands
 			src := a_edge.source
 			dst := a_edge.destination
 
-
 			--since vertex.add_edge already adds both incoming and
 			--outgoing edges in the case of a self-loop edge
 			if src ~ dst then
@@ -324,8 +323,6 @@ feature -- commands
 				src.remove_edge (a_edge)
 				dst.remove_edge (a_edge)
 			end
-
-
 
 		ensure
 			cl_remove_edge_count: edges.count = old edge_count - 1

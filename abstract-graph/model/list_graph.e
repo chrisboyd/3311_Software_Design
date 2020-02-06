@@ -44,9 +44,25 @@ feature -- Model
 			-- This must be implemented so that the contracts will work properly
 			-- You must find a way to translate the `LIST_GRAPH` implementation into the mathematical
 			-- model representation of a graph: `COMPARABLE_GRAPH` (which inherits from `GRAPH`).
+		local
+			l_edge: PAIR[VERTEX[G], VERTEX[G]]
 		do
 			create Result.make_empty
+
 				-- To Do.
+			across
+				vertices is v
+			loop
+				Result.vertex_extend(v)
+
+				across
+					v.outgoing is e
+				loop
+					create l_edge.make (e.source, e.destination)
+					Result.edge_extend(l_edge)
+				end
+			end
+
 		ensure
 			comment ("Establishes model consistency invariants")
 		end
@@ -66,8 +82,14 @@ feature {NONE} -- Initialization
 			-- Return the associated vertext object storing `g`, if any.
 			-- Note. In the invariant, it is asserted that all vertices are unique.
 		do
-
-				-- To Do.
+			-- Done?
+			across
+				vertices as v
+			loop
+				if v.item.item ~ g then
+					Result := v.item
+				end
+			end
 
 		ensure
 			mm_attached: attached Result implies model.has_vertex (create {VERTEX [G]}.make (g))
@@ -142,7 +164,9 @@ feature -- queries
 	vertex_count: INTEGER
 			-- number of vertices
 		do
-				-- To Do.
+			-- Done?
+			Result := vertices.count
+
 		ensure
 			mm_vertex_count: Result = model.vertex_count
 		end
@@ -150,7 +174,13 @@ feature -- queries
 	edge_count: INTEGER
 			-- number of outgoing edges
 		do
-				-- To Do.
+			-- Done?
+			across
+				vertices as l_vertex
+			loop
+				Result := Result + l_vertex.item.outgoing_edge_count
+			end
+
 		ensure
 			mm_edge_count: Result = model.edge_count
 		end
@@ -158,7 +188,9 @@ feature -- queries
 	is_empty: BOOLEAN
 			-- does the graph contain no vertices?
 		do
-				-- To Do.
+			-- Done?
+			Result := vertices.is_empty
+
 		ensure
 			comment ("See invariant empty_consistency")
 			mm_is_empty: Result = model.is_empty
@@ -167,15 +199,30 @@ feature -- queries
 	has_vertex (a_vertex: VERTEX [G]): BOOLEAN
 			-- does the current graph have `a_vertex`?
 		do
-				-- To Do.
+			-- Done?
+			Result := vertices.has (a_vertex)
+
 		ensure
 			mm_has_vertex: Result = model.has_vertex (a_vertex)
 		end
 
 	has_edge (a_edge: EDGE [G]): BOOLEAN
 			-- does the current graph have `a_edge`?
+		local
+			i: INTEGER
 		do
-				-- To Do.
+			-- Done?
+			from
+				i := 1
+			until
+				i > vertex_count or Result
+			loop
+				if vertices [i].has_outgoing_edge (a_edge) then
+					Result := True
+				end
+				i := i + 1
+			end
+
 		ensure
 			mm_has_edge: Result = model.has_edge ([a_edge.source, a_edge.destination])
 		end
@@ -184,7 +231,18 @@ feature -- queries
 			-- array of all outgoing edges
 		do
 			create Result.make_empty
-				-- To Do.
+			-- Done?
+			across
+				vertices as l_vertex
+			loop
+				across
+					l_vertex.item.outgoing as l_edge
+				loop
+					Result.force (l_edge.item, Result.count + 1)
+				end
+			end
+			Result.compare_objects
+
 		ensure
 			mm_edges_count: Result.count = model.edge_count
 			mm_edges_membership: across Result as l_edge all model.has_edge ([l_edge.item.source, l_edge.item.destination]) end
@@ -200,8 +258,6 @@ feature -- Advanced Queries
 			is_acyclic: model.is_acyclic
 		do
 			create Result.make_empty
-
-				-- To Do.
 
 		ensure
 			mm_sorted: Result ~ model.topologically_sorted.as_array
@@ -222,9 +278,39 @@ feature -- advanced queries (Lab 1)
 			-- Note. `outgoing_sorted` is somewhat analogous to `adjacent` in the abstract algorithm documentation of BFS.
 		require
 			mm_existing_source: model.has_vertex (src)
+		local
+			-- Include declarations for local variables used here
+			queue: QUEUE[VERTEX[G]]
+			parent: VERTEX[G]
 		do
+			--Done?
 			create Result.make_empty
-				-- To Do.
+			--create visited.make_empty
+			create {QUEUE [VERTEX [G]]} queue.make_empty
+			Result.force (src, Result.count + 1)
+			queue.enqueue(src)
+
+			--while there are still vertices to visit,
+			--get the outgoing edge lists for each vertice,
+			--for any destination edges in outgoing, if they have not
+			--been visited add to the queue
+			from
+			until
+				queue.is_empty
+			loop
+				parent := queue.first
+				queue.dequeue
+				across
+					parent.outgoing_sorted as to_visit
+				loop
+					if not (Result.has (to_visit.item.destination)) then
+						queue.enqueue (to_visit.item.destination)
+						Result.force (to_visit.item.destination, Result.count + 1)
+					end
+				end
+			end
+			Result.compare_objects
+
 		ensure
 			mm_reachable_in_model: model.reachable (src).as_array ~ Result
 		end
@@ -236,7 +322,9 @@ feature -- commands
 		require
 			mm_non_existing_vertex: not model.has_vertex (a_vertex)
 		do
-				-- To Do.
+			-- Done?
+			vertices.extend (a_vertex)
+
 		ensure
 			mm_vertex_added: model ~ (old model.deep_twin) + a_vertex
 		end
@@ -247,8 +335,23 @@ feature -- commands
 			mm_existing_source_vertex: model.has_vertex (a_edge.source)
 			mm_existing_destination_vertex: model.has_vertex (a_edge.destination)
 			mm_non_existing_edge: not model.has_edge ([a_edge.source, a_edge.destination])
+		local
+			src, dst: VERTEX [G]
 		do
-				-- To Do.
+			-- Done?
+			src := a_edge.source
+			dst := a_edge.destination
+
+			--since vertex.add_edge already adds both incoming and
+			--outgoing edges in the case of a self-loop edge
+			if src ~ dst then
+				src.add_edge (a_edge)
+			else
+				src.add_edge (a_edge)
+				dst.add_edge (a_edge)
+			end
+			edges.force (a_edge, edges.count + 1)
+
 		ensure
 			mm_edge_added: model ~ (old model.deep_twin) |\/| [a_edge.source, a_edge.destination]
 		end
@@ -257,8 +360,39 @@ feature -- commands
 			-- removes `a_edge` from the current graph
 		require
 			mm_existing_edge: model.has_edge ([a_edge.source, a_edge.destination])
+		local
+			src, dst: VERTEX [G]
+			index_remove: INTEGER
 		do
-				-- To Do.
+			-- Done?
+			src := a_edge.source
+			dst := a_edge.destination
+
+			--get index of a_edge in edges array
+			--I didnt' see a get_index_of or equivalent for arrays
+			from
+				index_remove := 1
+			until
+
+				(a_edge.destination ~ edges.at (index_remove).destination)
+					and (a_edge.source ~ edges.at (index_remove).source)
+			loop
+				index_remove := index_remove + 1
+			end
+
+			--swap the last element of edges array to the index of
+			--edge to be removed and then remove the tail element
+			edges[index_remove] := edges[edges.count]
+			edges.remove_tail (1)
+
+			--remove edge from both source and destination vertices
+			if src ~ dst then
+				src.remove_edge (a_edge)
+			else
+				src.remove_edge (a_edge)
+				dst.remove_edge (a_edge)
+			end
+
 		ensure
 			mm_edge_removed: model ~ (old model.deep_twin) |\ [a_edge.source, a_edge.destination]
 		end
@@ -267,8 +401,53 @@ feature -- commands
 			-- removes `a_vertex` from the current graph
 		require
 			mm_existing_vertex: model.has_vertex (a_vertex)
+		local
+			i_edge: INTEGER
 		do
-				-- To Do.
+			-- Done?
+			--go through all vertices in the graph, if a vertex has an
+			--edge that starts or ends with a_vertex, remove it
+			across
+				vertices as vert
+			loop
+				across
+					vert.item.outgoing as out_edge
+				loop
+					if out_edge.item.destination ~ a_vertex then
+						vert.item.remove_edge (out_edge.item)
+					end
+				end
+				across
+					vert.item.incoming as in_edge
+				loop
+					if in_edge.item.source ~ a_vertex then
+						vert.item.remove_edge (in_edge.item)
+					end
+				end
+			end
+
+			--remove a_vertex from vertices
+			vertices.prune (a_vertex)
+
+			--remove edges connecting to a_vertex from edges array by swapping
+			--edge connecting to a_vertex with the end of edges array and then removing the
+			--tail of edges array
+			from
+				i_edge := 1
+			until
+				i_edge > edges.count
+			loop
+				if edges[i_edge].source ~ a_vertex or edges[i_edge].destination ~ a_vertex then
+					if edges.count = 1 then
+						edges.clear_all
+					else
+						edges[i_edge] := edges[edges.count]
+						edges.remove_tail (1)
+					end
+				end
+				i_edge := i_edge + 1
+			end
+
 		ensure
 			mm_vertex_removed: model ~ (old model.deep_twin) - a_vertex
 		end
