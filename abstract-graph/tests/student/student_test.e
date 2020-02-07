@@ -16,11 +16,13 @@ feature {NONE} -- Initialization
 
 	make
 		do
+			--add_boolean_case(agent t6)
 			add_boolean_case(agent t1)
 			add_boolean_case(agent t2)
 			add_boolean_case(agent t3)
 			add_boolean_case(agent t4)
 			add_boolean_case(agent t5)
+
 		end
 
 feature -- Tests
@@ -121,5 +123,36 @@ feature -- Tests
 
 			Result := i_g.edge_count = 1
 
+		end
+
+	t6:BOOLEAN -- Add/remove - Add Edge that doesn't exist in graph, but with source vertex that share the same item but are different than those added into the graph
+		local
+			i_g: LIST_GRAPH[INTEGER]
+			i_v, i_v2: VERTEX[INTEGER]
+			i_e: EDGE[INTEGER]
+		do
+			comment ("t6: Add & Remove Commands - add_edge - destination vertex not in graph (but shares same item)")
+			create i_g.make_empty
+			across 1 |..| 6 as i loop
+				create i_v.make (i.item)
+				i_g.add_vertex (i_v)
+			end
+			create i_e.make (i_g.vertices[1], i_g.vertices[2]) -- (1, 2)
+			i_g.add_edge (i_e)
+			create i_e.make (i_g.vertices[4], i_g.vertices[3])
+			i_g.add_edge (i_e)
+			create i_e.make (i_g.vertices[1], i_g.vertices[5])
+			i_g.add_edge (i_e)
+
+			assert_equal ("correct vertices & edges", "[1:2,5][2][3][4:3][5][6]", i_g.out)
+			Result := i_g.edge_count ~ 3 and i_g.vertex_count ~ 6
+			check Result end
+
+
+			-- Create new vertex for destination (notice it shares the same item as the one in the graph already
+			create i_v2.make (3)
+			create i_e.make (i_g.vertices[2], i_v2)
+			i_g.add_edge (i_e)
+			assert_equal ("correct vertices & edges", "[1:2,5][2:3][3][4:3][5][6]", i_g.out)
 		end
 end

@@ -160,7 +160,6 @@ feature -- commands
 			a_edge.source ~ Current implies outgoing.count = old outgoing.count + 1
 			a_edge.destination ~ Current implies incoming.has (a_edge)
 			a_edge.source ~ Current implies outgoing.has (a_edge)
-			-- incomplete, to add!
 		end
 
 	remove_edge(a_edge: EDGE[G])
@@ -179,7 +178,8 @@ feature -- commands
 				incoming.prune (a_edge)
 			end
 		ensure
-			-- To do.
+			a_edge.destination ~ Current implies incoming.count = old incoming.count - 1
+			a_edge.source ~ Current implies outgoing.count = old outgoing.count - 1
 		end
 
 feature -- out
@@ -199,7 +199,7 @@ feature -- out
 		do
 			Result := item.out + ":"
 			across outgoing_sorted as l_edge loop
-				Result := Result + l_edge.item.destination.item.out +"," 
+				Result := Result + l_edge.item.destination.item.out +","
 			end
 			Result.remove (Result.count)
 		end

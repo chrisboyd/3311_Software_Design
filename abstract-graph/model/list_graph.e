@@ -286,7 +286,12 @@ feature -- Advanced Queries
 				--get first vertex with zero incoming edges and add to result
 				curr_vert := no_incoming.first
 				no_incoming.dequeue
-				Result.force_and_fill(curr_vert, Result.count + 1)
+				if
+					not Result.has(curr_vert)
+				then
+					Result.force (curr_vert, Result.count + 1)
+				end
+
 				--loop through all vertices that have and edge starting at curr_vertex
 				--and remove edge
 				across
@@ -296,10 +301,13 @@ feature -- Advanced Queries
 					vert := out_rem.destination
 					vert.remove_edge (out_rem)
 					if vert.incoming_edge_count = 0 then
+						Result.force (vert, Result.count + 1)
 						no_incoming.enqueue (vert)
 					end
 				end
 			end
+
+
 		ensure
 			mm_sorted: Result ~ model.topologically_sorted.as_array
 		end
@@ -389,7 +397,7 @@ feature -- commands
 			mm_vertex_added: model ~ (old model.deep_twin) + a_vertex
 		end
 
-	add_edge (a_edge: EDGE [G])
+	 add_edge (a_edge: EDGE [G])
 			-- adds `a_edge` to the current graph
 		require
 			mm_existing_source_vertex: model.has_vertex (a_edge.source)
@@ -397,20 +405,47 @@ feature -- commands
 			mm_non_existing_edge: not model.has_edge ([a_edge.source, a_edge.destination])
 		local
 			src, dst: VERTEX [G]
+			n_edge: EDGE[G]
 		do
-			-- Done?
 			src := a_edge.source
 			dst := a_edge.destination
+			across
+				vertices is v
+			loop
+				if a_edge.source.item ~ v.item then
+					src := v
+				end
+				if a_edge.destination.item ~ v.item then
+					dst := v
+				end
+
+			end
+
+			create n_edge.make (src, dst)
+
 
 			--since vertex.add_edge already adds both incoming and
 			--outgoing edges in the case of a self-loop edge
 			if src ~ dst then
-				src.add_edge (a_edge)
+				src.add_edge (n_edge)
 			else
-				src.add_edge (a_edge)
-				dst.add_edge (a_edge)
+				src.add_edge (n_edge)
+				dst.add_edge (n_edge)
 			end
-			edges.force (a_edge, edges.count + 1)
+			edges.force (n_edge, edges.count + 1)
+
+--				--self loop case
+--				if v.item ~ src.item and v.item ~ dst.item then
+--					create n_edge.make (v, v)
+--					v.add_edge (n_edge)
+--				elseif v.item ~ src.item then
+--					create n_edge.make (v, dst)
+--					v.add_edge (n_edge)
+--				elseif  v.item ~ dst.item then
+--					create n_edge.make (src, v)
+--					v.add_edge (n_edge)
+--				end
+--				edges.force (a_edge, edges.count + 1)
 
 		ensure
 			mm_edge_added: model ~ (old model.deep_twin) |\/| [a_edge.source, a_edge.destination]
@@ -445,12 +480,16 @@ feature -- commands
 			edges[index_remove] := edges[edges.count]
 			edges.remove_tail (1)
 
-			--remove edge from both source and destination vertices
-			if src ~ dst then
-				src.remove_edge (a_edge)
-			else
-				src.remove_edge (a_edge)
-				dst.remove_edge (a_edge)
+			across
+				vertices is v
+			loop
+				if v.item ~ src.item and v.item ~ dst.item then
+					v.remove_edge (a_edge)
+				elseif v.item ~ src.item	then
+					v.remove_edge (a_edge)
+				elseif v.item ~ dst.item then
+					v.remove_edge (a_edge)
+				end
 			end
 
 		ensure
