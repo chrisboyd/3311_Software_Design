@@ -351,7 +351,7 @@ feature -- advanced queries (Lab 1)
 			queue: QUEUE[VERTEX[G]]
 			parent: VERTEX[G]
 		do
-			--Done?
+			--Done
 			create Result.make_empty
 			--create visited.make_empty
 			create {QUEUE [VERTEX [G]]} queue.make_empty
@@ -433,19 +433,6 @@ feature -- commands
 				dst.add_edge (n_edge)
 			end
 			edges.force (n_edge, edges.count + 1)
-
---				--self loop case
---				if v.item ~ src.item and v.item ~ dst.item then
---					create n_edge.make (v, v)
---					v.add_edge (n_edge)
---				elseif v.item ~ src.item then
---					create n_edge.make (v, dst)
---					v.add_edge (n_edge)
---				elseif  v.item ~ dst.item then
---					create n_edge.make (src, v)
---					v.add_edge (n_edge)
---				end
---				edges.force (a_edge, edges.count + 1)
 
 		ensure
 			mm_edge_added: model ~ (old model.deep_twin) |\/| [a_edge.source, a_edge.destination]
