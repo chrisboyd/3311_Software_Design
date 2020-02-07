@@ -256,9 +256,50 @@ feature -- Advanced Queries
 			-- A topological sort is performed.
 		require
 			is_acyclic: model.is_acyclic
+		local
+			no_incoming: QUEUE[VERTEX[G]]
+			l_vert: LIST[VERTEX [G]]
+			curr_vert: VERTEX[G]
+			vert: VERTEX[G]
 		do
+			--Using Kahn's Algorithm
 			create Result.make_empty
+			Result.compare_objects
+			create no_incoming.make_empty
+			create {LINKED_LIST [VERTEX [G]]} l_vert.make_from_iterable (vertices)
+			l_vert.compare_objects
 
+			--find vertices with no incoming edges
+			--and enqueue
+			across
+				l_vert is v
+			loop
+				if v.incoming_edge_count = 0 then
+					no_incoming.enqueue (v)
+				end
+			end
+
+			from
+			until
+				no_incoming.is_empty
+			loop
+				--get first vertex with zero incoming edges and add to result
+				curr_vert := no_incoming.first
+				no_incoming.dequeue
+				Result.force_and_fill(curr_vert, Result.count + 1)
+				--loop through all vertices that have and edge starting at curr_vertex
+				--and remove edge
+				across
+					curr_vert.outgoing_sorted is out_rem
+				loop
+					curr_vert.remove_edge (out_rem)
+					vert := out_rem.destination
+					vert.remove_edge (out_rem)
+					if vert.incoming_edge_count = 0 then
+						no_incoming.enqueue (vert)
+					end
+				end
+			end
 		ensure
 			mm_sorted: Result ~ model.topologically_sorted.as_array
 		end
@@ -266,7 +307,26 @@ feature -- Advanced Queries
 	is_topologically_sorted (seq: like topologically_sorted): BOOLEAN
 			-- does `seq` represent a topological order of the current graph?
 		do
-				-- To Do.
+			--seq count is same as vertices count
+			--all members of seq are in vertices
+			--result ordered in ascending edge count
+			Result := seq.count ~ vertices.count
+			and then
+			across
+				seq is v
+			all
+				vertices.has (v)
+			end
+			and then
+			across
+				1 |..| seq.count as i
+			all
+				across
+					1 |..| seq.count as j
+				all
+					i.item = j.item or else (edges.has ([seq[i.item], seq[j.item]]) implies i.item < j.item)
+				end
+			end
 		end
 
 feature -- advanced queries (Lab 1)
