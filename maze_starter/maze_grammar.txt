@@ -1,0 +1,34 @@
+system maze
+
+type LEVEL = {easy, medium, hard}
+    -- easy is a maze that has 7 x 7 positions
+    -- winning an easy game earns 1 point
+    -- medium is 11 x 11 (winning earns 2 points)
+    -- hard is 15 x 15 (winning earns 3 points)
+
+type DIRECTION = {N, E, S, W}
+    -- player can move in one of 4 directions in the maze
+    -- error is reported where there is a wall etc.
+
+new_game(a_level: LEVEL)
+    -- sets up the player at the entrance
+    -- entrance is left top
+    -- exit is right bottom
+    -- the goal is for the player to escape 
+    -- out of the maze at movethe exit
+
+move(a_direction: DIRECTION)
+    -- move in the stated directions
+    -- when the exit is reached,
+    -- a message saying "You've escaped the maze! Well done."
+    -- score: number of games won/games played
+
+abort
+    -- counts as game lost if solvable
+
+solve
+    -- shows a shortest path to the exit
+    -- if it exists from the current position
+    -- counts as a game lost if solvable
+
+
