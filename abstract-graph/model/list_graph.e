@@ -254,6 +254,7 @@ feature -- Advanced Queries
 			-- Return an array <<..., vi, ..., vj, ...>> such that
 			-- (vi, vj) in edges => i < j
 			-- A topological sort is performed.
+
 		require
 			is_acyclic: model.is_acyclic
 		local
@@ -261,13 +262,18 @@ feature -- Advanced Queries
 			l_vert: LIST[VERTEX [G]]
 			curr_vert: VERTEX[G]
 			vert: VERTEX[G]
+			order: LINKED_LIST[VERTEX[G]]
 		do
 			--Using Kahn's Algorithm
 			create Result.make_empty
 			Result.compare_objects
+
 			create no_incoming.make_empty
 			create {LINKED_LIST [VERTEX [G]]} l_vert.make_from_iterable (vertices)
 			l_vert.compare_objects
+
+			create order.make
+			order.compare_objects
 
 			--find vertices with no incoming edges
 			--and enqueue
@@ -286,13 +292,14 @@ feature -- Advanced Queries
 				--get first vertex with zero incoming edges and add to result
 				curr_vert := no_incoming.first
 				no_incoming.dequeue
+				order.put_front (curr_vert)
 				if
 					not Result.has(curr_vert)
 				then
 					Result.force (curr_vert, Result.count + 1)
 				end
 
-				--loop through all vertices that have and edge starting at curr_vertex
+				--loop through all vertices that have an edge starting at curr_vertex
 				--and remove edge
 				across
 					curr_vert.outgoing_sorted is out_rem
@@ -446,7 +453,7 @@ feature -- commands
 			src, dst: VERTEX [G]
 			index_remove: INTEGER
 		do
-			-- Done?
+			-- Done
 			src := a_edge.source
 			dst := a_edge.destination
 
