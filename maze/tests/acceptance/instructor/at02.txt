@@ -1,8 +1,0 @@
-new_game(easy)
-move(N)
-move(W)
-move(S)
-move(E)
-move(S)
-move(E)
-
