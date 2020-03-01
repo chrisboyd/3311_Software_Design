@@ -181,7 +181,7 @@ feature -- commands
 			a_edge.source ~ Current implies outgoing.has (a_edge)
 			a_edge.destination /~ Current and a_edge.source /~ Current implies
 				incoming.count = old incoming.count and outgoing.count = old outgoing.count
-			
+
 		end
 
 	remove_edge(a_edge: EDGE[G])
