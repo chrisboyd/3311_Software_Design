@@ -1,0 +1,11 @@
+--create a new account with id 'id1'
+new("id1")
+
+--create a new account with id 'id2'
+new("id2")
+
+--deposit into the account with id 'id1' an amount of 234
+deposit("id1", 234)
+
+--withdraw from the account with id 'id1' an amount of 50
+withdraw("id1", 50)
