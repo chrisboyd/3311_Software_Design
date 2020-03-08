@@ -15,7 +15,7 @@ feature -- command
     	do
 			-- perform some update on the model state
 			if across model.accounts as cursor	some cursor.item.id ~ id	end	then
-				model.set_error("id: " + id + " already exists")
+				model.set_error("Id " + id + " already exists")
 			else
 				model.new(id)
 			end
