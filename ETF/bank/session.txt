@@ -1,0 +1,4 @@
+new("Chris")
+new("id2")
+deposit("id2", 200)
+man

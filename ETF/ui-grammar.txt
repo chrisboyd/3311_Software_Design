@@ -1,0 +1,8 @@
+system bank
+-- simple bank
+
+new(id: STRING) -- add a new account id to bank
+
+deposit(id: STRING; amount: INTEGER)
+withdraw(id: STRING; amount: INTEGER)
+transfer(id1: STRING; id2: STRING; amount: INTEGER)

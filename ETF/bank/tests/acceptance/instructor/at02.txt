@@ -1,0 +1,4 @@
+--create a new account
+new("id1")
+--create a duplicate
+new("id1")

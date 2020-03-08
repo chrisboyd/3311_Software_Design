@@ -1,0 +1,5 @@
+new("id1")
+new("id2")
+deposit("id1", 234)
+withdraw("id1", 20)
+transfer("id1", "id2", 200)
