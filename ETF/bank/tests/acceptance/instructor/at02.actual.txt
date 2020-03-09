@@ -1,5 +1,0 @@
-accounts: {}
-->new("id1")
-accounts: {Account with id id1 has balance 0}
-->new("id1")
-  Error: Id id1 already exists

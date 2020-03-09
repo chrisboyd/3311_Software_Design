@@ -1,9 +1,0 @@
-accounts: {}
-->new("id1")
-accounts: {Account with id id1 has balance 0}
-->new("id2")
-accounts: {Account with id id1 has balance 0, Account with id id2 has balance 0}
-->deposit("id1",234)
-accounts: {Account with id id1 has balance 234, Account with id id2 has balance 0}
-->withdraw("id1",50)
-accounts: {Account with id id1 has balance 184, Account with id id2 has balance 0}
