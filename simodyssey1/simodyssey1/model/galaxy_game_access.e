@@ -5,10 +5,10 @@ note
 	revision: "$Revision$"
 
 expanded class
-	ETF_MODEL_ACCESS
+	GALAXY_GAME_ACCESS
 
 feature
-	m: ETF_MODEL
+	m: GALAXY_GAME
 		once
 			create Result.make
 		end

@@ -93,7 +93,7 @@ feature -- commands
 			end
 		end
 
-feature {GALAXY} --command
+feature {GALAXY_GAME} --command
 
 	put (new_component: ENTITY_ALPHABET)
 			-- put `new_component' in contents array
