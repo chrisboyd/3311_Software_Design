@@ -41,7 +41,7 @@ feature {NONE} -- Initialization
 				until
 					column > shared_info.number_columns
 				loop
-					grid[row,column] := create {SECTOR}.make(row,column,create{ENTITY_ALPHABET}.make ('E'))
+					grid[row,column] := create {SECTOR}.make(row,column,create{ENTITY_MOVABLE}.make ('E', 1))
 					column:= column + 1;
 				end
 				row := row + 1
@@ -84,12 +84,15 @@ feature -- model operations
 
 	play
 		do
-			in_play := TRUE
 			test(30)
 		end
+
 	test (p_threshold : INTEGER)
+		local
+
 		do
 			state := state + 1
+			set_movable_items (p_threshold)
 			set_stationary_items
 			in_play := TRUE
 			test_mode := TRUE
@@ -108,6 +111,140 @@ feature -- model operations
 		end
 
 feature {NONE} --commands (internal)
+	next_available_quad (sect: SECTOR)  : INTEGER
+		require
+			not sect.is_full
+		local
+			loop_counter : INTEGER
+			occupant : ENTITY_ALPHABET
+			empty_space_found : BOOLEAN
+		do
+
+			empty_space_found := FALSE
+			from
+				loop_counter := 1
+			until
+				loop_counter > sect.contents.count or empty_space_found
+			loop
+				occupant := sect.contents [loop_counter]
+				if not attached occupant  then
+					empty_space_found := TRUE
+				end
+				loop_counter := loop_counter + 1
+			end
+			Result := loop_counter
+
+		end
+
+	has_stationary (sect: SECTOR) : BOOLEAN
+		local
+			stationary : BOOLEAN
+		do
+
+			stationary := FALSE
+			across
+				sect.contents is quad
+			loop
+				if quad.is_stationary then
+					stationary := TRUE
+				end
+			end
+
+			Result := stationary
+		end
+
+
+	set_movable_items (p_threshold : INTEGER)
+		local
+			threshold: INTEGER
+			number_items: INTEGER
+			loop_counter: INTEGER
+			component: ENTITY_MOVABLE
+			turn :INTEGER
+			id: INTEGER
+		do
+			id := 2 --since Explorer id := 1
+			across
+				grid is sector
+			loop
+				number_items := gen.rchoose (1, shared_info.max_capacity-1)  -- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
+				from
+					loop_counter := 1
+				until
+					loop_counter > number_items
+				loop
+					threshold := gen.rchoose (1, 100) -- each iteration, generate a new value to compare against the threshold values provided by `test` or `play`
+
+
+					if threshold < p_threshold then
+						create component.make('P', id)
+						id := id + 1
+					end
+
+
+					if attached component as entity then
+						sector.put(entity)  -- add new entity to the contents list
+
+						--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+						turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
+						-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
+						--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+						component := void -- reset component object
+					end
+
+					loop_counter := loop_counter + 1
+				end --loop through num items in each sector
+
+			end --loop through all sectors in grid
+		end
+
+	set_stationary_items
+			-- distribute stationary items amongst the sectors in the grid.
+			-- There can be only one stationary item in a sector
+		local
+			loop_counter: INTEGER
+			check_sector: SECTOR
+			temp_row: INTEGER
+			temp_column: INTEGER
+			id: INTEGER
+		do
+			id := -2
+			from
+				loop_counter := 1
+			until
+				loop_counter > shared_info.number_of_stationary_items
+			loop
+
+				temp_row :=  gen.rchoose (1, shared_info.number_rows)
+				temp_column := gen.rchoose (1, shared_info.number_columns)
+				check_sector := grid[temp_row,temp_column]
+				if (not check_sector.has_stationary) and (not check_sector.is_full) then
+					grid[temp_row,temp_column].put (create_stationary_item(id))
+					loop_counter := loop_counter + 1
+					id := id - 1
+				end -- if
+			end -- loop
+		end -- feature set_stationary_items
+
+	create_stationary_item(id : INTEGER): ENTITY_ALPHABET
+			-- this feature randomly creates one of the possible types of stationary actors
+		local
+			chance: INTEGER
+			stationary : ENTITY_STATIONARY
+		do
+			chance := gen.rchoose (1, 3)
+			inspect chance
+			when 1 then
+				create stationary.make ('Y',id)
+			when 2 then
+				create stationary.make('*',id)
+			when 3 then
+				create stationary.make('W',id)
+			else
+				create stationary.make('Y',id) -- create more yellow dwarfs this will never happen, but create by default
+			end -- inspect
+			Result := stationary
+		end
 
 	galaxy_out : STRING
 		local
@@ -180,48 +317,6 @@ feature {NONE} --commands (internal)
 				string1.wipe_out
 				string2.wipe_out
 			end
-		end
-	set_stationary_items
-			-- distribute stationary items amongst the sectors in the grid.
-			-- There can be only one stationary item in a sector
-		local
-			loop_counter: INTEGER
-			check_sector: SECTOR
-			temp_row: INTEGER
-			temp_column: INTEGER
-		do
-			from
-				loop_counter := 1
-			until
-				loop_counter > shared_info.number_of_stationary_items
-			loop
-
-				temp_row :=  gen.rchoose (1, shared_info.number_rows)
-				temp_column := gen.rchoose (1, shared_info.number_columns)
-				check_sector := grid[temp_row,temp_column]
-				if (not check_sector.has_stationary) and (not check_sector.is_full) then
-					grid[temp_row,temp_column].put (create_stationary_item)
-					loop_counter := loop_counter + 1
-				end -- if
-			end -- loop
-		end -- feature set_stationary_items
-
-	create_stationary_item: ENTITY_ALPHABET
-			-- this feature randomly creates one of the possible types of stationary actors
-		local
-			chance: INTEGER
-		do
-			chance := gen.rchoose (1, 3)
-			inspect chance
-			when 1 then
-				create Result.make('Y')
-			when 2 then
-				create Result.make('*')
-			when 3 then
-				create Result.make('W')
-			else
-				create Result.make('Y') -- create more yellow dwarfs this will never happen, but create by default
-			end -- inspect
 		end
 
 

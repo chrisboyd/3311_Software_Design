@@ -6,7 +6,7 @@ note
     date: "April 30, 2019"
     revision: "1"
 
-class
+deferred class
     ENTITY_ALPHABET
 
 inherit
@@ -16,20 +16,11 @@ inherit
             is_equal
         end
 
-create
-    make
-
-feature -- Constructor
-
-    make (a_char: CHARACTER)
-        do
-            item := a_char
-        end
 
 feature -- Attributes
 
     item: CHARACTER
-
+	id: INTEGER
 
 feature -- Query
 
@@ -51,6 +42,13 @@ feature -- Query
            		Result := True
            end
         end
+
+    is_movable: BOOLEAN
+    	do
+    		if item = 'E' or item = 'P' then
+    			Result := True
+    		end
+    	end
 
 invariant
     allowable_symbols:

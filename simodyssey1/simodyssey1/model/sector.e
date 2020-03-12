@@ -38,12 +38,12 @@ feature -- constructor
 			create contents.make (shared_info.max_capacity) -- Each sector should have 4 quadrants
 			contents.compare_objects
 			if (row = 3) and (column = 3) then
-				put (create {ENTITY_ALPHABET}.make ('O')) -- If this is the sector in the middle of the board, place a black hole
+				put (create {ENTITY_STATIONARY}.make ('O', -1)) -- If this is the sector in the middle of the board, place a black hole
 			else
 				if (row = 1) and (column = 1) then
 					put (a_explorer) -- If this is the top left corner sector, place the explorer there
 				end
-				populate -- Run the populate command to complete setup
+				--populate -- Run the populate command to complete setup
 			end -- if
 		end
 
@@ -53,44 +53,6 @@ feature -- commands
 		do
 			create contents.make (shared_info.max_capacity)
 			contents.compare_objects
-		end
-
-	populate
-			-- this feature creates 1 to max_capacity-1 components to be intially stored in the
-			-- sector. The component may be a planet or nothing at all.
-		local
-			threshold: INTEGER
-			number_items: INTEGER
-			loop_counter: INTEGER
-			component: ENTITY_ALPHABET
-			turn :INTEGER
-		do
-			number_items := gen.rchoose (1, shared_info.max_capacity-1)  -- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
-			from
-				loop_counter := 1
-			until
-				loop_counter > number_items
-			loop
-				threshold := gen.rchoose (1, 100) -- each iteration, generate a new value to compare against the threshold values provided by `test` or `play`
-
-
-				if threshold < shared_info.planet_threshold then
-					create component.make('P')
-				end
-
-
-				if attached component as entity then
-					put (entity) -- add new entity to the contents list
-
-					--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-					turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
-					-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
-					--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-					component := void -- reset component object
-				end
-
-				loop_counter := loop_counter + 1
-			end
 		end
 
 feature {GALAXY_GAME} --command
