@@ -16,14 +16,45 @@ inherit
 create {GALAXY_GAME_ACCESS}
 	make
 
+feature {NONE} -- model attributes
+	s : STRING
+	state : INTEGER			--valid states game has gone through
+	error_state : INTEGER		--error states game has encountered
+	in_play: BOOLEAN			--is there a game currently active
+	error : STRING			--error message to output to player
+	test_mode : BOOLEAN		-- is the game in test mode
+	grid: ARRAY2 [SECTOR] 	-- the board
+	movable_entities: LINKED_LIST[ENTITY_MOVABLE]
+	stationary_entities: LINKED_LIST[ENTITY_STATIONARY]
+
+
+	gen: RANDOM_GENERATOR_ACCESS
+
+	shared_info_access : SHARED_INFORMATION_ACCESS
+
+	shared_info: SHARED_INFORMATION
+		attribute
+			Result:= shared_info_access.shared_info
+		end
+
 feature {NONE} -- Initialization
 	make
 			-- Initialization for `Current'.
 		local
 				row : INTEGER
 				column : INTEGER
+				explorer: ENTITY_MOVABLE
+				blackhole: ENTITY_STATIONARY
 		do
 			create s.make_empty
+			create movable_entities.make
+			create stationary_entities.make
+			create explorer.make ('E', 1)
+			create blackhole.make ('O', -1)
+
+			movable_entities.extend (explorer)
+			stationary_entities.extend (blackhole)
+
 			state := 0
 			error_state := 0
 			in_play := FALSE
@@ -41,7 +72,7 @@ feature {NONE} -- Initialization
 				until
 					column > shared_info.number_columns
 				loop
-					grid[row,column] := create {SECTOR}.make(row,column,create{ENTITY_MOVABLE}.make ('E', 1))
+					grid[row,column] := create {SECTOR}.make(row,column,explorer,blackhole)
 					column:= column + 1;
 				end
 				row := row + 1
@@ -50,24 +81,6 @@ feature {NONE} -- Initialization
 
 		end
 
-feature {NONE} -- model attributes
-	s : STRING
-	state : INTEGER
-	error_state : INTEGER
-	in_play: BOOLEAN
-	error : STRING
-	test_mode : BOOLEAN
-	grid: ARRAY2 [SECTOR]
-			-- the board
-
-	gen: RANDOM_GENERATOR_ACCESS
-
-	shared_info_access : SHARED_INFORMATION_ACCESS
-
-	shared_info: SHARED_INFORMATION
-		attribute
-			Result:= shared_info_access.shared_info
-		end
 
 feature -- model operations
 	default_update
@@ -101,13 +114,20 @@ feature -- model operations
 		local
 			sect: SEQ[ENTITY_ALPHABET]
 		do
-			error.append ("return movable in order: ")
-			sect := return_m_ent_low_high (grid[1,2])
+			error.append ("all stationary: ")
 			across
-				sect is entity
+				stationary_entities is st
 			loop
-				error.append (entity.out_id)
+				error.append (st.out_id + " " )
 			end
+			error.append ("%N")
+			error.append ("all movable: ")
+			across
+				movable_entities is m
+			loop
+				error.append (m.out_id + " " )
+			end
+
 		end
 
 	is_playing : BOOLEAN
@@ -189,6 +209,7 @@ feature {NONE} --commands (internal)
 
 					if threshold < p_threshold then
 						create component.make('P', id)
+						movable_entities.extend (component)
 						id := id + 1
 					end
 
@@ -200,6 +221,7 @@ feature {NONE} --commands (internal)
 						turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
 						-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
 						--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+						component.set_turn (turn)
 						component := void -- reset component object
 					end
 
@@ -247,13 +269,17 @@ feature {NONE} --commands (internal)
 			inspect chance
 			when 1 then
 				create stationary.make ('Y',id)
+				stationary.set_luminosity (2)
 			when 2 then
 				create stationary.make('*',id)
+				stationary.set_luminosity (5)
 			when 3 then
 				create stationary.make('W',id)
 			else
 				create stationary.make('Y',id) -- create more yellow dwarfs this will never happen, but create by default
+				stationary.set_luminosity (2)
 			end -- inspect
+			stationary_entities.extend (stationary)
 			Result := stationary
 		end
 

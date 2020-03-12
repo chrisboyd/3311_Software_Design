@@ -27,7 +27,7 @@ feature -- attributes
 	column: INTEGER
 
 feature -- constructor
-	make(row_input: INTEGER; column_input: INTEGER; a_explorer:ENTITY_ALPHABET)
+	make(row_input: INTEGER; column_input: INTEGER; a_explorer:ENTITY_ALPHABET; blackhole:ENTITY_ALPHABET)
 		--initialization
 		require
 			valid_row: (row_input >= 1) and (row_input <= shared_info.number_rows)
@@ -38,7 +38,7 @@ feature -- constructor
 			create contents.make (shared_info.max_capacity) -- Each sector should have 4 quadrants
 			contents.compare_objects
 			if (row = 3) and (column = 3) then
-				put (create {ENTITY_STATIONARY}.make ('O', -1)) -- If this is the sector in the middle of the board, place a black hole
+				put (blackhole) -- If this is the sector in the middle of the board, place a black hole
 			else
 				if (row = 1) and (column = 1) then
 					put (a_explorer) -- If this is the top left corner sector, place the explorer there

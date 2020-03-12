@@ -33,7 +33,8 @@ feature --query
 
 	is_equal(other : ENTITY_STATIONARY): BOOLEAN
         do
-            Result := current.item.is_equal (other.item)
+            Result := current.item.is_equal (other.item) and
+            			current.id.is_equal (other.id)
         end
 
 feature --commands

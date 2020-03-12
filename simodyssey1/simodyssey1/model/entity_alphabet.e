@@ -40,7 +40,8 @@ feature -- Query
 
     is_equal(other : ENTITY_ALPHABET): BOOLEAN
         do
-            Result := current.item.is_equal (other.item)
+            Result := current.item.is_equal (other.item) and
+            			current.id.is_equal (other.id)
         end
 
     is_stationary: BOOLEAN
