@@ -1,1 +1,2 @@
-test(30)
+test(100)
+status

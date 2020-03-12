@@ -88,8 +88,6 @@ feature -- model operations
 		end
 
 	test (p_threshold : INTEGER)
-		local
-
 		do
 			state := state + 1
 			set_movable_items (p_threshold)
@@ -97,6 +95,19 @@ feature -- model operations
 			in_play := TRUE
 			test_mode := TRUE
 
+		end
+
+	status
+		local
+			sect: SEQ[ENTITY_ALPHABET]
+		do
+			error.append ("return movable in order: ")
+			sect := return_m_ent_low_high (grid[1,2])
+			across
+				sect is entity
+			loop
+				error.append (entity.out_id)
+			end
 		end
 
 	is_playing : BOOLEAN
@@ -245,6 +256,43 @@ feature {NONE} --commands (internal)
 			end -- inspect
 			Result := stationary
 		end
+
+	return_m_ent_low_high (sect: SECTOR) : SEQ[ENTITY_ALPHABET]
+		local
+			temp: SEQ[ENTITY_ALPHABET]
+			i: INTEGER
+			inserted : BOOLEAN
+		do
+			create temp.make_empty
+
+			across
+				sect.contents is ent
+			loop
+				if ent.is_movable then
+					if temp.is_empty then
+						temp.append (ent)
+					else
+						from
+							i := temp.lower
+						until
+							i > temp.upper or inserted
+						loop
+							if ent.id <= temp[i].id then
+								temp.insert (ent, i)
+								inserted := True
+							end
+							i := i + 1
+						end--insert current movable entity into temp in order of id
+						if not inserted then
+							temp.append (ent)
+						end
+					end--temp was empty, inserted current movable into front of temp
+				end--current entity wasn't movable
+			end--end of across entities of sect
+
+			Result := temp
+		end
+
 
 	galaxy_out : STRING
 		local
