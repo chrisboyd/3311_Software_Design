@@ -17,15 +17,15 @@ create {GALAXY_GAME_ACCESS}
 	make
 
 feature {NONE} -- model attributes
-	s : STRING
+
 	state : INTEGER			--valid states game has gone through
 	error_state : INTEGER		--error states game has encountered
 	in_play: BOOLEAN			--is there a game currently active
 	error : STRING			--error message to output to player
 	test_mode : BOOLEAN		-- is the game in test mode
 	grid: ARRAY2 [SECTOR] 	-- the board
-	movable_entities: LINKED_LIST[ENTITY_MOVABLE]
-	stationary_entities: LINKED_LIST[ENTITY_STATIONARY]
+	movable_entities: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
+	stationary_entities: SORTED_TWO_WAY_LIST[ENTITY_STATIONARY]
 
 
 	gen: RANDOM_GENERATOR_ACCESS
@@ -46,9 +46,11 @@ feature {NONE} -- Initialization
 				explorer: ENTITY_MOVABLE
 				blackhole: ENTITY_STATIONARY
 		do
-			create s.make_empty
+
 			create movable_entities.make
+			movable_entities.compare_objects
 			create stationary_entities.make
+			stationary_entities.compare_objects
 			create explorer.make ('E', 1)
 			create blackhole.make ('O', -1)
 
@@ -112,20 +114,15 @@ feature -- model operations
 
 	status
 		local
-			sect: SEQ[ENTITY_ALPHABET]
+			temp: SEQ[ENTITY_ALPHABET]
 		do
-			error.append ("all stationary: ")
+			temp := return_m_ent_low_high(grid[1,2])
+
+			error.append ("test m_ent (1,2): ")
 			across
-				stationary_entities is st
+				temp is ent
 			loop
-				error.append (st.out_id + " " )
-			end
-			error.append ("%N")
-			error.append ("all movable: ")
-			across
-				movable_entities is m
-			loop
-				error.append (m.out_id + " " )
+				error.append (ent.out_id + " " )
 			end
 
 		end

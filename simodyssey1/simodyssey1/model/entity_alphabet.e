@@ -10,17 +10,30 @@ deferred class
     ENTITY_ALPHABET
 
 inherit
+
+	COMPARABLE
+    	undefine
+    		out,
+            is_equal
+    	end
+
     ANY
         redefine
             out,
             is_equal
         end
 
-
 feature -- Attributes
 
     item: CHARACTER
 	id: INTEGER
+
+feature --Comparison
+
+	is_less alias "<" (other: LIKE CURRENT): BOOLEAN
+		do
+			Result := id < other.id
+		end
 
 feature -- Query
 
