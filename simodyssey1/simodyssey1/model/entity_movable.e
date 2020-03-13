@@ -18,7 +18,8 @@ create
 
 feature --attributes
 	turn: INTEGER
-
+	fuel: INTEGER
+	landed: BOOLEAN
 feature -- Constructor
 
     make (a_char: CHARACTER; i: INTEGER)
@@ -26,6 +27,15 @@ feature -- Constructor
             item := a_char
             id := i
             turn := 0
+            landed := False
+            row := 0
+            col := 0
+
+            if a_char = 'E' then
+            	fuel := 3
+            else
+            	fuel := 0
+            end
         end
 
 

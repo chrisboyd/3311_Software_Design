@@ -27,12 +27,21 @@ feature -- Attributes
 
     item: CHARACTER
 	id: INTEGER
+	row: INTEGER
+	col: INTEGER
 
 feature --Comparison
 
 	is_less alias "<" (other: LIKE CURRENT): BOOLEAN
 		do
 			Result := id < other.id
+		end
+feature --Command
+
+	set_location (r: INTEGER; c: INTEGER)
+		do
+			row := r
+			col := c
 		end
 
 feature -- Query
@@ -128,6 +137,11 @@ feature -- Query
     		else
     			Result := False
     		end
+    	end
+
+    get_location: TUPLE[INTEGER, INTEGER]
+    	do
+    		Result := [row, col]
     	end
 
 invariant

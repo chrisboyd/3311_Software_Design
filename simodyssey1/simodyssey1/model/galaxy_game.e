@@ -113,16 +113,13 @@ feature -- model operations
 		end
 
 	status
-		local
-			temp: SEQ[ENTITY_ALPHABET]
 		do
-			temp := return_m_ent_low_high(grid[1,2])
-
-			error.append ("test m_ent (1,2): ")
+			error.append ("movable addresses:%N")
 			across
-				temp is ent
+				movable_entities as m
 			loop
-				error.append (ent.out_id + " " )
+				error.append ("row: " + m.item.row.out)
+				error.append ( " col: " + m.item.col.out + "%N")
 			end
 
 		end
@@ -138,7 +135,37 @@ feature -- model operations
 			error_state := error_state + 1
 		end
 
+	move (row_inc: INTEGER; col_inc: INTEGER)
+		local
+			coord: TUPLE[INTEGER, INTEGER]
+		do
+			if not in_play then
+				error_state := error_state + 1
+				error.append ("  Negative on that request:no mission in progress.")
+				error.append ("%N")
+				error.append ("first movable coordinates: ")
+			else
+				--change to map_coord of row and col one by one
+				coord := get_new_coord(movable_entities.first.get_location, [row_inc, col_inc])
+			end
+
+		end
+
 feature {NONE} --commands (internal)
+
+	get_new_coord(start: TUPLE[INTEGER,INTEGER]; increment: TUPLE[INTEGER, INTEGER]): TUPLE[INTEGER, INTEGER]
+		local
+			row_dest: INTEGER
+			col_dest: INTEGER
+		do
+			if (start.lower + increment.lower) <= shared_info.number_rows
+				and (start.lower + increment.lower) >= 1 then
+				row_dest := start.lower + increment.lower
+
+			end
+			Result := [row_dest, col_dest]
+		end
+
 	next_available_quad (sect: SECTOR)  : INTEGER
 		require
 			not sect.is_full
@@ -190,43 +217,92 @@ feature {NONE} --commands (internal)
 			component: ENTITY_MOVABLE
 			turn :INTEGER
 			id: INTEGER
+			row_counter: INTEGER
+			col_counter: INTEGER
 		do
 			id := 2 --since Explorer id := 1
-			across
-				grid is sector
+			from
+				row_counter := 1
+			until
+				row_counter > shared_info.number_rows
 			loop
-				number_items := gen.rchoose (1, shared_info.max_capacity-1)  -- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
 				from
-					loop_counter := 1
+					col_counter := 1
 				until
-					loop_counter > number_items
+					col_counter > shared_info.number_columns
 				loop
-					threshold := gen.rchoose (1, 100) -- each iteration, generate a new value to compare against the threshold values provided by `test` or `play`
+					number_items := gen.rchoose (1, shared_info.max_capacity-1)  -- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
+					from
+						loop_counter := 1
+					until
+						loop_counter > number_items
+					loop
+						threshold := gen.rchoose (1, 100) -- each iteration, generate a new value to compare against the threshold values provided by `test` or `play`
 
 
-					if threshold < p_threshold then
-						create component.make('P', id)
-						movable_entities.extend (component)
-						id := id + 1
+						if threshold < p_threshold then
+							create component.make('P', id)
+							movable_entities.extend (component)
+							id := id + 1
+						end
+
+
+						if attached component as entity then
+							grid[row_counter, col_counter].put(entity)  -- add new entity to the contents list
+							entity.set_location (row_counter, col_counter)
+							--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+							turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
+							-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
+							--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+							component.set_turn (turn)
+							component := void -- reset component object
+						end
+
+						loop_counter := loop_counter + 1
 					end
-
-
-					if attached component as entity then
-						sector.put(entity)  -- add new entity to the contents list
-
-						--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-						turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
-						-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
-						--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-						component.set_turn (turn)
-						component := void -- reset component object
-					end
-
-					loop_counter := loop_counter + 1
-				end --loop through num items in each sector
-
-			end --loop through all sectors in grid
+					col_counter := col_counter + 1
+				end
+				row_counter := row_counter + 1
+			end
 		end
+
+
+
+--			across
+--				grid is sector
+--			loop
+--				number_items := gen.rchoose (1, shared_info.max_capacity-1)  -- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
+--				from
+--					loop_counter := 1
+--				until
+--					loop_counter > number_items
+--				loop
+--					threshold := gen.rchoose (1, 100) -- each iteration, generate a new value to compare against the threshold values provided by `test` or `play`
+
+
+--					if threshold < p_threshold then
+--						create component.make('P', id)
+--						movable_entities.extend (component)
+--						id := id + 1
+--					end
+
+
+--					if attached component as entity then
+--						sector.put(entity)  -- add new entity to the contents list
+
+--						--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--						turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
+--						-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
+--						--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+--						component.set_turn (turn)
+--						component := void -- reset component object
+--					end
+
+--					loop_counter := loop_counter + 1
+--				end --loop through num items in each sector
+
+--			end --loop through all sectors in grid
+--		end
 
 	set_stationary_items
 			-- distribute stationary items amongst the sectors in the grid.
@@ -237,6 +313,7 @@ feature {NONE} --commands (internal)
 			temp_row: INTEGER
 			temp_column: INTEGER
 			id: INTEGER
+			entity: ENTITY_STATIONARY
 		do
 			id := -2
 			from
@@ -249,14 +326,17 @@ feature {NONE} --commands (internal)
 				temp_column := gen.rchoose (1, shared_info.number_columns)
 				check_sector := grid[temp_row,temp_column]
 				if (not check_sector.has_stationary) and (not check_sector.is_full) then
-					grid[temp_row,temp_column].put (create_stationary_item(id))
+					--use temp entity to for create and add to grid
+					entity := create_stationary_item(id)
+					entity.set_location (temp_row, temp_column)
+					grid[temp_row,temp_column].put (entity)
 					loop_counter := loop_counter + 1
 					id := id - 1
 				end -- if
 			end -- loop
 		end -- feature set_stationary_items
 
-	create_stationary_item(id : INTEGER): ENTITY_ALPHABET
+	create_stationary_item(id : INTEGER): ENTITY_STATIONARY
 			-- this feature randomly creates one of the possible types of stationary actors
 		local
 			chance: INTEGER
@@ -395,7 +475,7 @@ feature -- queries
 	out : STRING
 		do
 			create Result.make_empty
-			Result.append (" state:")
+			Result.append ("  state:")
 			Result.append (state.out)
 			Result.append (".")
 			Result.append (error_state.out)

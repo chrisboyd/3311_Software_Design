@@ -39,9 +39,11 @@ feature -- constructor
 			contents.compare_objects
 			if (row = 3) and (column = 3) then
 				put (blackhole) -- If this is the sector in the middle of the board, place a black hole
+				blackhole.set_location (row, column)
 			else
 				if (row = 1) and (column = 1) then
 					put (a_explorer) -- If this is the top left corner sector, place the explorer there
+					a_explorer.set_location (row, column)
 				end
 				--populate -- Run the populate command to complete setup
 			end -- if

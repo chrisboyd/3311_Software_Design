@@ -26,6 +26,8 @@ feature -- Constructor
             item := a_char
             id := i
             luminosity := 0
+            row := 0
+            col := 0
         end
 
 
