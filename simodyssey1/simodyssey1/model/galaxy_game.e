@@ -103,7 +103,10 @@ feature -- model operations
 
 	play
 		do
-			test(30)
+			state := state + 1
+			set_movable_items (30)
+			set_stationary_items
+			in_play := TRUE
 		end
 
 	test (p_threshold : INTEGER)
@@ -192,6 +195,7 @@ feature -- model operations
 							explorer.add_fuel (2)
 						elseif stationary.is_blackole then
 							blackhole_msg.append ("  Explorer got devoured by blackhole (id: -1) at Sector:3:3")
+							grid[coord.first, coord.second].contents.prune (explorer)
 						end
 
 					end
@@ -299,6 +303,7 @@ feature {NONE} --commands (internal)
 				until
 					col_counter > shared_info.number_columns
 				loop
+
 					number_items := gen.rchoose (1, shared_info.max_capacity-1)  -- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
 					from
 						loop_counter := 1
