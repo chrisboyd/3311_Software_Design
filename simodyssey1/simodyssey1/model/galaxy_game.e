@@ -137,33 +137,74 @@ feature -- model operations
 
 	move (row_inc: INTEGER; col_inc: INTEGER)
 		local
-			coord: TUPLE[INTEGER, INTEGER]
+			coord: PAIR[INTEGER, INTEGER]
+			sect: SECTOR
 		do
 			if not in_play then
 				error_state := error_state + 1
 				error.append ("  Negative on that request:no mission in progress.")
 				error.append ("%N")
-				error.append ("first movable coordinates: ")
 			else
-				--change to map_coord of row and col one by one
+				--get new coordinates to move explorer too
 				coord := get_new_coord(movable_entities.first.get_location, [row_inc, col_inc])
+
+				--make sure explorer isn't landed
+				if movable_entities.first.is_landed then
+					error_state := error_state + 1
+					error.append ("  Negative on that request:you are currently landed at Sector:")
+					error.append (grid[movable_entities.first.row, movable_entities.first.col].print_sector)
+					error.append ("%N")
+
+				--make sure sector isn't full
+				elseif grid[coord.first, coord.second].is_full then
+					error_state := error_state + 1
+					error.append ("  Cannot transfer to new location as it is full.")
+					error.append ("%N")
+				--perform move
+				else
+					state := state + 1
+					movable_entities.first.use_fuel
+					--check if fuel zero, give error message use death message text to still
+					--show grid?
+					sect := grid[movable_entities.first.row, movable_entities.first.col]
+					sect.contents.prune (movable_entities.first)
+					grid[coord.first, coord.second].put (movable_entities.first)
+					movable_entities.first.set_location (coord.first, coord.second)
+				end
+
 			end
 
 		end
 
 feature {NONE} --commands (internal)
 
-	get_new_coord(start: TUPLE[INTEGER,INTEGER]; increment: TUPLE[INTEGER, INTEGER]): TUPLE[INTEGER, INTEGER]
+	get_new_coord(start: PAIR[INTEGER,INTEGER]; increment: PAIR[INTEGER, INTEGER]): PAIR[INTEGER, INTEGER]
 		local
 			row_dest: INTEGER
 			col_dest: INTEGER
-		do
-			if (start.lower + increment.lower) <= shared_info.number_rows
-				and (start.lower + increment.lower) >= 1 then
-				row_dest := start.lower + increment.lower
 
+		do
+			if (start.first + increment.first) <= shared_info.number_rows then
+				if (start.first + increment.first) >= 1 then
+					row_dest := start.first + increment.first
+				else
+					row_dest := shared_info.number_rows
+				end
+			else
+				row_dest := 1
 			end
-			Result := [row_dest, col_dest]
+
+			if (start.second + increment.second) <= shared_info.number_columns then
+				if (start.second + increment.second) >= 1 then
+					col_dest := start.second + increment.second
+				else
+					col_dest := shared_info.number_columns
+				end
+			else
+				col_dest := 1
+			end
+
+			Result := create {PAIR[INTEGER, INTEGER]}.make (row_dest, col_dest)
 		end
 
 	next_available_quad (sect: SECTOR)  : INTEGER

@@ -1,2 +1,3 @@
-test(100)
-status
+play
+move(S)
+move(E)

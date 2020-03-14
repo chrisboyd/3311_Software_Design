@@ -139,9 +139,9 @@ feature -- Query
     		end
     	end
 
-    get_location: TUPLE[INTEGER, INTEGER]
+    get_location: PAIR[INTEGER, INTEGER]
     	do
-    		Result := [row, col]
+    		Result := create {PAIR[INTEGER, INTEGER]}.make (row, col)
     	end
 
 invariant

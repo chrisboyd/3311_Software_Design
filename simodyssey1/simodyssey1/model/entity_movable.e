@@ -16,7 +16,7 @@ inherit
 create
 	make
 
-feature --attributes
+feature{none} --attributes
 	turn: INTEGER
 	fuel: INTEGER
 	landed: BOOLEAN
@@ -47,11 +47,37 @@ feature --query
             			current.id.is_equal (other.id)
         end
 
+    is_landed: BOOLEAN
+    	do
+    		Result := landed
+    	end
+
+	land
+		do
+			landed := True
+		end
 feature --commands
 
-	set_turn(i: INTEGER)
+	set_turn (i: INTEGER)
 		do
 			turn := i
+		end
+
+	use_fuel
+		do
+			if fuel >= 1 then
+				fuel := fuel - 1
+			end
+		end
+	add_fuel (amount: INTEGER)
+		do
+			fuel := fuel + amount
+			if fuel > 3 then
+				fuel := 3
+			end
+
+		ensure
+			fuel <= 3
 		end
 
 

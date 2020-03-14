@@ -16,7 +16,7 @@ inherit
 create
 	make
 
-feature --attributes
+feature{none} --attributes
 	luminosity : INTEGER
 
 feature -- Constructor
