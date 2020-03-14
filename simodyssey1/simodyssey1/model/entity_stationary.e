@@ -46,5 +46,11 @@ feature --commands
 			luminosity := i
 		end
 
+	get_luminosity : INTEGER
+		do
+			Result := luminosity
+		end
+
+
 
 end

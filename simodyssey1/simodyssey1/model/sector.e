@@ -140,5 +140,25 @@ feature -- Queries
 				loop_counter := loop_counter + 1
 			end
 		end
-
+	get_stationary: ENTITY_ALPHABET
+		require
+			Current.has_stationary
+		local
+			loop_counter: INTEGER
+		do
+			--create Result.make ('Y', 0)
+			Result := contents[1]
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count
+			loop
+				if attached contents [loop_counter] as temp_item  then
+					if temp_item.is_stationary then
+						Result := temp_item
+					end
+				end -- if
+				loop_counter := loop_counter + 1
+			end
+		end
 end

@@ -80,6 +80,10 @@ feature --commands
 			fuel <= 3
 		end
 
+	fuel_empty : BOOLEAN
+		do
+			Result := fuel = 0
+		end
 
 end
 

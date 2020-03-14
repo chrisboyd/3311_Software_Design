@@ -85,7 +85,7 @@ feature -- Query
     		end
     	end
 
-    is_planet(ent: ENTITY_ALPHABET): BOOLEAN
+    is_planet: BOOLEAN
     	do
     		if item = 'P' then
     			Result := True
@@ -94,7 +94,7 @@ feature -- Query
     		end
     	end
 
-    is_explorer(ent: ENTITY_ALPHABET): BOOLEAN
+    is_explorer: BOOLEAN
     	do
     		if item = 'E' then
     			Result := True
@@ -103,7 +103,7 @@ feature -- Query
     		end
     	end
 
-    is_blackole(ent: ENTITY_ALPHABET): BOOLEAN
+    is_blackole: BOOLEAN
     	do
     		if item = 'O' then
     			Result := True
@@ -112,7 +112,7 @@ feature -- Query
     		end
     	end
 
-    is_yellow_dwarf(ent: ENTITY_ALPHABET): BOOLEAN
+    is_yellow_dwarf: BOOLEAN
     	do
     		if item = 'Y' then
     			Result := True
@@ -121,7 +121,7 @@ feature -- Query
     		end
     	end
 
-    is_blue_giant(ent: ENTITY_ALPHABET): BOOLEAN
+    is_blue_giant: BOOLEAN
     	do
     		if item = '*' then
     			Result := True
@@ -130,7 +130,7 @@ feature -- Query
     		end
     	end
 
-    is_wormhole(ent: ENTITY_ALPHABET): BOOLEAN
+    is_wormhole: BOOLEAN
     	do
     		if item = 'W' then
     			Result := True

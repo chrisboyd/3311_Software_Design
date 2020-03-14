@@ -20,13 +20,15 @@ feature {NONE} -- model attributes
 
 	state : INTEGER			--valid states game has gone through
 	error_state : INTEGER		--error states game has encountered
+	fuel_msg : STRING
+	blackhole_msg: STRING
 	in_play: BOOLEAN			--is there a game currently active
 	error : STRING			--error message to output to player
 	test_mode : BOOLEAN		-- is the game in test mode
 	grid: ARRAY2 [SECTOR] 	-- the board
 	movable_entities: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
 	stationary_entities: SORTED_TWO_WAY_LIST[ENTITY_STATIONARY]
-
+	explorer : ENTITY_MOVABLE
 
 	gen: RANDOM_GENERATOR_ACCESS
 
@@ -43,7 +45,6 @@ feature {NONE} -- Initialization
 		local
 				row : INTEGER
 				column : INTEGER
-				explorer: ENTITY_MOVABLE
 				blackhole: ENTITY_STATIONARY
 		do
 
@@ -62,6 +63,9 @@ feature {NONE} -- Initialization
 			in_play := FALSE
 			test_mode := FALSE
 			create error.make_empty
+			create fuel_msg.make_empty
+			create blackhole_msg.make_empty
+
 			create grid.make_filled (create {SECTOR}.make_dummy, shared_info.number_rows, shared_info.number_columns)
 			from
 				row := 1
@@ -139,6 +143,8 @@ feature -- model operations
 		local
 			coord: PAIR[INTEGER, INTEGER]
 			sect: SECTOR
+			stationary: ENTITY_ALPHABET
+
 		do
 			if not in_play then
 				error_state := error_state + 1
@@ -146,13 +152,13 @@ feature -- model operations
 				error.append ("%N")
 			else
 				--get new coordinates to move explorer too
-				coord := get_new_coord(movable_entities.first.get_location, [row_inc, col_inc])
+				coord := get_new_coord(explorer.get_location, [row_inc, col_inc])
 
 				--make sure explorer isn't landed
 				if movable_entities.first.is_landed then
 					error_state := error_state + 1
 					error.append ("  Negative on that request:you are currently landed at Sector:")
-					error.append (grid[movable_entities.first.row, movable_entities.first.col].print_sector)
+					error.append (grid[explorer.row, explorer.col].print_sector)
 					error.append ("%N")
 
 				--make sure sector isn't full
@@ -163,16 +169,37 @@ feature -- model operations
 				--perform move
 				else
 					state := state + 1
-					movable_entities.first.use_fuel
-					--check if fuel zero, give error message use death message text to still
-					--show grid?
-					sect := grid[movable_entities.first.row, movable_entities.first.col]
-					sect.contents.prune (movable_entities.first)
-					grid[coord.first, coord.second].put (movable_entities.first)
-					movable_entities.first.set_location (coord.first, coord.second)
-				end
+					explorer.use_fuel
+					sect := grid[explorer.row, explorer.col]
+					sect.contents.prune (explorer)
+					explorer.set_location (coord.first, coord.second)
 
-			end
+					--check if explorer is out of fuel, and thus, dead					
+					if explorer.fuel_empty then
+						fuel_msg.append ("  Explorer got lost in space - out of fuel at Sector:")
+						fuel_msg.append (grid[explorer.row, explorer.col].print_sector)
+					else
+						grid[coord.first, coord.second].put (explorer)
+					end
+
+					--check if there are stationary entities in sector
+					--check if it is star to refuel or blackhole and explorer dies
+					if grid[coord.first, coord.second].has_stationary then
+						stationary := grid[coord.first, coord.second].get_stationary
+						if stationary.is_blue_giant then
+							explorer.add_fuel (5)
+						elseif stationary.is_yellow_dwarf then
+							explorer.add_fuel (2)
+						elseif stationary.is_blackole then
+							blackhole_msg.append ("  Explorer got devoured by blackhole (id: -1) at Sector:3:3")
+						end
+
+					end
+
+
+				end--end of landed if
+
+			end -- end of in_play if
 
 		end
 
@@ -306,44 +333,6 @@ feature {NONE} --commands (internal)
 				row_counter := row_counter + 1
 			end
 		end
-
-
-
---			across
---				grid is sector
---			loop
---				number_items := gen.rchoose (1, shared_info.max_capacity-1)  -- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
---				from
---					loop_counter := 1
---				until
---					loop_counter > number_items
---				loop
---					threshold := gen.rchoose (1, 100) -- each iteration, generate a new value to compare against the threshold values provided by `test` or `play`
-
-
---					if threshold < p_threshold then
---						create component.make('P', id)
---						movable_entities.extend (component)
---						id := id + 1
---					end
-
-
---					if attached component as entity then
---						sector.put(entity)  -- add new entity to the contents list
-
---						--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
---						turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
---						-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
---						--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
---						component.set_turn (turn)
---						component := void -- reset component object
---					end
-
---					loop_counter := loop_counter + 1
---				end --loop through num items in each sector
-
---			end --loop through all sectors in grid
---		end
 
 	set_stationary_items
 			-- distribute stationary items amongst the sectors in the grid.
@@ -525,9 +514,21 @@ feature -- queries
 			if not error.is_empty then
 				Result.append (error)
 			else if in_play then
+				if not fuel_msg.is_empty then
+					Result.append (fuel_msg + "%N")
+					Result.append ("  The game has ended. You can start a new game.")
+					in_play := False
+					--**********
+					--have to recreate board to prep for user entering play / test
+					--**********
+				elseif not blackhole_msg.is_empty then
+					Result.append (blackhole_msg + "%N")
+					Result.append ("  The game has ended. You can start a new game.")
+					in_play := False
+				end
 				Result.append (galaxy_out)
 			else
-				Result.append (" Welcome! Try test(30)")
+				Result.append ("  Welcome! Try test(30)")
 			end
 			end
 
