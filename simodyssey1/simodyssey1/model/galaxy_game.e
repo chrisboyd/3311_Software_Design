@@ -312,25 +312,37 @@ feature {NONE} --commands (internal)
 					loop
 						threshold := gen.rchoose (1, 100) -- each iteration, generate a new value to compare against the threshold values provided by `test` or `play`
 
-
 						if threshold < p_threshold then
 							create component.make('P', id)
 							movable_entities.extend (component)
 							id := id + 1
 						end
 
-
+						--couldn't use row /= 3 and col /= 3 due to eiffel's handling of boolean test
+						--would instantly stop ie, wouldn't put anything in row 3 or column 3
 						if attached component as entity then
-							grid[row_counter, col_counter].put(entity)  -- add new entity to the contents list
-							entity.set_location (row_counter, col_counter)
-							--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-							turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
-							-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
-							--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-							component.set_turn (turn)
+							if row_counter = 3 then
+								if col_counter /= 3 then
+									grid[row_counter, col_counter].put(entity)  -- add new entity to the contents list
+									entity.set_location (row_counter, col_counter)
+									--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+									turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
+									-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
+									--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+									component.set_turn (turn)
+								end
+							else
+								grid[row_counter, col_counter].put(entity)  -- add new entity to the contents list
+								entity.set_location (row_counter, col_counter)
+								--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+								turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
+								-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
+								--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+								component.set_turn (turn)
+							end
+
 							component := void -- reset component object
 						end
-
 						loop_counter := loop_counter + 1
 					end
 					col_counter := col_counter + 1
