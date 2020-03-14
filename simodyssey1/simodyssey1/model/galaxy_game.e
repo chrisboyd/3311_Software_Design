@@ -200,7 +200,7 @@ feature -- model operations
 
 					end
 
-
+					update_movables
 				end--end of landed if
 
 			end -- end of in_play if
@@ -208,6 +208,76 @@ feature -- model operations
 		end
 
 feature {NONE} --commands (internal)
+
+	update_movables
+		local
+			row: INTEGER
+			col: INTEGER
+		do
+			across
+				movable_entities as ent
+			loop
+				if not ent.item.is_explorer then
+					row := ent.item.row
+					col := ent.item.col
+					if ent.item.get_turns = 0 then
+						if ent.item.is_planet and grid[row,col].has_star then
+							ent.item.attach_star
+							if  grid[row,col].has_yellow_dwarf then
+								if gen.rchoose (1, 2) = 2 then
+									ent.item.set_support_life (True)
+								end
+							end
+						else
+							move_planet(ent.item)
+							--check if it moved to a blackhole spot
+
+						end
+					else
+						ent.item.set_turn (ent.item.get_turns - 1)
+					end
+				end
+			end
+		end
+
+	move_planet(planet: ENTITY_MOVABLE)
+		local
+			direction: INTEGER
+			start: PAIR[INTEGER, INTEGER]
+			dest: PAIR[INTEGER, INTEGER]
+			inc: PAIR[INTEGER, INTEGER]
+		do
+			create start.make (planet.row, planet.col)
+			direction := gen.rchoose (1, 8)
+			inspect direction
+			when 1 then
+				create inc.make (-1, 0)
+			when 2 then
+				create inc.make (-1, 1)
+			when 3 then
+				create inc.make (0, 1)
+			when 4 then
+				create inc.make (1, 1)
+			when 5 then
+				create inc.make (1, 0)
+			when 6 then
+				create inc.make (1, -1)
+			when 7 then
+				create inc.make (0, -1)
+			when 8 then
+				create inc.make (-1, -1)
+			else
+				create inc.make (0, 0)
+			end -- inspect
+
+			dest := get_new_coord(start, inc)
+
+			if not grid[dest.first, dest.second].is_full then
+				grid[start.first, start.second].contents.prune (planet)
+				planet.set_location (dest.first, dest.second)
+				grid[dest.first, dest.second].put (planet)
+			end
+		end
 
 	get_new_coord(start: PAIR[INTEGER,INTEGER]; increment: PAIR[INTEGER, INTEGER]): PAIR[INTEGER, INTEGER]
 		local
@@ -314,6 +384,7 @@ feature {NONE} --commands (internal)
 
 						if threshold < p_threshold then
 							create component.make('P', id)
+							component.set_location (row_counter, col_counter)
 							movable_entities.extend (component)
 							id := id + 1
 						end
@@ -324,21 +395,19 @@ feature {NONE} --commands (internal)
 							if row_counter = 3 then
 								if col_counter /= 3 then
 									grid[row_counter, col_counter].put(entity)  -- add new entity to the contents list
-									entity.set_location (row_counter, col_counter)
 									--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 									turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
 									-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
 									--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-									component.set_turn (turn)
+									entity.set_turn (turn)
 								end
 							else
 								grid[row_counter, col_counter].put(entity)  -- add new entity to the contents list
-								entity.set_location (row_counter, col_counter)
 								--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 								turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
 								-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
 								--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-								component.set_turn (turn)
+								entity.set_turn (turn)
 							end
 
 							component := void -- reset component object

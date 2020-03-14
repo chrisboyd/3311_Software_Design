@@ -140,6 +140,7 @@ feature -- Queries
 				loop_counter := loop_counter + 1
 			end
 		end
+
 	get_stationary: ENTITY_ALPHABET
 		require
 			Current.has_stationary
@@ -157,6 +158,38 @@ feature -- Queries
 					if temp_item.is_stationary then
 						Result := temp_item
 					end
+				end -- if
+				loop_counter := loop_counter + 1
+			end
+		end
+
+	has_star: BOOLEAN
+		local
+			loop_counter: INTEGER
+		do
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count or Result
+			loop
+				if attached contents [loop_counter] as temp_item  then
+					Result := temp_item.is_yellow_dwarf or temp_item.is_blue_giant
+				end -- if
+				loop_counter := loop_counter + 1
+			end
+		end
+
+	has_yellow_dwarf: BOOLEAN
+		local
+			loop_counter: INTEGER
+		do
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count or Result
+			loop
+				if attached contents [loop_counter] as temp_item  then
+					Result := temp_item.is_yellow_dwarf
 				end -- if
 				loop_counter := loop_counter + 1
 			end

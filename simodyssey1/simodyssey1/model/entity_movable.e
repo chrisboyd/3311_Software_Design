@@ -16,10 +16,12 @@ inherit
 create
 	make
 
-feature{none} --attributes
+feature {none} --attributes
 	turn: INTEGER
 	fuel: INTEGER
 	landed: BOOLEAN
+	attach: BOOLEAN
+	support_life: BOOLEAN
 feature -- Constructor
 
     make (a_char: CHARACTER; i: INTEGER)
@@ -30,6 +32,8 @@ feature -- Constructor
             landed := False
             row := 0
             col := 0
+			attach := False
+			support_life := False
 
             if a_char = 'E' then
             	fuel := 3
@@ -83,6 +87,26 @@ feature --commands
 	fuel_empty : BOOLEAN
 		do
 			Result := fuel = 0
+		end
+
+	get_turns : INTEGER
+		do
+			Result := turn
+		end
+
+	attach_star
+		do
+			attach := True
+		end
+
+	can_support_life: BOOLEAN
+		do
+			Result := support_life
+		end
+
+	set_support_life (life: BOOLEAN)
+		do
+			support_life := life
 		end
 
 end
