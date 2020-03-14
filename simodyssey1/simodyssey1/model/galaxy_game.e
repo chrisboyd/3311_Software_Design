@@ -200,7 +200,7 @@ feature -- model operations
 
 					end
 
-					update_movables
+					--update_movables
 				end--end of landed if
 
 			end -- end of in_play if
@@ -357,67 +357,35 @@ feature {NONE} --commands (internal)
 			number_items: INTEGER
 			loop_counter: INTEGER
 			component: ENTITY_MOVABLE
-			turn :INTEGER
 			id: INTEGER
-			row_counter: INTEGER
-			col_counter: INTEGER
 		do
-			id := 2 --since Explorer id := 1
-			from
-				row_counter := 1
-			until
-				row_counter > shared_info.number_rows
-			loop
-				from
-					col_counter := 1
-				until
-					col_counter > shared_info.number_columns
-				loop
 
-					number_items := gen.rchoose (1, shared_info.max_capacity-1)  -- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
+			id := 2 --since Explorer id := 1
+			across
+				grid as sector
+			loop
+				if (sector.item.row = 3) and (sector.item.column = 3) then
+				else
+					number_items := gen.rchoose (1, shared_info.max_capacity - 1)
 					from
 						loop_counter := 1
 					until
 						loop_counter > number_items
 					loop
-						threshold := gen.rchoose (1, 100) -- each iteration, generate a new value to compare against the threshold values provided by `test` or `play`
+						threshold := gen.rchoose (1, 100)
 
 						if threshold < p_threshold then
 							create component.make('P', id)
-							component.set_location (row_counter, col_counter)
+							component.set_location (sector.item.row, sector.item.column)
+							component.set_turn (gen.rchoose (0, 2))
 							movable_entities.extend (component)
+							sector.item.put (component)
 							id := id + 1
 						end
-
-						--couldn't use row /= 3 and col /= 3 due to eiffel's handling of boolean test
-						--would instantly stop ie, wouldn't put anything in row 3 or column 3
-						if attached component as entity then
-							if row_counter = 3 then
-								if col_counter /= 3 then
-									grid[row_counter, col_counter].put(entity)  -- add new entity to the contents list
-									--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-									turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
-									-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
-									--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-									entity.set_turn (turn)
-								end
-							else
-								grid[row_counter, col_counter].put(entity)  -- add new entity to the contents list
-								--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-								turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to the planet created
-								-- The turn value of the planet created (except explorer) suggests the number of turns left before it can move.
-								--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-								entity.set_turn (turn)
-							end
-
-							component := void -- reset component object
-						end
 						loop_counter := loop_counter + 1
-					end
-					col_counter := col_counter + 1
-				end
-				row_counter := row_counter + 1
-			end
+					end--end loop_counter
+				end--end check for sector 3 if-else
+			end--end across loop
 		end
 
 	set_stationary_items
