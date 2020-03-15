@@ -88,6 +88,11 @@ feature --commands
 			Result := fuel = 0
 		end
 
+	get_fuel: INTEGER
+		do
+			Result := fuel
+		end
+
 	get_turns : INTEGER
 		do
 			Result := turn

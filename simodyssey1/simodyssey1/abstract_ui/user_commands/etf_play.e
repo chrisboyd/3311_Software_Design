@@ -18,7 +18,7 @@ feature -- command
 			if not model.is_playing then
 				model.play
 			else
-				model.set_error (" To start a new mission, please abort the current one first.")
+				model.set_error ("  To start a new mission, please abort the current one first.")
 			end
 
 			etf_cmd_container.on_change.notify ([Current])

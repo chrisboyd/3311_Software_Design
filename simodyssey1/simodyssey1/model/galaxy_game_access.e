@@ -10,7 +10,7 @@ expanded class
 feature
 	m: GALAXY_GAME
 		once
-			create Result.make
+			create Result.make (0,0)
 		end
 
 invariant

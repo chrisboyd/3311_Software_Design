@@ -1,11 +1,4 @@
-test(90)
+play
 move(S)
-move(E)
-land
-land
-land
-land
 move(N)
-land
-move(E)
-land
+move(S)
