@@ -35,7 +35,7 @@ feature -- Constructor
             col := 0
 			attach := False
 			support_life := False
-			visited := True
+			visited := False
 
             if a_char = 'E' then
             	fuel := 3
@@ -57,11 +57,6 @@ feature --query
     	do
     		Result := landed
     	end
-
-	land
-		do
-			landed := True
-		end
 feature --commands
 
 	set_turn (i: INTEGER)
@@ -103,6 +98,11 @@ feature --commands
 			attach := True
 		end
 
+	is_attached: BOOLEAN
+		do
+			Result := attach
+		end
+
 	can_support_life: BOOLEAN
 		do
 			Result := support_life
@@ -121,6 +121,11 @@ feature --commands
 	visit
 		do
 			visited := True
+		end
+
+	set_land(land: BOOLEAN)
+		do
+			landed := land
 		end
 
 end
