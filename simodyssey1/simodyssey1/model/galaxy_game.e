@@ -407,13 +407,15 @@ feature {NONE} --commands (internal)
 
 			dest := get_new_coord(start, inc)
 
-			--movement.append ("%N   [" + planet.id.out + ",P]:")
-			--movement.append (s: READABLE_STRING_8)
+			movement.append ("%N    [" + planet.id.out + ",P]:")
+			movement.append (out_coord_quad(planet))
 
 			if not grid[dest.first, dest.second].is_full then
 				grid[start.first, start.second].contents.prune (planet)
 				planet.set_location (dest.first, dest.second)
 				grid[dest.first, dest.second].put (planet)
+				movement.append ("->")
+				movement.append (out_coord_quad(planet))
 			end
 		end
 
