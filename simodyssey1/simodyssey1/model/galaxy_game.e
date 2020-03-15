@@ -25,6 +25,7 @@ feature {NONE} -- model attributes
 	land_msg: STRING
 	liftoff_msg: STRING
 	status_msg: STRING
+	movement: STRING
 	in_play: BOOLEAN			--is there a game currently active
 	error : STRING			--error message to output to player
 	test_mode : BOOLEAN		-- is the game in test mode
@@ -71,6 +72,7 @@ feature {NONE} -- Initialization
 			create land_msg.make_empty
 			create status_msg.make_empty
 			create liftoff_msg.make_empty
+			create movement.make_empty
 
 			create grid.make_filled (create {SECTOR}.make_dummy, shared_info.number_rows, shared_info.number_columns)
 			from
@@ -127,15 +129,20 @@ feature -- model operations
 
 	status
 		do
-			status_msg.wipe_out
-			if not explorer.is_landed then
-				status_msg.append ("  Explorer status report:Travelling at cruise speed at [")
-				status_msg.append_integer (explorer.row)
-				status_msg.append (",")
-				status_msg.append_integer (explorer.col)
-				status_msg.append (",")
-				status_msg.append_integer (grid[explorer.row, explorer.col].contents.index_of (explorer, 1))
-				status_msg.append ("]")
+			if not in_play then
+				error_state := error_state + 1
+				error.append ("  Negative on that request:no mission in progress.")
+			else
+				status_msg.wipe_out
+				if not explorer.is_landed then
+					status_msg.append ("  Explorer status report:Travelling at cruise speed at [")
+					status_msg.append_integer (explorer.row)
+					status_msg.append (",")
+					status_msg.append_integer (explorer.col)
+					status_msg.append (",")
+					status_msg.append_integer (grid[explorer.row, explorer.col].contents.index_of (explorer, 1))
+					status_msg.append ("]")
+				end
 			end
 		end
 
@@ -182,16 +189,23 @@ feature -- model operations
 					state := state + 1
 					explorer.use_fuel
 					sect := grid[explorer.row, explorer.col]
+					movement.wipe_out
+					movement.append ("    [" + explorer.id.out + "," + "E]:")
+					movement.append (out_coord_quad (explorer))
+					movement.append ("->")
 					sect.contents.prune (explorer)
 					explorer.set_location (coord.first, coord.second)
+					grid[coord.first, coord.second].put (explorer)
+					movement.append (out_coord_quad (explorer))
+
 
 					--check if explorer is out of fuel, and thus, dead					
 					if explorer.fuel_empty then
 						in_play := False
+						grid[explorer.row, explorer.col].contents.prune (explorer)
 						fuel_msg.append ("  Explorer got lost in space - out of fuel at Sector:")
 						fuel_msg.append (grid[explorer.row, explorer.col].print_sector)
-					else
-						grid[coord.first, coord.second].put (explorer)
+
 					end
 
 					--check if there are stationary entities in sector
@@ -392,6 +406,9 @@ feature {NONE} --commands (internal)
 			end -- inspect
 
 			dest := get_new_coord(start, inc)
+
+			--movement.append ("%N   [" + planet.id.out + ",P]:")
+			--movement.append (s: READABLE_STRING_8)
 
 			if not grid[dest.first, dest.second].is_full then
 				grid[start.first, start.second].contents.prune (planet)
@@ -601,6 +618,18 @@ feature {NONE} --commands (internal)
 			Result := temp
 		end
 
+	out_coord_quad (ent: ENTITY_MOVABLE): STRING
+		do
+			create Result.make_empty
+			Result.append ("[")
+			Result.append_integer (ent.row)
+			Result.append (",")
+			Result.append_integer (ent.col)
+			Result.append (",")
+			Result.append_integer (grid[ent.row,ent.col].contents.index_of (ent, 1))
+			Result.append ("]")
+		end
+
 
 	galaxy_out : STRING
 		local
@@ -684,10 +713,39 @@ feature -- queries
 			Result.append (state.out)
 			Result.append (".")
 			Result.append (error_state.out)
-			Result.append ("%N")
+			Result.append (", ")
+
+			if state /= 0 then
+				if in_play then
+					Result.append ("mode:play,")
+				elseif test_mode then
+					Result.append ("mode:test,")
+				end
+				if error.is_empty then
+					Result.append (" ok")
+				else
+					Result.append (" error")
+				end
+				Result.append ("%N")
+				--****************
+				--move out of fuel, blackhole messages here
+				--****************
+				Result.append ("  Movement:")
+				if movement.is_empty then
+					Result.append ("none")
+				else
+					Result.append ("%N" + movement)
+				end
+
+				Result.append (galaxy_out)
+			else
+				Result.append ("%N")
+				Result.append ("  Welcome! Try test(30)")
+			end
+
 
 			if not error.is_empty then
-				Result.append (error)
+				Result.append ("%N" + error)
 				error.wipe_out
 
 			elseif in_play then
@@ -704,15 +762,10 @@ feature -- queries
 					liftoff_msg.wipe_out
 				end
 
-				if status_msg.is_empty then
-					Result.append (galaxy_out)
-				else
+				if not status_msg.is_empty then
 					Result.append (status_msg)
 					status_msg.wipe_out
 				end
-
-
-
 					--**********
 					--have to recreate board to prep for user entering play / test
 					--**********
@@ -729,8 +782,6 @@ feature -- queries
 				Result.append (blackhole_msg + "%N")
 				Result.append ("  The game has ended. You can start a new game.")
 				blackhole_msg.wipe_out
-			else
-				Result.append ("  Welcome! Try test(30)")
 
 			end
 
