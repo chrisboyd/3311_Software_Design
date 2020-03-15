@@ -4,13 +4,13 @@
 # files are. If nothing is added, current directory is used.
 # WARNING: While absolute paths are suported, the oracle may not play nicely
 # with them.
-root = "../tests/acceptance/"
+root = "../tests"
 
 # Specify files or directories (relative to root) of the acceptance tests. 
 # NOTE: Tests can not be named test.expected.txt 
 # NOTE: To run all tests in root directory, uses [""] as the test.
 # WARNING: Does not support partial file names with wildcards ie at*.txt
-acceptance_tests = ["instructor"]
+acceptance_tests = ["acceptance/instructor"]
 
 # acceptance_tests = ["acceptance-tests/at00.txt"
 #                     ,"acceptance-tests/at01.txt"]
@@ -25,15 +25,15 @@ ignore_warnings = True
 is_expected = False
 
 # Specify where you put the oracle.
-oracle = "./oracle.exe"
+oracle = "../oracle.exe"
 
 # Specify the path of the executable built from your project.
-executable = "~/tmp/dconnor/EIFGENs/simodyssey/W_code/simodyssey"
+executable = "../EIFGENs/simodyssey/W_code/simodyssey"
 # The above is an OSX executable
 # Linux executable for students shaler be called: oracle.exe
 
 # Should the program only print tests that do not pass
-print_only_errors = False
+print_only_errors = True
 
 # Should the program format the output so it could easily be diffed:
 # examples include "meld", "diff -y", etc.
