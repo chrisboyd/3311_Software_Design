@@ -103,7 +103,7 @@ feature -- Query
     		end
     	end
 
-    is_blackole: BOOLEAN
+    is_blackhole: BOOLEAN
     	do
     		if item = 'O' then
     			Result := True

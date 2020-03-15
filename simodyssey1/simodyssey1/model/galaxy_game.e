@@ -22,6 +22,7 @@ feature {NONE} -- model attributes
 	error_state : INTEGER		--error states game has encountered
 	fuel_msg : STRING
 	blackhole_msg: STRING
+	end_msg: STRING
 	in_play: BOOLEAN			--is there a game currently active
 	error : STRING			--error message to output to player
 	test_mode : BOOLEAN		-- is the game in test mode
@@ -65,6 +66,7 @@ feature {NONE} -- Initialization
 			create error.make_empty
 			create fuel_msg.make_empty
 			create blackhole_msg.make_empty
+			create end_msg.make_empty
 
 			create grid.make_filled (create {SECTOR}.make_dummy, shared_info.number_rows, shared_info.number_columns)
 			from
@@ -179,6 +181,7 @@ feature -- model operations
 
 					--check if explorer is out of fuel, and thus, dead					
 					if explorer.fuel_empty then
+						in_play := False
 						fuel_msg.append ("  Explorer got lost in space - out of fuel at Sector:")
 						fuel_msg.append (grid[explorer.row, explorer.col].print_sector)
 					else
@@ -193,18 +196,102 @@ feature -- model operations
 							explorer.add_fuel (5)
 						elseif stationary.is_yellow_dwarf then
 							explorer.add_fuel (2)
-						elseif stationary.is_blackole then
+						elseif stationary.is_blackhole then
+							in_play := False
 							blackhole_msg.append ("  Explorer got devoured by blackhole (id: -1) at Sector:3:3")
 							grid[coord.first, coord.second].contents.prune (explorer)
 						end
-
 					end
-
-					--update_movables
+					update_movables
 				end--end of landed if
 
 			end -- end of in_play if
+		end
 
+	wormhole
+		local
+			temp_row: INTEGER
+			temp_col: INTEGER
+			added: BOOLEAN
+		do
+			if not in_play then
+				error.append ("  Negative on that request:no mission in progress.")
+				error_state := error_state + 1
+			elseif explorer.is_landed then
+				error.append ("  Negative on that request:you are currently landed at Sector:")
+				error.append (grid[explorer.row, explorer.col].print_sector)
+				error_state := error_state + 1
+			elseif not grid[explorer.row, explorer.col].has_wormhole then
+				error.append ("  Explorer couldn't find wormhole at Sector:")
+				error.append (grid[explorer.row, explorer.col].print_sector)
+				error_state := error_state + 1
+			else
+				state := state + 1
+				from
+					added := False
+				until
+					added
+				loop
+					temp_row := gen.rchoose (1, shared_info.number_rows)
+					temp_col := gen.rchoose (1, shared_info.number_columns)
+
+					if not grid[temp_row, temp_col].is_full then
+						grid[explorer.row, explorer.col].contents.prune (explorer)
+						explorer.set_location (temp_row, temp_col)
+						grid[temp_row, temp_col].contents.extend (explorer)
+						added := True
+					end
+				end--end loop finding rand location until spot available
+				update_movables
+			end --end of use wormhole
+		end
+
+	land
+		local
+			planets: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
+			landed: BOOLEAN
+		do
+			if not in_play then
+				error.append ("  Negative on that request:no mission in progress.")
+				error_state := error_state + 1
+			elseif explorer.is_landed then
+				error.append ("  Negative on that request:already landed on a planet at Sector:")
+				error.append (grid[explorer.row, explorer.col].print_sector)
+				error_state := error_state + 1
+			elseif not grid[explorer.row, explorer.col].has_yellow_dwarf then
+				error.append ("  Negative on that request:no yellow dwarf at Sector:")
+				error.append (grid[explorer.row, explorer.col].print_sector)
+				error_state := error_state + 1
+			elseif not grid[explorer.row, explorer.col].has_planet then
+				error.append ("  Negative on that request:no planets at Sector:")
+				error.append (grid[explorer.row, explorer.col].print_sector)
+				error_state := error_state + 1
+			else
+				--check for unvisited planets, if found land
+				planets := grid[explorer.row, explorer.col].get_planets
+				across
+					planets as p
+				loop
+					if not p.item.is_visited then
+						state := state + 1
+						landed := True
+						p.item.visit
+						explorer.land
+						if p.item.can_support_life then
+							end_msg.append ("  Tranquility base here - we've got a life!")
+						end
+
+						update_movables
+					end
+				end
+
+				if not landed then
+					error.append ("  Negative on that request:no unvisited attached planet at Sector:")
+					error.append (grid[explorer.row, explorer.col].print_sector)
+					error_state := error_state + 1
+				end
+
+			end
 		end
 
 feature {NONE} --commands (internal)
@@ -231,7 +318,10 @@ feature {NONE} --commands (internal)
 						else
 							move_planet(ent.item)
 							--check if it moved to a blackhole spot
-
+							if grid[ent.item.row, ent.item.col].has_blackhole then
+								grid[ent.item.row, ent.item.col].contents.prune (ent.item)
+								blackhole_msg.append ("  Planet got devoured by blackhole (id: -1) at Sector:3:3")
+							end
 						end
 					else
 						ent.item.set_turn (ent.item.get_turns - 1)
@@ -567,23 +657,31 @@ feature -- queries
 
 			if not error.is_empty then
 				Result.append (error)
-			else if in_play then
-				if not fuel_msg.is_empty then
-					Result.append (fuel_msg + "%N")
-					Result.append ("  The game has ended. You can start a new game.")
-					in_play := False
+				error.wipe_out
+
+			elseif in_play then
+				if not blackhole_msg.is_empty then
+					Result.append (blackhole_msg + "%N")
+					blackhole_msg.wipe_out
+				end
+				Result.append (galaxy_out)
 					--**********
 					--have to recreate board to prep for user entering play / test
 					--**********
-				elseif not blackhole_msg.is_empty then
-					Result.append (blackhole_msg + "%N")
-					Result.append ("  The game has ended. You can start a new game.")
-					in_play := False
-				end
-				Result.append (galaxy_out)
+
+			elseif not fuel_msg.is_empty then
+				Result.append (fuel_msg + "%N")
+				Result.append ("  The game has ended. You can start a new game.")
+				fuel_msg.wipe_out
+
+			elseif not blackhole_msg.is_empty then
+				Result.append (blackhole_msg + "%N")
+				Result.append ("  The game has ended. You can start a new game.")
+				blackhole_msg.wipe_out
+
 			else
 				Result.append ("  Welcome! Try test(30)")
-			end
+
 			end
 
 		end

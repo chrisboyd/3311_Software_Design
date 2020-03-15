@@ -141,13 +141,29 @@ feature -- Queries
 			end
 		end
 
+	has_movable: BOOLEAN
+			-- returns whether the location contains any stationary item
+		local
+			loop_counter: INTEGER
+		do
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count or Result
+			loop
+				if attached contents [loop_counter] as temp_item  then
+					Result := temp_item.is_movable
+				end -- if
+				loop_counter := loop_counter + 1
+			end
+		end
+
 	get_stationary: ENTITY_ALPHABET
 		require
 			Current.has_stationary
 		local
 			loop_counter: INTEGER
 		do
-			--create Result.make ('Y', 0)
 			Result := contents[1]
 			from
 				loop_counter := 1
@@ -192,6 +208,75 @@ feature -- Queries
 					Result := temp_item.is_yellow_dwarf
 				end -- if
 				loop_counter := loop_counter + 1
+			end
+		end
+
+	has_blackhole: BOOLEAN
+		local
+			loop_counter: INTEGER
+		do
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count or Result
+			loop
+				if attached contents [loop_counter] as temp_item  then
+					Result := temp_item.is_blackhole
+				end -- if
+				loop_counter := loop_counter + 1
+			end
+		end
+
+	has_wormhole: BOOLEAN
+		local
+			loop_counter: INTEGER
+		do
+			if Current.has_stationary then
+				from
+					loop_counter := 1
+				until
+					loop_counter > contents.count or Result
+				loop
+					if attached contents [loop_counter] as temp_item  then
+						Result := temp_item.is_wormhole
+					end -- if
+					loop_counter := loop_counter + 1
+				end
+			end
+		end
+
+	has_planet: BOOLEAN
+		local
+			loop_counter: INTEGER
+		do
+			if Current.has_movable then
+				from
+					loop_counter := 1
+				until
+					loop_counter > contents.count or Result
+				loop
+					if attached contents [loop_counter] as temp_item  then
+						Result := temp_item.is_planet
+					end -- if
+					loop_counter := loop_counter + 1
+				end
+			end
+		end
+
+	get_planets: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
+		require
+			Current.has_planet
+		do
+			create Result.make
+			across
+				contents as quadrant
+			loop
+				if quadrant.item.is_planet then
+					check attached {ENTITY_MOVABLE} quadrant.item as p
+					then
+						Result.extend (p)
+					end
+				end
 			end
 		end
 end
