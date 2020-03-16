@@ -212,6 +212,7 @@ feature -- model operations
 
 					--check if explorer is out of fuel, and thus, dead					
 					if explorer.fuel_empty then
+						fuel_msg.wipe_out
 						grid[explorer.row, explorer.col].contents.prune (explorer)
 						fuel_msg.append ("  Explorer got lost in space - out of fuel at Sector:")
 						fuel_msg.append (grid[explorer.row, explorer.col].print_sector)
@@ -228,6 +229,7 @@ feature -- model operations
 						elseif stationary.is_yellow_dwarf then
 							explorer.add_fuel (2)
 						elseif stationary.is_blackhole then
+							blackhole_msg.wipe_out
 							blackhole_msg.append ("  Explorer got devoured by blackhole (id: -1) at Sector:3:3")
 							deaths.enqueue (create {PAIR[ENTITY_MOVABLE,STRING]}.make (explorer, create {STRING}.make_from_string (blackhole_msg)) )
 							grid[coord.first, coord.second].contents.prune (explorer)
@@ -821,7 +823,10 @@ feature {NONE} --commands (internal)
 						Result.append ("turns_left:" + m.item.get_turns.out)
 					end
 				end
-				Result.append ("%N")
+				if not m.after then
+					Result.append ("%N")
+				end
+
 			end
 		end
 
@@ -910,19 +915,15 @@ feature -- queries
 					if not fuel_msg.is_empty then
 						Result.append (fuel_msg + "%N")
 						Result.append ("  The game has ended. You can start a new game.%N")
-						fuel_msg.wipe_out
 						ended := True
 					end
 
 					if not blackhole_msg.is_empty then
 						Result.append (blackhole_msg + "%N")
 						Result.append ("  The game has ended. You can start a new game.%N")
-						blackhole_msg.wipe_out
 						ended := True
 					end
-					--****************
-					--move out of fuel, blackhole messages here
-					--****************
+
 					Result.append ("  Movement:")
 					if movement.is_empty then
 						Result.append ("none")
@@ -935,7 +936,7 @@ feature -- queries
 						Result.append (sectors_out)
 						Result.append ("  Descriptions:%N")
 						Result.append (entities_out)
-						Result.append ("%N  Deaths This Turn:")
+						Result.append ("  Deaths This Turn:")
 						if deaths.is_empty then
 							Result.append("none")
 						else
@@ -944,8 +945,18 @@ feature -- queries
 
 					end
 
-
 					Result.append (galaxy_out)
+
+					if test_mode  then
+						if not fuel_msg.is_empty then
+							Result.append ("%N" + fuel_msg + "%N")
+							Result.append ("  The game has ended. You can start a new game.")
+						elseif not blackhole_msg.is_empty then
+							Result.append ("%N" + blackhole_msg + "%N")
+							Result.append ("  The game has ended. You can start a new game.")
+						end
+
+					end
 				end
 			else
 				if abort_msg.is_empty then
