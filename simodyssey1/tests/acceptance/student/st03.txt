@@ -1,0 +1,4 @@
+--test correct death message for explorer into blackhole in test mode
+test(40)
+move(SE)
+move(SE)

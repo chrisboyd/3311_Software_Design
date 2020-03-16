@@ -1,0 +1,5 @@
+--test correct death message for explorer out of fuel in test mode
+test(40)
+move(S)
+move(N)
+move(S)

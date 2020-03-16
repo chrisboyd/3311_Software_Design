@@ -35,6 +35,7 @@ feature {NONE} -- model attributes
 	movable_entities: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
 	stationary_entities: SORTED_TWO_WAY_LIST[ENTITY_STATIONARY]
 	explorer : ENTITY_MOVABLE
+	deaths: QUEUE[PAIR[ENTITY_MOVABLE, STRING]]
 
 	gen: RANDOM_GENERATOR_ACCESS
 
@@ -77,6 +78,7 @@ feature {NONE} -- Initialization
 			create movement.make_empty
 			create planet_msg.make_empty
 			create abort_msg.make_empty
+			create deaths.make_empty
 
 			create grid.make_filled (create {SECTOR}.make_dummy, shared_info.number_rows, shared_info.number_columns)
 			from
@@ -194,6 +196,7 @@ feature -- model operations
 					error.append ("%N")
 				--perform move
 				else
+					create deaths.make_empty
 					state := state + 1
 					explorer.use_fuel
 					sect := grid[explorer.row, explorer.col]
@@ -212,6 +215,7 @@ feature -- model operations
 						grid[explorer.row, explorer.col].contents.prune (explorer)
 						fuel_msg.append ("  Explorer got lost in space - out of fuel at Sector:")
 						fuel_msg.append (grid[explorer.row, explorer.col].print_sector)
+						deaths.enqueue (create {PAIR[ENTITY_MOVABLE,STRING]}.make (explorer, create {STRING}.make_from_string (fuel_msg)) )
 						movable_entities.prune_all (explorer)
 					end
 
@@ -225,6 +229,7 @@ feature -- model operations
 							explorer.add_fuel (2)
 						elseif stationary.is_blackhole then
 							blackhole_msg.append ("  Explorer got devoured by blackhole (id: -1) at Sector:3:3")
+							deaths.enqueue (create {PAIR[ENTITY_MOVABLE,STRING]}.make (explorer, create {STRING}.make_from_string (blackhole_msg)) )
 							grid[coord.first, coord.second].contents.prune (explorer)
 							movable_entities.prune_all (explorer)
 						end
@@ -361,7 +366,6 @@ feature -- model operations
 			if not in_play then
 				error.append ("  Negative on that request:no mission in progress.")
 			else
-
 				abort_msg.append ("  Mission aborted.")
 			end
 
@@ -397,6 +401,7 @@ feature {NONE} --commands (internal)
 								movable_entities.prune_all (ent.item)
 								if planet_msg.is_empty then
 									planet_msg.append ("  Planet got devoured by blackhole (id: -1) at Sector:3:3")
+									deaths.enqueue (create {PAIR[ENTITY_MOVABLE,STRING]}.make (ent.item, create {STRING}.make_from_string (planet_msg)) )
 								end
 							end
 						end
@@ -820,6 +825,36 @@ feature {NONE} --commands (internal)
 			end
 		end
 
+	deaths_out: STRING
+		local
+			ent: ENTITY_MOVABLE
+			msg: STRING
+			temp_pair: PAIR[ENTITY_MOVABLE, STRING]
+		do
+			create Result.make_empty
+			from
+			until
+				deaths.is_empty
+			loop
+				temp_pair := deaths.first
+				deaths.dequeue
+				ent := temp_pair.first
+				msg := temp_pair.second
+				Result.append ("%N   [" + ent.id.out + "," + ent.item.out + "]->")
+				if ent.item = 'E' then
+					Result.append ("fuel:" + ent.get_fuel.out + "/3, ")
+					Result.append ("life:0/3, landed?:" + ent.is_landed.out.at (1).out + ",%N")
+				else
+					Result.append ("attached?:" + ent.is_attached.out.at (1).out + ", ")
+					Result.append ("support_life?:" + ent.can_support_life.out.at (1).out + ", ")
+					Result.append ("visited?:" + ent.is_visited.out.at (1).out + ", ")
+					Result.append ("turns_left:N/A,%N")
+				end
+
+				Result.append ("    " + msg)
+			end
+		end
+
 
 feature -- queries
 	 out : STRING
@@ -900,8 +935,15 @@ feature -- queries
 						Result.append (sectors_out)
 						Result.append ("  Descriptions:%N")
 						Result.append (entities_out)
+						Result.append ("%N  Deaths This Turn:")
+						if deaths.is_empty then
+							Result.append("none")
+						else
+							Result.append (deaths_out)
+						end
 
 					end
+
 
 					Result.append (galaxy_out)
 				end
