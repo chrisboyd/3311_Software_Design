@@ -15,8 +15,12 @@ feature -- command
 		require else
 			test_precond(p_threshold)
     	do
-			-- perform some update on the model state
-			model.test(p_threshold)
+			if not model.is_playing then
+				model.test(p_threshold)
+			else
+				model.set_error ("  To start a new mission, please abort the current one first.")
+			end
+
 			etf_cmd_container.on_change.notify ([Current])
     	end
 

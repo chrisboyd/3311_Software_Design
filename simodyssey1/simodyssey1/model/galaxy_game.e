@@ -736,12 +736,95 @@ feature {NONE} --commands (internal)
 			end
 		end
 
+	sectors_out: STRING
+		local
+			component: ENTITY_ALPHABET
+			printed_symbols: INTEGER
+		do
+
+			create Result.make_empty
+			across
+				grid as sector
+			loop
+				printed_symbols := 0
+				Result.append ("    [" + sector.item.row.out + "," + sector.item.column.out + "]->")
+				across
+					sector.item.contents as quadrant
+				loop
+					component := quadrant.item
+
+					if attached component as entity then
+						Result.append ("[" + entity.id.out + "," + entity.item.out + "]")
+						if not quadrant.after then
+							Result.append(",")
+						end
+					else
+						Result.append("-")
+					end
+					printed_symbols := printed_symbols + 1
+				end
+				from
+				until (shared_info.max_capacity - printed_symbols)=0
+				loop
+						Result.append("-")
+						printed_symbols:=printed_symbols+1
+						if (shared_info.max_capacity - printed_symbols)/=0 then
+							Result.append (",")
+						end
+
+				end
+				if not sector.after then
+					Result.append ("%N")
+				end
+
+			end
+		end
+
+	entities_out: STRING
+		do
+			create Result.make_empty
+			across
+				stationary_entities as s
+			loop
+				Result.append ("    [" + s.item.id.out + "," + s.item.item.out + "]->")
+				if s.item.item = '*' or s.item.item = 'Y' then
+					Result.append("Luminosity:" + s.item.get_luminosity.out)
+				end
+
+				Result.append ("%N")
+			end
+
+			across
+				movable_entities as m
+			loop
+				Result.append ("   [" + m.item.id.out + "," + m.item.item.out + "]->")
+				if m.item.item = 'E' then
+					Result.append("fuel:" + m.item.get_fuel.out + "/3, life:3/3, ")
+					Result.append ("landed?:" + m.item.is_landed.out)
+				else
+					Result.append ("attached?:" + m.item.is_attached.out + ", ")
+					Result.append ("support_life?:" + m.item.can_support_life.out + ", ")
+					Result.append ("visited?:" + m.item.is_visited.out + ", ")
+					if m.item.can_support_life  then
+						Result.append ("turns_left:N/A")
+					else
+						Result.append ("turns_left:" + m.item.get_turns.out)
+					end
+
+				end
+			end
+		end
+
 
 feature -- queries
 	 out : STRING
 	 	local
 	 		ended: BOOLEAN
+	 		sectors: STRING
+	 		entities: STRING
 		do
+			create sectors.make_empty
+			create entities.make_empty
 			create Result.make_empty
 			Result.append ("  state:")
 			Result.append (state.out)
@@ -807,11 +890,19 @@ feature -- queries
 						Result.append ("%N" + movement)
 					end
 
+					if test_mode then
+						Result.append ("%N  Sectors:%N")
+						Result.append (sectors_out)
+						Result.append ("  Descriptions:%N")
+						Result.append (entities_out)
+
+					end
+
 					Result.append (galaxy_out)
 				end
 			else
 				if abort_msg.is_empty then
-					Result.append ("%N")
+					Result.append ("ok%N")
 					Result.append ("  Welcome! Try test(30)")
 				else
 					Result.append ("%N")
