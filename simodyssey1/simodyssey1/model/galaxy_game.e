@@ -212,7 +212,7 @@ feature -- model operations
 						grid[explorer.row, explorer.col].contents.prune (explorer)
 						fuel_msg.append ("  Explorer got lost in space - out of fuel at Sector:")
 						fuel_msg.append (grid[explorer.row, explorer.col].print_sector)
-
+						movable_entities.prune_all (explorer)
 					end
 
 					--check if there are stationary entities in sector
@@ -226,6 +226,7 @@ feature -- model operations
 						elseif stationary.is_blackhole then
 							blackhole_msg.append ("  Explorer got devoured by blackhole (id: -1) at Sector:3:3")
 							grid[coord.first, coord.second].contents.prune (explorer)
+							movable_entities.prune_all (explorer)
 						end
 					end
 					update_movables
@@ -393,6 +394,7 @@ feature {NONE} --commands (internal)
 							--check if it moved to a blackhole spot
 							if grid[ent.item.row, ent.item.col].has_blackhole then
 								grid[ent.item.row, ent.item.col].contents.prune (ent.item)
+								movable_entities.prune_all (ent.item)
 								if planet_msg.is_empty then
 									planet_msg.append ("  Planet got devoured by blackhole (id: -1) at Sector:3:3")
 								end
@@ -781,8 +783,11 @@ feature {NONE} --commands (internal)
 		end
 
 	entities_out: STRING
+		local
+			bool: STRING
 		do
 			create Result.make_empty
+			create bool.make_empty
 			across
 				stationary_entities as s
 			loop
@@ -797,21 +802,21 @@ feature {NONE} --commands (internal)
 			across
 				movable_entities as m
 			loop
-				Result.append ("   [" + m.item.id.out + "," + m.item.item.out + "]->")
+				Result.append ("    [" + m.item.id.out + "," + m.item.item.out + "]->")
 				if m.item.item = 'E' then
 					Result.append("fuel:" + m.item.get_fuel.out + "/3, life:3/3, ")
-					Result.append ("landed?:" + m.item.is_landed.out)
+					Result.append ("landed?:" + m.item.is_landed.out.at (1).out)
 				else
-					Result.append ("attached?:" + m.item.is_attached.out + ", ")
-					Result.append ("support_life?:" + m.item.can_support_life.out + ", ")
-					Result.append ("visited?:" + m.item.is_visited.out + ", ")
-					if m.item.can_support_life  then
+					Result.append ("attached?:" + m.item.is_attached.out.at (1).out + ", ")
+					Result.append ("support_life?:" + m.item.can_support_life.out.at (1).out + ", ")
+					Result.append ("visited?:" + m.item.is_visited.out.at (1).out + ", ")
+					if m.item.is_attached  then
 						Result.append ("turns_left:N/A")
 					else
 						Result.append ("turns_left:" + m.item.get_turns.out)
 					end
-
 				end
+				Result.append ("%N")
 			end
 		end
 
