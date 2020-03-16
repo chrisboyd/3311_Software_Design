@@ -239,7 +239,6 @@ feature -- model operations
 							blackhole_msg.wipe_out
 							blackhole_msg.append ("  Explorer got devoured by blackhole (id: -1) at Sector:3:3")
 							deaths.enqueue (create {PAIR[ENTITY_MOVABLE,STRING]}.make (explorer, create {STRING}.make_from_string (blackhole_msg)) )
---							grid[coord.first, coord.second].contents.prune_all (explorer)
 							i_replace := sect.contents.index_of (explorer, 1)
 							sect.contents[i_replace] := Void
 							movable_entities.prune_all (explorer)
@@ -419,11 +418,11 @@ feature {NONE} --commands (internal)
 										ent.item.set_support_life (True)
 									else
 										ent.item.set_support_life (False)
-									end
-								end
+									end --end choose set life
+								end --end has yellow draw
 							end
-
 						else
+							--resetting the turns_left of the planet after the planet moves (and it does not get attached)
 							move_planet(ent.item)
 							--check if it moved to a blackhole spot
 							if grid[ent.item.row, ent.item.col].has_blackhole then
@@ -435,10 +434,10 @@ feature {NONE} --commands (internal)
 									deaths.enqueue (create {PAIR[ENTITY_MOVABLE,STRING]}.make (ent.item, create {STRING}.make_from_string (planet_msg)) )
 								end
 							elseif ent.item.is_planet then
-								if  grid[row,col].has_star then
+								if  grid[ent.item.row, ent.item.col].has_star then
 									ent.item.attach_star
 									if not ent.item.has_set_life then
-										if  grid[row,col].has_yellow_dwarf then
+										if  grid[ent.item.row, ent.item.col].has_yellow_dwarf then
 											if gen.rchoose (1, 2) = 2 then
 												ent.item.set_support_life (True)
 											else
@@ -898,7 +897,7 @@ feature {NONE} --commands (internal)
 				deaths.dequeue
 				ent := temp_pair.first
 				msg := temp_pair.second
-				Result.append ("%N   [" + ent.id.out + "," + ent.item.out + "]->")
+				Result.append ("%N    [" + ent.id.out + "," + ent.item.out + "]->")
 				if ent.item = 'E' then
 					Result.append ("fuel:" + ent.get_fuel.out + "/3, ")
 					Result.append ("life:0/3, landed?:" + ent.is_landed.out.at (1).out + ",%N")
