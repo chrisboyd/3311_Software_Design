@@ -172,6 +172,7 @@ feature -- model operations
 			coord: PAIR[INTEGER, INTEGER]
 			sect: SECTOR
 			stationary: ENTITY_ALPHABET
+			i_replace: INTEGER
 
 		do
 			if not in_play then
@@ -207,7 +208,8 @@ feature -- model operations
 					--sect.contents.prune_all (explorer)
 					--grid[ent.row,ent.col].contents.index_of (ent, 1)
 
-					sect.contents.array_put (void, sect.contents.index_of (explorer, 1))
+					i_replace := sect.contents.index_of (explorer, 1)
+					sect.contents[i_replace] := Void
 					explorer.set_location (coord.first, coord.second)
 					grid[coord.first, coord.second].put (explorer)
 					movement.append (out_coord_quad (explorer))
@@ -216,7 +218,9 @@ feature -- model operations
 					--check if explorer is out of fuel, and thus, dead					
 					if explorer.fuel_empty then
 						fuel_msg.wipe_out
-						grid[explorer.row, explorer.col].contents.prune_all (explorer)
+--						grid[explorer.row, explorer.col].contents.prune_all (explorer)
+						i_replace := sect.contents.index_of (explorer, 1)
+						sect.contents[i_replace] := Void
 						fuel_msg.append ("  Explorer got lost in space - out of fuel at Sector:")
 						fuel_msg.append (grid[explorer.row, explorer.col].print_sector)
 						deaths.enqueue (create {PAIR[ENTITY_MOVABLE,STRING]}.make (explorer, create {STRING}.make_from_string (fuel_msg)) )
@@ -235,7 +239,9 @@ feature -- model operations
 							blackhole_msg.wipe_out
 							blackhole_msg.append ("  Explorer got devoured by blackhole (id: -1) at Sector:3:3")
 							deaths.enqueue (create {PAIR[ENTITY_MOVABLE,STRING]}.make (explorer, create {STRING}.make_from_string (blackhole_msg)) )
-							grid[coord.first, coord.second].contents.prune_all (explorer)
+--							grid[coord.first, coord.second].contents.prune_all (explorer)
+							i_replace := sect.contents.index_of (explorer, 1)
+							sect.contents[i_replace] := Void
 							movable_entities.prune_all (explorer)
 						end
 					end
@@ -251,6 +257,7 @@ feature -- model operations
 			temp_col: INTEGER
 			added: BOOLEAN
 			sect: SECTOR
+			i_replace: INTEGER
 		do
 			if not in_play then
 				error.append ("  Negative on that request:no mission in progress.")
@@ -280,7 +287,9 @@ feature -- model operations
 						movement.append (out_coord_quad (explorer))
 						movement.append ("->")
 
-						sect.contents.prune_all (explorer)
+--						sect.contents.prune_all (explorer)
+						i_replace := sect.contents.index_of (explorer, 1)
+						sect.contents[i_replace] := Void
 						explorer.set_location (temp_row, temp_col)
 						grid[temp_row, temp_col].put (explorer)
 						movement.append (out_coord_quad (explorer))
@@ -391,6 +400,7 @@ feature {NONE} --commands (internal)
 		local
 			row: INTEGER
 			col: INTEGER
+			i_replace: INTEGER
 		do
 			across
 				movable_entities as ent
@@ -410,7 +420,9 @@ feature {NONE} --commands (internal)
 							move_planet(ent.item)
 							--check if it moved to a blackhole spot
 							if grid[ent.item.row, ent.item.col].has_blackhole then
-								grid[ent.item.row, ent.item.col].contents.prune_all (ent.item)
+								--grid[ent.item.row, ent.item.col].contents.prune_all (ent.item)
+								i_replace := grid[ent.item.row, ent.item.col].contents.index_of (ent.item, 1)
+								grid[ent.item.row, ent.item.col].contents[i_replace] := Void
 								movable_entities.prune_all (ent.item)
 								if planet_msg.is_empty then
 									planet_msg.append ("  Planet got devoured by blackhole (id: -1) at Sector:3:3")
@@ -439,6 +451,7 @@ feature {NONE} --commands (internal)
 			start: PAIR[INTEGER, INTEGER]
 			dest: PAIR[INTEGER, INTEGER]
 			inc: PAIR[INTEGER, INTEGER]
+			i_replace: INTEGER
 		do
 			create start.make (planet.row, planet.col)
 			direction := gen.rchoose (1, 8)
@@ -474,8 +487,9 @@ feature {NONE} --commands (internal)
 --			movement.append (out_coord_quad (explorer))
 
 			if not grid[dest.first, dest.second].is_full then
-
-				grid[start.first, start.second].contents.prune_all (planet)
+--				grid[start.first, start.second].contents.prune_all (planet)
+				i_replace := grid[start.first, start.second].contents.index_of (planet, 1)
+				grid[start.first, start.second].contents[i_replace] := Void
 				planet.set_location (dest.first, dest.second)
 				grid[dest.first, dest.second].put (planet)
 				movement.append ("->")
@@ -546,9 +560,12 @@ feature {NONE} --commands (internal)
 			across
 				sect.contents is quad
 			loop
-				if quad.is_stationary then
-					stationary := TRUE
+				if attached quad as q then
+					if q.is_stationary then
+						stationary := TRUE
+					end
 				end
+
 			end
 
 			Result := stationary
@@ -648,41 +665,41 @@ feature {NONE} --commands (internal)
 			Result := stationary
 		end
 
-	return_m_ent_low_high (sect: SECTOR) : SEQ[ENTITY_ALPHABET]
-		local
-			temp: SEQ[ENTITY_ALPHABET]
-			i: INTEGER
-			inserted : BOOLEAN
-		do
-			create temp.make_empty
+--	return_m_ent_low_high (sect: SECTOR) : SEQ[ENTITY_ALPHABET]
+--		local
+--			temp: SEQ[ENTITY_ALPHABET]
+--			i: INTEGER
+--			inserted : BOOLEAN
+--		do
+--			create temp.make_empty
 
-			across
-				sect.contents is ent
-			loop
-				if ent.is_movable then
-					if temp.is_empty then
-						temp.append (ent)
-					else
-						from
-							i := temp.lower
-						until
-							i > temp.upper or inserted
-						loop
-							if ent.id <= temp[i].id then
-								temp.insert (ent, i)
-								inserted := True
-							end
-							i := i + 1
-						end--insert current movable entity into temp in order of id
-						if not inserted then
-							temp.append (ent)
-						end
-					end--temp was empty, inserted current movable into front of temp
-				end--current entity wasn't movable
-			end--end of across entities of sect
+--			across
+--				sect.contents is ent
+--			loop
+--				if ent.is_movable then
+--					if temp.is_empty then
+--						temp.append (ent)
+--					else
+--						from
+--							i := temp.lower
+--						until
+--							i > temp.upper or inserted
+--						loop
+--							if ent.id <= temp[i].id then
+--								temp.insert (ent, i)
+--								inserted := True
+--							end
+--							i := i + 1
+--						end--insert current movable entity into temp in order of id
+--						if not inserted then
+--							temp.append (ent)
+--						end
+--					end--temp was empty, inserted current movable into front of temp
+--				end--current entity wasn't movable
+--			end--end of across entities of sect
 
-			Result := temp
-		end
+--			Result := temp
+--		end
 
 	out_coord_quad (ent: ENTITY_MOVABLE): STRING
 		do
@@ -782,6 +799,7 @@ feature {NONE} --commands (internal)
 			loop
 				printed_symbols := 0
 				Result.append ("    [" + sector.item.row.out + "," + sector.item.column.out + "]->")
+
 				across
 					sector.item.contents as quadrant
 				loop
@@ -923,8 +941,11 @@ feature -- queries
 					status_msg.wipe_out
 				else
 					if not land_msg.is_empty then
-						Result.append (land_msg + "%N")
+						Result.append (land_msg)
 						land_msg.wipe_out
+						if not in_play then
+							make (state, 0)
+						end
 					end
 					if in_play then
 						if not planet_msg.is_empty then
