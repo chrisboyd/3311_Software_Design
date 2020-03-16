@@ -20,7 +20,7 @@ feature -- attributes
 
 	gen: RANDOM_GENERATOR_ACCESS
 
-	contents: ARRAYED_LIST [ENTITY_ALPHABET] --holds 4 quadrants
+	contents: ARRAYED_LIST [detachable ENTITY_ALPHABET] --holds 4 quadrants
 
 	row: INTEGER
 
@@ -164,7 +164,8 @@ feature -- Queries
 		local
 			loop_counter: INTEGER
 		do
-			Result := contents[1]
+			--dummy entity
+			Result := create {ENTITY_STATIONARY}.make('W', -10)
 			from
 				loop_counter := 1
 			until
@@ -271,10 +272,9 @@ feature -- Queries
 			across
 				contents as quadrant
 			loop
-				if quadrant.item.is_planet then
-					check attached {ENTITY_MOVABLE} quadrant.item as p
-					then
-						Result.extend (p)
+				if attached {ENTITY_MOVABLE} quadrant.item as q then
+					if q.is_planet then
+						Result.extend (q)
 					end
 				end
 			end

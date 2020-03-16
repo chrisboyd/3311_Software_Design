@@ -204,7 +204,10 @@ feature -- model operations
 					movement.append ("    [" + explorer.id.out + "," + "E]:")
 					movement.append (out_coord_quad (explorer))
 					movement.append ("->")
-					sect.contents.prune_all (explorer)
+					--sect.contents.prune_all (explorer)
+					--grid[ent.row,ent.col].contents.index_of (ent, 1)
+
+					sect.contents.array_put (void, sect.contents.index_of (explorer, 1))
 					explorer.set_location (coord.first, coord.second)
 					grid[coord.first, coord.second].put (explorer)
 					movement.append (out_coord_quad (explorer))
@@ -471,6 +474,7 @@ feature {NONE} --commands (internal)
 --			movement.append (out_coord_quad (explorer))
 
 			if not grid[dest.first, dest.second].is_full then
+
 				grid[start.first, start.second].contents.prune_all (planet)
 				planet.set_location (dest.first, dest.second)
 				grid[dest.first, dest.second].put (planet)
