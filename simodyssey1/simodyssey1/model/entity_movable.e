@@ -23,6 +23,7 @@ feature {none} --attributes
 	attach: BOOLEAN
 	support_life: BOOLEAN
 	visited: BOOLEAN
+	set_life: BOOLEAN
 feature -- Constructor
 
     make (a_char: CHARACTER; i: INTEGER)
@@ -34,8 +35,8 @@ feature -- Constructor
             row := 0
             col := 0
 			attach := False
-			support_life := False
 			visited := False
+			set_life := False
 
             if a_char = 'E' then
             	fuel := 3
@@ -116,6 +117,7 @@ feature --commands
 	set_support_life (life: BOOLEAN)
 		do
 			support_life := life
+			set_life := True
 		end
 
 	is_visited: BOOLEAN
@@ -131,6 +133,11 @@ feature --commands
 	set_land(land: BOOLEAN)
 		do
 			landed := land
+		end
+
+	has_set_life: BOOLEAN
+		do
+			Result := set_life
 		end
 
 end

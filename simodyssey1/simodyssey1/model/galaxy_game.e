@@ -205,12 +205,12 @@ feature -- model operations
 					movement.append ("    [" + explorer.id.out + "," + "E]:")
 					movement.append (out_coord_quad (explorer))
 					movement.append ("->")
-					--sect.contents.prune_all (explorer)
-					--grid[ent.row,ent.col].contents.index_of (ent, 1)
 
 					i_replace := sect.contents.index_of (explorer, 1)
 					sect.contents[i_replace] := Void
 					explorer.set_location (coord.first, coord.second)
+					--update sector to explorer's new position
+					sect := grid[explorer.row, explorer.col]
 					grid[coord.first, coord.second].put (explorer)
 					movement.append (out_coord_quad (explorer))
 
@@ -218,7 +218,7 @@ feature -- model operations
 					--check if explorer is out of fuel, and thus, dead					
 					if explorer.fuel_empty then
 						fuel_msg.wipe_out
---						grid[explorer.row, explorer.col].contents.prune_all (explorer)
+
 						i_replace := sect.contents.index_of (explorer, 1)
 						sect.contents[i_replace] := Void
 						fuel_msg.append ("  Explorer got lost in space - out of fuel at Sector:")
@@ -401,6 +401,8 @@ feature {NONE} --commands (internal)
 			row: INTEGER
 			col: INTEGER
 			i_replace: INTEGER
+			life: INTEGER
+			turns: INTEGER
 		do
 			across
 				movable_entities as ent
@@ -411,16 +413,20 @@ feature {NONE} --commands (internal)
 					if ent.item.get_turns = 0 then
 						if ent.item.is_planet and grid[row,col].has_star then
 							ent.item.attach_star
-							if  grid[row,col].has_yellow_dwarf then
-								if gen.rchoose (1, 2) = 2 then
-									ent.item.set_support_life (True)
+							if not ent.item.has_set_life then
+								if  grid[row,col].has_yellow_dwarf then
+									if gen.rchoose (1, 2) = 2 then
+										ent.item.set_support_life (True)
+									else
+										ent.item.set_support_life (False)
+									end
 								end
 							end
+
 						else
 							move_planet(ent.item)
 							--check if it moved to a blackhole spot
 							if grid[ent.item.row, ent.item.col].has_blackhole then
-								--grid[ent.item.row, ent.item.col].contents.prune_all (ent.item)
 								i_replace := grid[ent.item.row, ent.item.col].contents.index_of (ent.item, 1)
 								grid[ent.item.row, ent.item.col].contents[i_replace] := Void
 								movable_entities.prune_all (ent.item)
@@ -428,18 +434,27 @@ feature {NONE} --commands (internal)
 									planet_msg.append ("  Planet got devoured by blackhole (id: -1) at Sector:3:3")
 									deaths.enqueue (create {PAIR[ENTITY_MOVABLE,STRING]}.make (ent.item, create {STRING}.make_from_string (planet_msg)) )
 								end
-							elseif ent.item.is_planet and grid[row,col].has_star then
-								ent.item.attach_star
-								if  grid[row,col].has_yellow_dwarf then
-									if gen.rchoose (1, 2) = 2 then
-										ent.item.set_support_life (True)
+							elseif ent.item.is_planet then
+								if  grid[row,col].has_star then
+									ent.item.attach_star
+									if not ent.item.has_set_life then
+										if  grid[row,col].has_yellow_dwarf then
+											if gen.rchoose (1, 2) = 2 then
+												ent.item.set_support_life (True)
+											else
+												ent.item.set_support_life (False)
+											end
+										end
 									end
+								else
+									turns := gen.rchoose (0, 2)
+									ent.item.set_turn (turns)
 								end
 							end
-							ent.item.set_turn (gen.rchoose (0, 2))
 						end
 					else
-						ent.item.set_turn (ent.item.get_turns - 1)
+						turns := ent.item.get_turns - 1
+						ent.item.set_turn (turns)
 					end
 				end
 			end
@@ -455,22 +470,23 @@ feature {NONE} --commands (internal)
 		do
 			create start.make (planet.row, planet.col)
 			direction := gen.rchoose (1, 8)
+
 			inspect direction
-			when 1 then
+			when 1 then --N
 				create inc.make (-1, 0)
-			when 2 then
+			when 2 then --NE
 				create inc.make (-1, 1)
-			when 3 then
+			when 3 then --E
 				create inc.make (0, 1)
-			when 4 then
+			when 4 then --SE
 				create inc.make (1, 1)
-			when 5 then
+			when 5 then --S
 				create inc.make (1, 0)
-			when 6 then
+			when 6 then --SW
 				create inc.make (1, -1)
-			when 7 then
+			when 7 then --W
 				create inc.make (0, -1)
-			when 8 then
+			when 8 then --NW
 				create inc.make (-1, -1)
 			else
 				create inc.make (0, 0)
@@ -481,13 +497,7 @@ feature {NONE} --commands (internal)
 			movement.append ("%N    [" + planet.id.out + ",P]:")
 			movement.append (out_coord_quad(planet))
 
---			sect.contents.prune (explorer)
---			explorer.set_location (coord.first, coord.second)
---			grid[coord.first, coord.second].put (explorer)
---			movement.append (out_coord_quad (explorer))
-
 			if not grid[dest.first, dest.second].is_full then
---				grid[start.first, start.second].contents.prune_all (planet)
 				i_replace := grid[start.first, start.second].contents.index_of (planet, 1)
 				grid[start.first, start.second].contents[i_replace] := Void
 				planet.set_location (dest.first, dest.second)
@@ -826,7 +836,6 @@ feature {NONE} --commands (internal)
 
 				end
 				if not sector.after then
-					--Result.append (" next:" + next_available_quad(sector.item).out)
 					Result.append ("%N")
 				end
 
@@ -924,7 +933,7 @@ feature -- queries
 			if state /= 0 and abort_msg.is_empty then
 				if test_mode then
 					Result.append ("mode:test,")
-				elseif in_play then
+				else
 					Result.append ("mode:play,")
 				end
 				if error.is_empty then
@@ -1012,7 +1021,7 @@ feature -- queries
 					Result.append ("ok%N")
 					Result.append ("  Welcome! Try test(30)")
 				else
-					Result.append ("%N")
+					Result.append ("ok%N")
 					Result.append (abort_msg + " Try test(30)")
 					reset
 				end
