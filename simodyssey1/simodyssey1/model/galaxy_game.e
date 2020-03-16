@@ -534,7 +534,6 @@ feature {NONE} --commands (internal)
 			occupant : ENTITY_ALPHABET
 			empty_space_found : BOOLEAN
 		do
-
 			empty_space_found := FALSE
 			from
 				loop_counter := 1
@@ -544,8 +543,9 @@ feature {NONE} --commands (internal)
 				occupant := sect.contents [loop_counter]
 				if not attached occupant  then
 					empty_space_found := TRUE
+				else
+					loop_counter := loop_counter + 1
 				end
-				loop_counter := loop_counter + 1
 			end
 			Result := loop_counter
 
@@ -807,11 +807,11 @@ feature {NONE} --commands (internal)
 
 					if attached component as entity then
 						Result.append ("[" + entity.id.out + "," + entity.item.out + "]")
-						if not quadrant.after then
-							Result.append(",")
-						end
 					else
 						Result.append("-")
+					end
+					if not quadrant.after then
+							Result.append(",")
 					end
 					printed_symbols := printed_symbols + 1
 				end
@@ -826,6 +826,7 @@ feature {NONE} --commands (internal)
 
 				end
 				if not sector.after then
+					--Result.append (" next:" + next_available_quad(sector.item).out)
 					Result.append ("%N")
 				end
 

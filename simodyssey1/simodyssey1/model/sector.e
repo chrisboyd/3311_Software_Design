@@ -64,16 +64,26 @@ feature {GALAXY_GAME} --command
 		local
 			loop_counter: INTEGER
 			found: BOOLEAN
+			occupant : ENTITY_ALPHABET
 		do
 			from
 				loop_counter := 1
 			until
 				loop_counter > contents.count or found
 			loop
-				if contents [loop_counter] = new_component then
+--				if contents [loop_counter] = new_component then
+--					found := TRUE
+--				else
+--					loop_counter := loop_counter + 1
+--				end --if
+				occupant := contents [loop_counter]
+				if not attached occupant  then
 					found := TRUE
-				end --if
-				loop_counter := loop_counter + 1
+					contents [loop_counter] := new_component
+				else
+					loop_counter := loop_counter + 1
+				end
+
 			end -- loop
 
 			if not found and not is_full then
