@@ -204,7 +204,7 @@ feature -- model operations
 					movement.append ("    [" + explorer.id.out + "," + "E]:")
 					movement.append (out_coord_quad (explorer))
 					movement.append ("->")
-					sect.contents.prune (explorer)
+					sect.contents.prune_all (explorer)
 					explorer.set_location (coord.first, coord.second)
 					grid[coord.first, coord.second].put (explorer)
 					movement.append (out_coord_quad (explorer))
@@ -213,7 +213,7 @@ feature -- model operations
 					--check if explorer is out of fuel, and thus, dead					
 					if explorer.fuel_empty then
 						fuel_msg.wipe_out
-						grid[explorer.row, explorer.col].contents.prune (explorer)
+						grid[explorer.row, explorer.col].contents.prune_all (explorer)
 						fuel_msg.append ("  Explorer got lost in space - out of fuel at Sector:")
 						fuel_msg.append (grid[explorer.row, explorer.col].print_sector)
 						deaths.enqueue (create {PAIR[ENTITY_MOVABLE,STRING]}.make (explorer, create {STRING}.make_from_string (fuel_msg)) )
@@ -232,7 +232,7 @@ feature -- model operations
 							blackhole_msg.wipe_out
 							blackhole_msg.append ("  Explorer got devoured by blackhole (id: -1) at Sector:3:3")
 							deaths.enqueue (create {PAIR[ENTITY_MOVABLE,STRING]}.make (explorer, create {STRING}.make_from_string (blackhole_msg)) )
-							grid[coord.first, coord.second].contents.prune (explorer)
+							grid[coord.first, coord.second].contents.prune_all (explorer)
 							movable_entities.prune_all (explorer)
 						end
 					end
@@ -247,6 +247,7 @@ feature -- model operations
 			temp_row: INTEGER
 			temp_col: INTEGER
 			added: BOOLEAN
+			sect: SECTOR
 		do
 			if not in_play then
 				error.append ("  Negative on that request:no mission in progress.")
@@ -270,9 +271,17 @@ feature -- model operations
 					temp_col := gen.rchoose (1, shared_info.number_columns)
 
 					if not grid[temp_row, temp_col].is_full then
-						grid[explorer.row, explorer.col].contents.prune (explorer)
+						sect := grid[explorer.row, explorer.col]
+						movement.wipe_out
+						movement.append ("    [" + explorer.id.out + "," + "E]:")
+						movement.append (out_coord_quad (explorer))
+						movement.append ("->")
+
+						sect.contents.prune_all (explorer)
 						explorer.set_location (temp_row, temp_col)
-						grid[temp_row, temp_col].contents.extend (explorer)
+						grid[temp_row, temp_col].put (explorer)
+						movement.append (out_coord_quad (explorer))
+
 						added := True
 					end
 				end--end loop finding rand location until spot available
@@ -395,17 +404,24 @@ feature {NONE} --commands (internal)
 								end
 							end
 						else
-							ent.item.set_turn (gen.rchoose (0, 2))
 							move_planet(ent.item)
 							--check if it moved to a blackhole spot
 							if grid[ent.item.row, ent.item.col].has_blackhole then
-								grid[ent.item.row, ent.item.col].contents.prune (ent.item)
+								grid[ent.item.row, ent.item.col].contents.prune_all (ent.item)
 								movable_entities.prune_all (ent.item)
 								if planet_msg.is_empty then
 									planet_msg.append ("  Planet got devoured by blackhole (id: -1) at Sector:3:3")
 									deaths.enqueue (create {PAIR[ENTITY_MOVABLE,STRING]}.make (ent.item, create {STRING}.make_from_string (planet_msg)) )
 								end
+							elseif ent.item.is_planet and grid[row,col].has_star then
+								ent.item.attach_star
+								if  grid[row,col].has_yellow_dwarf then
+									if gen.rchoose (1, 2) = 2 then
+										ent.item.set_support_life (True)
+									end
+								end
 							end
+							ent.item.set_turn (gen.rchoose (0, 2))
 						end
 					else
 						ent.item.set_turn (ent.item.get_turns - 1)
@@ -449,8 +465,13 @@ feature {NONE} --commands (internal)
 			movement.append ("%N    [" + planet.id.out + ",P]:")
 			movement.append (out_coord_quad(planet))
 
+--			sect.contents.prune (explorer)
+--			explorer.set_location (coord.first, coord.second)
+--			grid[coord.first, coord.second].put (explorer)
+--			movement.append (out_coord_quad (explorer))
+
 			if not grid[dest.first, dest.second].is_full then
-				grid[start.first, start.second].contents.prune (planet)
+				grid[start.first, start.second].contents.prune_all (planet)
 				planet.set_location (dest.first, dest.second)
 				grid[dest.first, dest.second].put (planet)
 				movement.append ("->")
@@ -897,66 +918,68 @@ feature -- queries
 					Result.append (status_msg)
 					status_msg.wipe_out
 				else
-					if not planet_msg.is_empty then
-						Result.append (planet_msg + "%N")
-						planet_msg.wipe_out
-					end
-
 					if not land_msg.is_empty then
 						Result.append (land_msg + "%N")
 						land_msg.wipe_out
 					end
-
-					if not liftoff_msg.is_empty then
-						Result.append (liftoff_msg + "%N")
-						liftoff_msg.wipe_out
-					end
-
-					if not fuel_msg.is_empty then
-						Result.append (fuel_msg + "%N")
-						Result.append ("  The game has ended. You can start a new game.%N")
-						ended := True
-					end
-
-					if not blackhole_msg.is_empty then
-						Result.append (blackhole_msg + "%N")
-						Result.append ("  The game has ended. You can start a new game.%N")
-						ended := True
-					end
-
-					Result.append ("  Movement:")
-					if movement.is_empty then
-						Result.append ("none")
-					else
-						Result.append ("%N" + movement)
-					end
-
-					if test_mode then
-						Result.append ("%N  Sectors:%N")
-						Result.append (sectors_out)
-						Result.append ("  Descriptions:%N")
-						Result.append (entities_out)
-						Result.append ("  Deaths This Turn:")
-						if deaths.is_empty then
-							Result.append("none")
-						else
-							Result.append (deaths_out)
+					if in_play then
+						if not planet_msg.is_empty then
+							Result.append (planet_msg + "%N")
+							planet_msg.wipe_out
 						end
 
-					end
+						if not liftoff_msg.is_empty then
+							Result.append (liftoff_msg + "%N")
+							liftoff_msg.wipe_out
+						end
 
-					Result.append (galaxy_out)
-
-					if test_mode  then
 						if not fuel_msg.is_empty then
-							Result.append ("%N" + fuel_msg + "%N")
-							Result.append ("  The game has ended. You can start a new game.")
-						elseif not blackhole_msg.is_empty then
-							Result.append ("%N" + blackhole_msg + "%N")
-							Result.append ("  The game has ended. You can start a new game.")
+							Result.append (fuel_msg + "%N")
+							Result.append ("  The game has ended. You can start a new game.%N")
+							ended := True
 						end
 
+						if not blackhole_msg.is_empty then
+							Result.append (blackhole_msg + "%N")
+							Result.append ("  The game has ended. You can start a new game.%N")
+							ended := True
+						end
+
+						Result.append ("  Movement:")
+						if movement.is_empty then
+							Result.append ("none")
+						else
+							Result.append ("%N" + movement)
+						end
+
+						if test_mode then
+							Result.append ("%N  Sectors:%N")
+							Result.append (sectors_out)
+							Result.append ("  Descriptions:%N")
+							Result.append (entities_out)
+							Result.append ("  Deaths This Turn:")
+							if deaths.is_empty then
+								Result.append("none")
+							else
+								Result.append (deaths_out)
+							end
+
+						end
+
+
+						Result.append (galaxy_out)
+
+						if test_mode  then
+							if not fuel_msg.is_empty then
+								Result.append ("%N" + fuel_msg + "%N")
+								Result.append ("  The game has ended. You can start a new game.")
+							elseif not blackhole_msg.is_empty then
+								Result.append ("%N" + blackhole_msg + "%N")
+								Result.append ("  The game has ended. You can start a new game.")
+							end
+						end
 					end
+
 				end
 			else
 				if abort_msg.is_empty then
