@@ -139,7 +139,9 @@ feature --commands
 		do
 			Result := set_life
 		end
-
+invariant
+    allowable_symbols:
+        item = 'E' or item = 'P'
 end
 
 

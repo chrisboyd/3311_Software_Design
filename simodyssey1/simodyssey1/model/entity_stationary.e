@@ -39,6 +39,11 @@ feature --query
             			current.id.is_equal (other.id)
         end
 
+    get_luminosity : INTEGER
+		do
+			Result := luminosity
+		end
+
 feature --commands
 
 	set_luminosity(i: INTEGER)
@@ -46,11 +51,9 @@ feature --commands
 			luminosity := i
 		end
 
-	get_luminosity : INTEGER
-		do
-			Result := luminosity
-		end
-
+invariant
+    allowable_symbols:
+        item = 'O' or item = 'W' or item = 'Y' or item = '*'
 
 
 end

@@ -71,11 +71,7 @@ feature {GALAXY_GAME} --command
 			until
 				loop_counter > contents.count or found
 			loop
---				if contents [loop_counter] = new_component then
---					found := TRUE
---				else
---					loop_counter := loop_counter + 1
---				end --if
+
 				occupant := contents [loop_counter]
 				if not attached occupant  then
 					found := TRUE
@@ -92,6 +88,28 @@ feature {GALAXY_GAME} --command
 
 		ensure
 			component_put: not is_full implies contents.has (new_component)
+		end
+
+	get_stationary: ENTITY_STATIONARY
+		require
+			Current.has_stationary
+		local
+			loop_counter: INTEGER
+		do
+			--dummy entity
+			Result := create {ENTITY_STATIONARY}.make('W', -10)
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count
+			loop
+				if attached {ENTITY_STATIONARY} contents [loop_counter] as temp_item  then
+					if temp_item.is_stationary then
+						Result := temp_item
+					end
+				end -- if
+				loop_counter := loop_counter + 1
+			end
 		end
 
 feature -- Queries
@@ -152,7 +170,7 @@ feature -- Queries
 		end
 
 	has_movable: BOOLEAN
-			-- returns whether the location contains any stationary item
+			-- returns whether the location contains any movable item
 		local
 			loop_counter: INTEGER
 		do
@@ -168,27 +186,6 @@ feature -- Queries
 			end
 		end
 
-	get_stationary: ENTITY_ALPHABET
-		require
-			Current.has_stationary
-		local
-			loop_counter: INTEGER
-		do
-			--dummy entity
-			Result := create {ENTITY_STATIONARY}.make('W', -10)
-			from
-				loop_counter := 1
-			until
-				loop_counter > contents.count
-			loop
-				if attached contents [loop_counter] as temp_item  then
-					if temp_item.is_stationary then
-						Result := temp_item
-					end
-				end -- if
-				loop_counter := loop_counter + 1
-			end
-		end
 
 	has_star: BOOLEAN
 		local
