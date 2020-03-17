@@ -57,6 +57,8 @@ feature {NONE} -- model attributes
 
 	gen: RANDOM_GENERATOR_ACCESS
 
+	no_mission: STRING
+
 	shared_info_access: SHARED_INFORMATION_ACCESS
 
 	shared_info: SHARED_INFORMATION
@@ -95,6 +97,8 @@ feature {NONE} -- Initialization
 			create planet_msg.make_empty
 			create abort_msg.make_empty
 			create deaths.make_empty
+			create no_mission.make_empty
+
 			create grid.make_filled (create {SECTOR}.make_dummy, shared_info.number_rows, shared_info.number_columns)
 			from
 				row := 1
@@ -154,7 +158,7 @@ feature -- model operations
 			location.append (grid [explorer.row, explorer.col].contents.index_of (explorer, 1).out + "]")
 			if not in_play then
 				error_state := error_state + 1
-				error.append ("  Negative on that request:no mission in progress.")
+				no_mission.append ("  Negative on that request:no mission in progress.")
 			else
 				if not explorer.is_landed then
 					status_msg.append ("  Explorer status report:Travelling at cruise speed at " + location)
@@ -186,8 +190,8 @@ feature -- model operations
 		do
 			if not in_play then
 				error_state := error_state + 1
-				error.append ("  Negative on that request:no mission in progress.")
-				error.append ("%N")
+				no_mission.append ("  Negative on that request:no mission in progress.")
+				--error.append ("%N")
 			else
 					--get new coordinates to move explorer too
 				coord := get_new_coord (explorer.get_location, [row_inc, col_inc])
@@ -197,13 +201,13 @@ feature -- model operations
 					error_state := error_state + 1
 					error.append ("  Negative on that request:you are currently landed at Sector:")
 					error.append (grid [explorer.row, explorer.col].print_sector)
-					error.append ("%N")
+					--error.append ("%N")
 
 						--make sure sector isn't full
 				elseif grid [coord.first, coord.second].is_full then
 					error_state := error_state + 1
 					error.append ("  Cannot transfer to new location as it is full.")
-					error.append ("%N")
+					--error.append ("%N")
 						--perform move
 				else
 					create deaths.make_empty
@@ -265,7 +269,7 @@ feature -- model operations
 			i_replace: INTEGER
 		do
 			if not in_play then
-				error.append ("  Negative on that request:no mission in progress.")
+				no_mission.append ("  Negative on that request:no mission in progress.")
 				error_state := error_state + 1
 			elseif explorer.is_landed then
 				error.append ("  Negative on that request:you are currently landed at Sector:")
@@ -310,7 +314,7 @@ feature -- model operations
 			landed: BOOLEAN
 		do
 			if not in_play then
-				error.append ("  Negative on that request:no mission in progress.")
+				no_mission.append ("  Negative on that request:no mission in progress.")
 				error_state := error_state + 1
 			elseif explorer.is_landed then
 				error.append ("  Negative on that request:already landed on a planet at Sector:")
@@ -358,7 +362,7 @@ feature -- model operations
 	liftoff
 		do
 			if not in_play then
-				error.append ("  Negative on that request:no mission in progress.")
+				no_mission.append ("  Negative on that request:no mission in progress.")
 				error_state := error_state + 1
 			elseif not explorer.is_landed then
 				error.append ("  Negative on that request:you are not on a planet at Sector:")
@@ -376,7 +380,7 @@ feature -- model operations
 	pass
 		do
 			if not in_play then
-				error.append ("  Negative on that request:no mission in progress.")
+				no_mission.append ("  Negative on that request:no mission in progress.")
 				error_state := error_state + 1
 			else
 				state := state + 1
@@ -388,7 +392,7 @@ feature -- model operations
 		do
 			error_state := error_state + 1
 			if not in_play then
-				error.append ("  Negative on that request:no mission in progress.")
+				no_mission.append ("  Negative on that request:no mission in progress.")
 			else
 				abort_msg.append ("  Mission aborted.")
 			end
@@ -902,13 +906,13 @@ feature -- queries
 			Result.append (".")
 			Result.append (error_state.out)
 			Result.append (", ")
-			if state /= 0 and abort_msg.is_empty then
+			if (state /= 0 and abort_msg.is_empty) or not no_mission.is_empty then
 				if test_mode then
 					Result.append ("mode:test,")
 				else
 					Result.append ("mode:play,")
 				end
-				if error.is_empty then
+				if error.is_empty and no_mission.is_empty then
 					Result.append (" ok")
 				else
 					Result.append (" error")
@@ -917,6 +921,9 @@ feature -- queries
 				if not error.is_empty then
 					Result.append (error)
 					error.wipe_out
+				elseif not no_mission.is_empty then
+					Result.append (no_mission)
+					no_mission.wipe_out
 				elseif not status_msg.is_empty then
 					Result.append (status_msg)
 					status_msg.wipe_out
