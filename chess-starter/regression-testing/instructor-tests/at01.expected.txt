@@ -1,0 +1,65 @@
+  ok, K = King and N = Knight:
+->play(5)
+  ok:
+  K____
+  _____
+  _____
+  _____
+  ____N
+->move_knight([5, 3])
+  invalid move:
+->play(8)
+  game already started:
+->move_knight([2, 8])
+  invalid move:
+->move_knight([3, 4])
+  ok:
+  K____
+  _____
+  ___N_
+  _____
+  _____
+->move_knight([2, 2])
+  ok:
+  K____
+  _N___
+  _____
+  _____
+  _____
+->move_knight([1, 4])
+  ok:
+  K__N_
+  _____
+  _____
+  _____
+  _____
+->move_knight([3, 5])
+  ok:
+  K____
+  _____
+  ____N
+  _____
+  _____
+->move_king([2, 2])
+  ok:
+  _____
+  _K___
+  ____N
+  _____
+  _____
+->move_king([3, 3])
+  ok:
+  _____
+  _____
+  __K_N
+  _____
+  _____
+->move_knight([2, 2])
+  invalid move:
+->move_knight([4, 3])
+  ok:
+  _____
+  _____
+  __K__
+  __N__
+  _____
