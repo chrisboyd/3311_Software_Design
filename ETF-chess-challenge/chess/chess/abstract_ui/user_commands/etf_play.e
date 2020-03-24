@@ -8,12 +8,12 @@ class
 	ETF_PLAY
 inherit
 	ETF_PLAY_INTERFACE
-		redefine play end
+--		redefine play end
 create
 	make
 feature -- command
 
-	play(size: INTEGER_64)
+	play(size: INTEGER_32)
 		require else
 			play_precond(size)
 		local

@@ -5,30 +5,32 @@ note
 	revision: "$Revision$"
 
 class
-	ETF_UNDO
+	ETF_REDO
 inherit
-	ETF_UNDO_INTERFACE
-		redefine undo end
+	ETF_REDO_INTERFACE
+--		redefine redo end
 create
 	make
 feature -- command
-	undo
+	redo
     	do
-
-			if model.board.history.after then
-				model.board.history.back
+			-- forth
+			if
+				model.board.history.before
+				or not model.board.history.after
+			then
+				model.board.history.forth
 			end
 
+			-- redo
 			if model.board.history.on_item then
-				model.board.history.item.undo
-				model.board.history.back
-
-
+				model.board.history.item.redo
 				model.set_message ("ok")
 			else
-				model.set_message ("no more to undo")
+				model.set_message ("nothing to redo")
 			end
 
+			-- push
 			etf_cmd_container.on_change.notify ([Current])
     	end
 

@@ -9,12 +9,12 @@ class
 
 inherit
 	ETF_MOVE_BISHOP_INTERFACE
-		redefine move_bishop end
+--		redefine move_bishop end
 create
 	make
 feature -- command
-	move_bishop(square: TUPLE[x: INTEGER_64; y: INTEGER_64])
-		
+	move_bishop(square: TUPLE[x: INTEGER_32; y: INTEGER_32])
+
     	do
 
 			-- create move op

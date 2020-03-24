@@ -8,11 +8,11 @@ class
 	ETF_MOVE_KING
 inherit
 	ETF_MOVE_KING_INTERFACE
-		redefine move_king end
+--		redefine move_king end
 create
 	make
 feature -- command
-	move_king(square: TUPLE[x: INTEGER_64; y: INTEGER_64])
+	move_king(square: TUPLE[x: INTEGER_32; y: INTEGER_32])
 		require else
 			move_king_precond(square)
 		local
