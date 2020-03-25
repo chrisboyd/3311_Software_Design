@@ -41,6 +41,7 @@ feature -- query on declarations of event parameters
 		local
 			play_param_types: HASH_TABLE[ETF_PARAM_TYPE, STRING]
 			move_king_param_types: HASH_TABLE[ETF_PARAM_TYPE, STRING]
+			move_knight_param_types: HASH_TABLE[ETF_PARAM_TYPE, STRING]
 			move_bishop_param_types: HASH_TABLE[ETF_PARAM_TYPE, STRING]
 			undo_param_types: HASH_TABLE[ETF_PARAM_TYPE, STRING]
 			redo_param_types: HASH_TABLE[ETF_PARAM_TYPE, STRING]
@@ -55,6 +56,10 @@ feature -- query on declarations of event parameters
 			move_king_param_types.compare_objects
 			move_king_param_types.extend (create {ETF_NAMED_PARAM_TYPE}.make("SQUARE", create {ETF_TUPLE_PARAM}.make(<<create {ETF_PARAM_DECL}.make("x", create {ETF_INTERVAL_PARAM}.make(1, 8)), create {ETF_PARAM_DECL}.make("y", create {ETF_INTERVAL_PARAM}.make(1, 8))>>)), "square")
 			Result.extend (move_king_param_types, "move_king")
+			create move_knight_param_types.make (10)
+			move_knight_param_types.compare_objects
+			move_knight_param_types.extend (create {ETF_NAMED_PARAM_TYPE}.make("SQUARE", create {ETF_TUPLE_PARAM}.make(<<create {ETF_PARAM_DECL}.make("x", create {ETF_INTERVAL_PARAM}.make(1, 8)), create {ETF_PARAM_DECL}.make("y", create {ETF_INTERVAL_PARAM}.make(1, 8))>>)), "square")
+			Result.extend (move_knight_param_types, "move_knight")
 			create move_bishop_param_types.make (10)
 			move_bishop_param_types.compare_objects
 			move_bishop_param_types.extend (create {ETF_NAMED_PARAM_TYPE}.make("SQUARE", create {ETF_TUPLE_PARAM}.make(<<create {ETF_PARAM_DECL}.make("x", create {ETF_INTERVAL_PARAM}.make(1, 8)), create {ETF_PARAM_DECL}.make("y", create {ETF_INTERVAL_PARAM}.make(1, 8))>>)), "square")
@@ -71,6 +76,7 @@ feature -- query on declarations of event parameters
 		local
 			play_param_types: LINKED_LIST[ETF_PARAM_TYPE]
 			move_king_param_types: LINKED_LIST[ETF_PARAM_TYPE]
+			move_knight_param_types: LINKED_LIST[ETF_PARAM_TYPE]
 			move_bishop_param_types: LINKED_LIST[ETF_PARAM_TYPE]
 			undo_param_types: LINKED_LIST[ETF_PARAM_TYPE]
 			redo_param_types: LINKED_LIST[ETF_PARAM_TYPE]
@@ -85,6 +91,10 @@ feature -- query on declarations of event parameters
 			move_king_param_types.compare_objects
 			move_king_param_types.extend (create {ETF_NAMED_PARAM_TYPE}.make("SQUARE", create {ETF_TUPLE_PARAM}.make(<<create {ETF_PARAM_DECL}.make("x", create {ETF_INTERVAL_PARAM}.make(1, 8)), create {ETF_PARAM_DECL}.make("y", create {ETF_INTERVAL_PARAM}.make(1, 8))>>)))
 			Result.extend (move_king_param_types, "move_king")
+			create move_knight_param_types.make
+			move_knight_param_types.compare_objects
+			move_knight_param_types.extend (create {ETF_NAMED_PARAM_TYPE}.make("SQUARE", create {ETF_TUPLE_PARAM}.make(<<create {ETF_PARAM_DECL}.make("x", create {ETF_INTERVAL_PARAM}.make(1, 8)), create {ETF_PARAM_DECL}.make("y", create {ETF_INTERVAL_PARAM}.make(1, 8))>>)))
+			Result.extend (move_knight_param_types, "move_knight")
 			create move_bishop_param_types.make
 			move_bishop_param_types.compare_objects
 			move_bishop_param_types.extend (create {ETF_NAMED_PARAM_TYPE}.make("SQUARE", create {ETF_TUPLE_PARAM}.make(<<create {ETF_PARAM_DECL}.make("x", create {ETF_INTERVAL_PARAM}.make(1, 8)), create {ETF_PARAM_DECL}.make("y", create {ETF_INTERVAL_PARAM}.make(1, 8))>>)))
