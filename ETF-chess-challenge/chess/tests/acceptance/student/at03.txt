@@ -1,13 +1,12 @@
--- basic chess acceptance test with King (K) and Knight
+-- test king and knight not moving into eachother space
 play(5)
-move_knight([5, 3])
-play(8)
-move_knight([2, 8])
-move_knight([3, 4])
-move_knight([2, 2])
-move_knight([1, 4])
-move_knight([3, 5])
-move_king([2,2])
-move_king([3,3])
-move_knight([2, 2])
-move_knight([4, 3])
+move_knight([3,4])
+move_knight([1,3])
+move_king([1,2])
+move_king([1,3])
+move_knight([3,4])
+move_king([1,3])
+move_knight([1,3])
+undo
+redo
+redo

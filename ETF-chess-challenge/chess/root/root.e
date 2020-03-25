@@ -31,7 +31,7 @@ feature -- Tests
 		do
 			-- add your tests here
 			-- add cluster for tests
-			 add_test (create {CHESS_MOVES}.make)
+--			 add_test (create {CHESS_MOVES}.make)
 
 		end
 
