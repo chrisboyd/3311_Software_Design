@@ -31,7 +31,8 @@ feature -- Tests
 		do
 			-- add your tests here
 			-- add cluster for tests
-			-- add_test (create {MY_TEST}.make)
+			 add_test (create {CHESS_MOVES}.make)
+
 		end
 
 invariant

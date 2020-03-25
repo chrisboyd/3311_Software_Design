@@ -1,0 +1,9 @@
+Type Error: specification of command executions is not type-correct
+Error: unknown event name move_knight
+Error: unknown event name move_knight
+Error: unknown event name move_knight
+Error: unknown event name move_knight
+Error: unknown event name move_knight
+Error: unknown event name move_knight
+Error: unknown event name move_knight
+Error: unknown event name move_knight

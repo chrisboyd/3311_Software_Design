@@ -20,6 +20,11 @@ play(size: SIZE)
    -- some moves not permitted
    -- either due to board size
    -- or because a square is occupied
+ 
+ move_knight(square: SQUARE)
+   -- some moves not permitted
+   -- either due to board size
+   -- or because a square is occupied
 
  undo
 

@@ -623,9 +623,11 @@ feature {NONE} -- auxiliary procedures
   move_bishop(
       square: SQUARE = TUPLE[x: 1 .. 8; y: 1 .. 8]
   )
+  move_knight(
+  	  square: SQUARE = TUPLE[x: 1 .. 8; y: 1 .. 8]
   undo
   redo
 ]"
- feature -- ETF Version 
+ feature -- ETF Version
 	 etf_version : STRING = "1.14 (2019-10-12)"
  end

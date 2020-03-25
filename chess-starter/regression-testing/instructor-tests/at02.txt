@@ -1,0 +1,26 @@
+-- basic chess acceptance test with King (K) and Knight
+play(5)
+move_knight([5, 3])
+move_knight([2, 8])
+move_knight([3, 4])
+move_knight([2, 2])
+move_knight([1, 4])
+move_knight([3, 5])
+undo
+redo
+undo
+undo
+undo
+undo
+undo
+redo
+redo
+redo
+redo
+redo
+move_king([2,2])
+move_knight([1, 4])
+move_knight([2, 2])
+move_king([3,3])
+move_knight([2, 2])
+move_knight([4, 3])

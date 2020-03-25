@@ -20,7 +20,7 @@ feature {NONE} -- create
 	make
 			-- Initialization for `Current'.
 		do
-			message := "ok, K = King and B = Bishop"
+			message := "ok, K = King and N = Knight"
 			make_board (5) -- minimum size
 		end
 

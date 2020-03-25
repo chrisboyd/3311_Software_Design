@@ -13,6 +13,7 @@
 		</option>
 		<setting name="dead_code_removal" value="feature"/>
 		<capability>
+			<catcall_detection support="none"/>
 			<concurrency support="scoop"/>
 			<void_safety support="all" use="all"/>
 		</capability>
@@ -39,6 +40,6 @@
 		<cluster name="chess" location=".\chess\" recursive="true"/>
 		<cluster name="generated_code" location=".\generated_code\" recursive="true"/>
 		<cluster name="root" location=".\root\" recursive="true"/>
+		<tests name="test" location="\Users\chrisboyd\Google_Drive\York\3311EECS\3311_Software_Design\ETF-chess-challenge\chess\tests\unit\instructor\"/>
 	</target>
 </system>
-
