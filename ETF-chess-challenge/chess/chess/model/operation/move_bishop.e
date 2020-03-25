@@ -26,7 +26,8 @@ feature {NONE} -- constructor
 
 	make(a_new_position: SQUARE)
 		do
-			-- To DO
+			old_position := board.bishop_position
+			position := a_new_position
 		end
 
 feature -- queries
@@ -35,9 +36,31 @@ feature -- queries
 
 	directions: ARRAY[TUPLE[x: INTEGER; y: INTEGER]]
 		local
-			x,y: INTEGER
+			i, l_size: INTEGER
 		do
-			-- To Do
+			--can move on diagonals
+			--used for all possible moves relative to current position
+			--being [x + i, y + i] such that x&y + i is on the board
+
+			create Result.make_empty
+			l_size := board.size
+
+			from
+				i := 1
+			until
+				i > l_size
+			loop
+				--add NE
+				Result.force ([(-1 * i), i], Result.count + 1)
+				--add SE
+				Result.force ([i,i], Result.count + 1)
+				--add SW
+				Result.force ([i,(-1 * i)], Result.count + 1)
+				--add NW
+				Result.force ([(-1 * i),(-1 * i)], Result.count + 1)
+				i := i + 1
+			end
+
 		end
 
 
@@ -46,18 +69,18 @@ feature -- commands
 
 	execute
 		do
-				-- To Do
+			board.move_bishop(position)
 		end
 
 	undo
 		do
-
-				-- To Do
+			board.move_bishop (old_position)
 		end
 
 	redo
 		do
-			-- To Do
+--			board.history.forth
+			execute
 		end
 
 feature

@@ -57,7 +57,9 @@ feature -- positions
 
     move_bishop(a_square: SQUARE)
     	do
-    		-- To Do
+    		implementation.put ('_', bishop_position.x, bishop_position.y)
+    		implementation.put ('B', a_square.x, a_square.y)
+			bishop_position := a_square
     	end
 
 feature -- history

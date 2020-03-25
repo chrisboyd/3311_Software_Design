@@ -43,12 +43,12 @@ feature -- commands
 
 	execute
 		do
-				board.move_king	 (position)
+				board.move_king(position)
 		end
 
 	undo
 		do
-				board.move_king (old_position)
+				board.move_king(old_position)
 		end
 
 	redo
