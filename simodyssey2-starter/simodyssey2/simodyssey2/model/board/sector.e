@@ -60,13 +60,16 @@ feature -- commands
 			movable_id: INTEGER
 		do
 			movable_id := 1 --since explorer is 0
-			number_items := gen.rchoose (1, shared_info.max_capacity-1)  -- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
+			-- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
+			number_items := gen.rchoose (1, shared_info.max_capacity-1)
 			from
 				loop_counter := 1
 			until
 				loop_counter > number_items
 			loop
-				threshold := gen.rchoose (1, 100) -- each iteration, generate a new value to compare against the threshold values provided by `test` or `play`
+				-- each iteration, generate a new value to compare against the threshold values
+				--provided by `test` or `play`
+				threshold := gen.rchoose (1, 100)
 
 				if threshold < a_thresh then
 					component :=	create {ASTEROID}.make(movable_id, Current)

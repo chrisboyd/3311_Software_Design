@@ -15,7 +15,7 @@ feature -- command
     	do
 			-- perform some update on the model state
 			--model.default_update
-			if model.play_mode then
+			if model.play_mode or model.test_mode then
 				model.set_error ("To start a new mission, please abort the current one first.")
 			else
 				model.set_play (True)

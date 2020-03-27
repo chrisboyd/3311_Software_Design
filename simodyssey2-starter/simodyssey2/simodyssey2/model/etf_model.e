@@ -69,10 +69,15 @@ feature --Commands
 					b_thresh: INTEGER; p_thresh: INTEGER)
 		do
 			--initialize board with all movable entities
+			--currently uses RNG in blackholes sector, need to stop
 			across
 				g.grid as sect
 			loop
-				sect.item.populate_movable (a_thresh, j_thresh, m_thresh, b_thresh, p_thresh)
+
+				if not sect.item.contents.has (create {BLACKHOLE}.make (-1, sect.item)) then
+					sect.item.populate_movable (a_thresh, j_thresh, m_thresh, b_thresh, p_thresh)
+				end
+
 			end
 
 			--initialize board with all stationary entities
@@ -85,6 +90,7 @@ feature -- queries
 	out : STRING
 		do
 			create Result.make_empty
+			
 			Result.append (g.out)
 		end
 

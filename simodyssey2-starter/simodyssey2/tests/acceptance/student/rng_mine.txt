@@ -1,0 +1,114 @@
+num_items in sector: 1
+threshold: 55
+num_items in sector: 2
+threshold: 37
+threshold: 88
+num_items in sector: 2
+threshold: 27
+turns: 2
+threshold: 84
+num_items in sector: 3
+threshold: 86
+threshold: 52
+threshold: 92
+num_items in sector: 3
+threshold: 45
+threshold: 29
+turns: 2
+threshold: 19
+turns: 0
+num_items in sector: 1
+threshold: 76
+num_items in sector: 1
+threshold: 91
+num_items in sector: 1
+threshold: 34
+num_items in sector: 1
+threshold: 47
+num_items in sector: 1
+threshold: 23
+turns: 2
+num_items in sector: 1
+threshold: 6
+turns: 1
+num_items in sector: 1
+threshold: 87
+num_items in sector: 3
+threshold: 58
+threshold: 41
+threshold: 24
+turns: 2
+num_items in sector: 1
+threshold: 53
+num_items in sector: 2
+threshold: 35
+threshold: 59
+num_items in sector: 2
+threshold: 5
+turns: 2
+threshold: 86
+num_items in sector: 2
+threshold: 18
+turns: 0
+threshold: 90
+num_items in sector: 3
+threshold: 20
+turns: 1
+threshold: 62
+threshold: 72
+num_items in sector: 2
+threshold: 63
+threshold: 43
+num_items in sector: 3
+threshold: 93
+threshold: 12
+turns: 1
+threshold: 33
+num_items in sector: 2
+threshold: 94
+threshold: 57
+num_items in sector: 1
+threshold: 51
+num_items in sector: 1
+threshold: 98
+num_items in sector: 1
+threshold: 29
+turns: 2
+num_items in sector: 1
+threshold: 86
+temp_row: 1
+temp_col: 5
+chance stationary: 3
+temp_row: 2
+temp_col: 3
+chance stationary: 3
+temp_row: 4
+temp_col: 4
+chance stationary: 2
+temp_row: 2
+temp_col: 3
+temp_row: 3
+temp_col: 3
+temp_row: 1
+temp_col: 1
+chance stationary: 2
+temp_row: 2
+temp_col: 4
+chance stationary: 3
+temp_row: 2
+temp_col: 2
+chance stationary: 3
+temp_row: 5
+temp_col: 4
+chance stationary: 1
+temp_row: 1
+temp_col: 5
+temp_row: 3
+temp_col: 2
+chance stationary: 2
+temp_row: 4
+temp_col: 5
+chance stationary: 3
+temp_row: 5
+temp_col: 3
+chance stationary: 1

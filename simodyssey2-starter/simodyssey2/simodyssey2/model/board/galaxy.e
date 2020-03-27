@@ -79,11 +79,6 @@ feature --constructor
 			grid[3,3].put (blackhole)
 			stationary_entities.extend (blackhole)
 
-			--test dynamic inheritance
-			planet := create {PLANET}.make (1, grid[1,1])
-			movable_entities.extend (planet)
-
-			--set_stationary_items
 	end
 
 feature --commands
