@@ -29,7 +29,6 @@ feature -- Initialization
 feature --Attributes
 	life: INTEGER
 	fuel: INTEGER
-	landed: BOOLEAN
 
 feature --Commands
 	move(dest: SECTOR)

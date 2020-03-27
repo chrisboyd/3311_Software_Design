@@ -12,6 +12,7 @@ inherit
 
 feature --attributes
 	turns_left: INTEGER
+	landed: BOOLEAN
 
 feature --commands
 	set_turns(i: INTEGER)

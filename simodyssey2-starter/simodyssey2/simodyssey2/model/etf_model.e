@@ -23,12 +23,12 @@ feature {NONE} -- Initialization
     -- Initialization for `Current'
 	make
 		do
-			create g.make
+			create board.make
 			create error_msg.make_empty
 		end
 
 feature -- model attributes
-	g : GALAXY
+	board : GALAXY
 	play_mode: BOOLEAN
 	test_mode: BOOLEAN
 	error_msg: STRING
@@ -71,7 +71,7 @@ feature --Commands
 			--initialize board with all movable entities
 			--currently uses RNG in blackholes sector, need to stop
 			across
-				g.grid as sect
+				board.grid as sect
 			loop
 
 				if not sect.item.contents.has (create {BLACKHOLE}.make (-1, sect.item)) then
@@ -82,7 +82,7 @@ feature --Commands
 
 			--initialize board with all stationary entities
 			--do separate from movable due to random number generator
-			g.set_stationary_items
+			board.set_stationary_items
 		end
 
 
@@ -90,8 +90,12 @@ feature -- queries
 	out : STRING
 		do
 			create Result.make_empty
-			
-			Result.append (g.out)
+			if not error_msg.is_empty then
+				Result.append (error_msg)
+			else
+				Result.append (board.out)
+			end
+
 		end
 
 end

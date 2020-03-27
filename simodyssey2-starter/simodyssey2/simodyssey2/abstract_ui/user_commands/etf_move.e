@@ -6,17 +6,24 @@ note
 
 class
 	ETF_MOVE
-inherit 
+inherit
 	ETF_MOVE_INTERFACE
 create
 	make
-feature -- command 
+feature -- command
 	move(dir: INTEGER_32)
-		require else 
+		require else
 			move_precond(dir)
     	do
-			-- perform some update on the model state
-			model.default_update
+    		if not (model.play_mode or model.test_mode) then
+    			model.set_error ("Negative on that request:no mission in progress.")
+    		elseif model.board.explorer.landed then
+    			model.set_error ("Negative on that request:you are currently landed at Sector:" +
+    							model.board.explorer.location.out)
+    		else
+    			
+    		end
+
 			etf_cmd_container.on_change.notify ([Current])
     	end
 

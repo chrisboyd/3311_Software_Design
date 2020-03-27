@@ -7,6 +7,11 @@ note
 class
 	SECTOR
 
+inherit ANY
+	redefine
+		out
+	end
+
 create
 	make, make_dummy
 
@@ -109,6 +114,14 @@ feature -- commands
 
 				loop_counter := loop_counter + 1
 			end
+		end
+
+	out: STRING
+		do
+			create Result.make_empty
+			Result.append (row.out)
+			Result.append (":")
+			Result.append (column.out)
 		end
 
 feature {GALAXY} --command
