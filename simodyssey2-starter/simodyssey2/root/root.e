@@ -1,11 +1,6 @@
 note
-	description: "[
-		Starter code to help students generate the initial placement
-		of movable and stationary entities in the sectors of a galaxy
-		Note: This code is not well-designed, but can be refactored
-		in your design. 
-	]"
-	author: "JSO"
+	description: "Central control for running an ETF project."
+	author: "JSO and Jackie Wang"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -13,39 +8,39 @@ class
 	ROOT
 
 inherit
-
-	ARGUMENTS_32
-
-	ES_SUITE -- testing via ESpec
+	ETF_ROOT_INTERFACE
+		redefine
+			switch
+		end
 
 create
 	make
 
-feature {NONE} -- Initialization
+feature -- Queries
+	switch: INTEGER
+			-- Running mode of ETF application
+		do
+--			Result := etf_gui_show_history 	-- GUI mode
+			Result := etf_cl_show_history
+--			Result := unit_test 				-- Unit Testing mode
+		end
 
-    g: GALAXY  -- has access to shared information
-    info: SHARED_INFORMATION
+feature -- Tests
+	add_tests
+			-- test classes to be run in unit_test mode
+		do
+			-- add your tests here
+			-- add cluster for tests
+			-- add_test (create {MY_TEST}.make)
+		end
 
-    make
-            -- Run application.
-        local
-        	sa: SHARED_INFORMATION_ACCESS -- singleton
-        do
-        	info := sa.shared_info
-            print("This code is creating two boards with different thresholds.%N")
-
-        	--set first threshold
-        	info.test(3,5,7,15,30)
-         	create g.make
-           	print(g.out)
-			print("%N")
-
-           	--set second threshold
-        	info.test (10, 20, 30, 40, 50)
-         	create g.make
-           	print(g.out)
-           	io.new_line
-        end
-
-
+invariant
+	valid_switch:
+			switch = unit_test
+		or	switch = etf_gui_show_history
+		or 	switch = etf_gui_hide_history
+		or	switch = etf_cl_show_history
+		or	switch = etf_cl_hide_history
 end
+
+

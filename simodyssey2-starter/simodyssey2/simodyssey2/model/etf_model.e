@@ -22,11 +22,14 @@ feature {NONE} -- Initialization
 		do
 			create s.make_empty
 			i := 0
+
+			g := create {GALAXY}.make
 		end
 
 feature -- model attributes
 	s : STRING
 	i : INTEGER
+	g : GALAXY
 
 feature -- model operations
 	default_update
