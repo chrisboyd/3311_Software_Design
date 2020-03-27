@@ -26,12 +26,8 @@ feature -- attributes
 
 	column: INTEGER
 
-	stationary_id: INTEGER
-
-	movable_id: INTEGER
-
 feature -- constructor
-	make(row_input: INTEGER; column_input: INTEGER; a_explorer:ENTITY_ALPHABET)
+	make(row_input: INTEGER; column_input: INTEGER)
 		--initialization
 		require
 			valid_row: (row_input >= 1) and (row_input <= shared_info.number_rows)
@@ -39,20 +35,8 @@ feature -- constructor
 		do
 			row := row_input
 			column := column_input
-			stationary_id := -1
-			movable_id := 1
 			create contents.make (shared_info.max_capacity) -- Each sector should have 4 quadrants
 			contents.compare_objects
-			if (row = 3) and (column = 3) then
-				-- If this is the sector in the middle of the board, place a black hole
-				put (create {BLACKHOLE}.make (stationary_id))
-				stationary_id := stationary_id - 1
-			else
-				if (row = 1) and (column = 1) then
-					put (a_explorer) -- If this is the top left corner sector, place the explorer there
-				end
-				populate -- Run the populate command to complete setup
-			end -- if
 		end
 
 feature -- commands
@@ -63,16 +47,19 @@ feature -- commands
 			contents.compare_objects
 		end
 
-	populate
+	populate_movable(a_thresh: INTEGER; j_thresh: INTEGER; m_thresh: INTEGER;
+					b_thresh: INTEGER; p_thresh: INTEGER)
 			-- this feature creates 1 to max_capacity-1 components to be intially stored in the
 			-- sector. The component may be a planet or nothing at all.
 		local
 			threshold: INTEGER
 			number_items: INTEGER
 			loop_counter: INTEGER
-			component: ENTITY_ALPHABET
-			--turn :INTEGER
+			component: ENTITY_MOVABLE
+			turn :INTEGER
+			movable_id: INTEGER
 		do
+			movable_id := 1 --since explorer is 0
 			number_items := gen.rchoose (1, shared_info.max_capacity-1)  -- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
 			from
 				loop_counter := 1
@@ -81,24 +68,24 @@ feature -- commands
 			loop
 				threshold := gen.rchoose (1, 100) -- each iteration, generate a new value to compare against the threshold values provided by `test` or `play`
 
-				if threshold < shared_info.asteroid_threshold then
-					component :=	create {ASTEROID}.make(movable_id)
+				if threshold < a_thresh then
+					component :=	create {ASTEROID}.make(movable_id, Current)
 					movable_id := movable_id + 1
 				else
-					if threshold < shared_info.janitaur_threshold then
-						component :=	create {JANITAUR}.make(movable_id)
+					if threshold < j_thresh then
+						component :=	create {JANITAUR}.make(movable_id, Current)
 						movable_id := movable_id + 1
 					else
-						if (threshold < shared_info.malevolent_threshold) then
-							component :=	create {MALEVOLENT}.make(movable_id)
+						if threshold < m_thresh then
+							component :=	create {MALEVOLENT}.make(movable_id, Current)
 							movable_id := movable_id + 1
 						else
-							if (threshold < shared_info.benign_threshold) then
-								component :=	create {BENIGN}.make(movable_id)
+							if threshold < b_thresh then
+								component :=	create {BENIGN}.make(movable_id, Current)
 								movable_id := movable_id + 1
 							else
-								if threshold < shared_info.planet_threshold then
-									component :=	create {PLANET}.make(movable_id)
+								if threshold < p_thresh then
+									component :=	create {PLANET}.make(movable_id, Current)
 									movable_id := movable_id + 1
 								end
 							end
@@ -110,9 +97,10 @@ feature -- commands
 					put (entity) -- add new entity to the contents list
 
 					--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-					--turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to movable entities
+					turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to movable entities
 					-- The turn value of a movable entity (except explorer) suggests the number of turns left before it can move.
 					--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+					component.set_turns (turn)
 					component := void -- reset component object
 				end
 

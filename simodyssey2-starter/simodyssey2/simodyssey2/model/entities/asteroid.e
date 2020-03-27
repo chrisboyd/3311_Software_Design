@@ -8,51 +8,34 @@ class
 	ASTEROID
 
 inherit
-	ENTITY_BEHAVIOUR
-		redefine
-            out,
-            is_equal
-     	end
+	ENTITY_MOVABLE
 
 create
 	make
 
 feature --Initialization
-	make(i: INTEGER)
+	make(i: INTEGER; loc: SECTOR)
 		do
 			item := 'A'
 			id := i
-			turns_left := gen.rchoose(0,2)
+			location := loc
 		end
 
 feature --Commands
+	move(dest: SECTOR)
+		do
+		end
+
+	check_post_move
+		do
+		end
+
+	reproduce
+		do
+		end
+
 	behave
 		do
-
-		end
-
-	check_post
-		do
-
-		end
-
-	move(x: INTEGER; y: INTEGER)
-		do
-			row := x
-			col := y
-		end
-
-feature --Queries
-
-	out: STRING
-		do
-			Result := item.out
-		end
-
-	is_equal(other: ASTEROID): BOOLEAN
-		do
-			Result := current.item.is_equal (other.item) and
-            			current.id.is_equal (other.id)
 		end
 
 end

@@ -1,3 +1,4 @@
+toggle_RNG_out
 play
 quit
 

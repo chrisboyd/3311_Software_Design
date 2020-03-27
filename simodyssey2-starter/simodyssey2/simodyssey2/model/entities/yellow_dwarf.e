@@ -9,25 +9,17 @@ class
 
 inherit
 	STAR
-		redefine
-            out
-        end
 
 create
 	make
 
 feature --Initialization
-	make(i: INTEGER)
+	make(i: INTEGER; loc: SECTOR)
 		do
 			item := 'Y'
 			id := i
 			luminosity := 2
-		end
-
-feature --Queries
-	out: STRING
-		do
-			Result := item.out
+			location := loc
 		end
 
 end

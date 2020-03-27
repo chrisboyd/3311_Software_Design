@@ -9,17 +9,13 @@ class
 
 inherit
 	ENTITY_MOVABLE
-		redefine
-            out,
-            is_equal
-        end
 
 create
 	make
 
 feature -- Initialization
 
-	make(i: INTEGER)
+	make(i: INTEGER; loc: SECTOR)
 			-- Initialization for `Current'.
 		do
 			item := 'E'
@@ -27,6 +23,7 @@ feature -- Initialization
 			life := 3
 			fuel := 3
 			landed := False
+			location := loc
 		end
 
 feature --Attributes
@@ -35,10 +32,23 @@ feature --Attributes
 	landed: BOOLEAN
 
 feature --Commands
-	move(x: INTEGER; y: INTEGER)
+	move(dest: SECTOR)
 		do
-			row := x
-			col := y
+			--remove from location, add to destination
+			location := dest
+		end
+
+	check_post_move
+		do
+		end
+
+	reproduce
+		do
+		end
+
+	behave
+		do
+			--print("explorer behave %N")
 		end
 
 	land
@@ -53,18 +63,6 @@ feature --Commands
 			landed
 		do
 			landed := False
-		end
-
-feature --queries
-	out: STRING
-		do
-			Result := item.out
-		end
-
-	is_equal(other: EXPLORER): BOOLEAN
-		do
-			Result := current.item.is_equal (other.item) and
-            			current.id.is_equal (other.id)
 		end
 
 end

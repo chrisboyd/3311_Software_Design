@@ -9,33 +9,48 @@ note
 deferred class
     ENTITY_ALPHABET
 
---inherit
---    ANY
---        redefine
---            out,
---            is_equal
---        end
+inherit
+
+	COMPARABLE
+    	undefine
+    		out,
+            is_equal
+    	end
+
+    ANY
+        redefine
+            out,
+            is_equal
+        end
 
 feature -- Attributes
 
     item: CHARACTER
-    row: INTEGER
-    col: INTEGER
+    location: SECTOR
     id: INTEGER
 
+feature --Comparison
+
+	is_less alias "<" (other: LIKE CURRENT): BOOLEAN
+		do
+			Result := id < other.id
+		end
+
+	is_equal(other : LIKE CURRENT): BOOLEAN
+        do
+            Result := current.item.is_equal (other.item) and
+            			current.id.is_equal (other.id)
+        end
+
+feature --Command
+
+	out: STRING
+            -- Return string representation of alphabet.
+        do
+            Result := item.out
+        end
 
 feature -- Query
-
---    out: STRING
---            -- Return string representation of alphabet.
---        do
---            Result := item.out
---        end
-
---    is_equal(other : ENTITY_ALPHABET): BOOLEAN
---        do
---            Result := current.item.is_equal (other.item) and current.id.is_equal (other.id)
---        end
 
     is_stationary: BOOLEAN
           -- Return if current item is stationary.
@@ -100,6 +115,29 @@ feature -- Query
     			Result := True
     		end
     	end
+
+    is_malevolent: BOOLEAN
+    	do
+    		if item = 'M' then
+    			Result := True
+    		end
+    	end
+
+    is_janitaur: BOOLEAN
+    	do
+    		if item = 'J' then
+    			Result := True
+    		end
+    	end
+
+    is_asteroid: BOOLEAN
+    	do
+    		if item = 'A' then
+    			Result := True
+    		end
+    	end
+
+
 
 invariant
     allowable_symbols:

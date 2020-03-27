@@ -29,6 +29,12 @@ feature -- attributes
 			Result:= shared_info_access.shared_info
 		end
 
+	movable_entities: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE]
+
+	stationary_entities: SORTED_TWO_WAY_LIST [ENTITY_STATIONARY]
+
+	explorer: ENTITY_MOVABLE
+
 feature --constructor
 
 	make
@@ -36,7 +42,10 @@ feature --constructor
 		local
 			row : INTEGER
 			column : INTEGER
+			blackhole: ENTITY_STATIONARY
+			planet: ENTITY_MOVABLE
 		do
+			--make an empty board
 			create grid.make_filled (create {SECTOR}.make_dummy, shared_info.number_rows, shared_info.number_columns)
 			from
 				row := 1
@@ -49,12 +58,32 @@ feature --constructor
 				until
 					column > shared_info.number_columns
 				loop
-					grid[row,column] := create {SECTOR}.make(row,column,create{EXPLORER}.make (0))
+					grid[row,column] := create {SECTOR}.make(row,column)
 					column:= column + 1;
 				end
 				row := row + 1
 			end
-			set_stationary_items
+			--initialize movable and stationary lists
+			create movable_entities.make
+			movable_entities.compare_objects
+			create stationary_entities.make
+			stationary_entities.compare_objects
+
+			--put explorer in grid
+			explorer := create {EXPLORER}.make(0,grid[1,1])
+			grid[1,1].put (explorer)
+			movable_entities.extend (explorer)
+
+			--put blackhole in grid
+			blackhole := create {BLACKHOLE}.make (-1, grid[3,3])
+			grid[3,3].put (blackhole)
+			stationary_entities.extend (blackhole)
+
+			--test dynamic inheritance
+			planet := create {PLANET}.make (1, grid[1,1])
+			movable_entities.extend (planet)
+
+			--set_stationary_items
 	end
 
 feature --commands
@@ -78,13 +107,13 @@ feature --commands
 				temp_column := gen.rchoose (1, shared_info.number_columns)
 				check_sector := grid[temp_row,temp_column]
 				if (not check_sector.has_stationary) and (not check_sector.is_full) then
-					grid[temp_row,temp_column].put (create_stationary_item)
+					grid[temp_row,temp_column].put (create_stationary_item (grid[temp_row, temp_column]))
 					loop_counter := loop_counter + 1
 				end -- if
 			end -- loop
 		end -- feature set_stationary_items
 
-	create_stationary_item: ENTITY_ALPHABET
+	create_stationary_item(location: SECTOR): ENTITY_STATIONARY
 			-- this feature randomly creates one of the possible types of stationary actors
 		local
 			chance: INTEGER
@@ -94,17 +123,17 @@ feature --commands
 			chance := gen.rchoose (1, 3)
 			inspect chance
 			when 1 then
-				Result := create {YELLOW_DWARF}.make(stationary_id)
+				Result := create {YELLOW_DWARF}.make(stationary_id, location)
 				stationary_id := stationary_id - 1
 			when 2 then
-				Result := create {BLUE_GIANT}.make(stationary_id)
+				Result := create {BLUE_GIANT}.make(stationary_id, location)
 				stationary_id := stationary_id - 1
 			when 3 then
-				Result := create {WORMHOLE}.make(stationary_id)
+				Result := create {WORMHOLE}.make(stationary_id, location)
 				stationary_id := stationary_id - 1
 			else
 				-- create more yellow dwarfs this will never happen, but create by default
-				Result := create {YELLOW_DWARF}.make(stationary_id)
+				Result := create {YELLOW_DWARF}.make(stationary_id, location)
 				stationary_id := stationary_id - 1
 			end -- inspect
 		end

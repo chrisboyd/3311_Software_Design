@@ -8,55 +8,42 @@ class
 	MALEVOLENT
 
 inherit
-	ENTITY_REPRODUCE
-		redefine
-            out,
-            is_equal
-        end
+	ENTITY_MOVABLE
 
 create
 	make
 
-feature {NONE} -- Initialization
+feature --Initialization
 
-	make(i: INTEGER)
+	make(i: INTEGER; loc: SECTOR)
 			-- Initialization for `Current'.
 		do
 			item := 'M'
 			id := i
 			fuel := 3
 			repro_interval := 1
-			turns_left := gen.rchoose(0,2)
+			location := loc
 		end
 
+feature --attributes
+	repro_interval: INTEGER
+	fuel: INTEGER
+
 feature --Commands
-	move(x: INTEGER; y: INTEGER)
+	move(dest: SECTOR)
 		do
-			row := x
-			col := y
+		end
+
+	check_post_move
+		do
+		end
+
+	reproduce
+		do
 		end
 
 	behave
 		do
-
-		end
-
-	check_post
-		do
-
-		end
-
-feature --Queries
-
-	out: STRING
-		do
-			Result := item.out
-		end
-
-	is_equal(other: MALEVOLENT): BOOLEAN
-		do
-			Result := current.item.is_equal (other.item) and
-            			current.id.is_equal (other.id)
 		end
 
 end

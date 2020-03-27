@@ -10,12 +10,29 @@ deferred class
 inherit
 	ENTITY_ALPHABET
 
-feature{NONE}
+feature --attributes
+	turns_left: INTEGER
 
-	gen: RANDOM_GENERATOR_ACCESS
+feature --commands
+	set_turns(i: INTEGER)
+		do
+			turns_left := i
+		end
 
 feature --deferred command
-	move(x: INTEGER; y: INTEGER)
+	move(dest: SECTOR)
+		deferred
+		end
+
+	check_post_move
+		deferred
+		end
+
+	reproduce
+		deferred
+		end
+
+	behave
 		deferred
 		end
 

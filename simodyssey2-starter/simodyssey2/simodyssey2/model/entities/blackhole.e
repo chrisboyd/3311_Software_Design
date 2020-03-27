@@ -9,23 +9,15 @@ class
 
 inherit
 	ENTITY_STATIONARY
-		redefine
-            out
-        end
 
 create
 	make
 
 feature --Initialization
-	make(i: INTEGER)
+	make(i: INTEGER; loc: SECTOR)
 		do
 			item := 'O'
-		end
-
-feature --Queries
-	out: STRING
-		do
-			Result := item.out
+			location := loc
 		end
 
 end
