@@ -40,7 +40,8 @@ feature -- constructor
 		do
 			row := row_input
 			column := column_input
-			create contents.make (shared_info.max_capacity) -- Each sector should have 4 quadrants
+			-- Each sector should have 4 quadrants
+			create contents.make (shared_info.max_capacity)
 			contents.compare_objects
 		end
 
@@ -131,16 +132,22 @@ feature --command
 		local
 			loop_counter: INTEGER
 			found: BOOLEAN
+			occupant : ENTITY_ALPHABET
 		do
 			from
 				loop_counter := 1
 			until
 				loop_counter > contents.count or found
 			loop
-				if contents [loop_counter] = entity then
+
+				occupant := contents [loop_counter]
+				if not attached occupant  then
 					found := TRUE
-				end --if
-				loop_counter := loop_counter + 1
+					contents [loop_counter] := entity
+				else
+					loop_counter := loop_counter + 1
+				end
+
 			end -- loop
 
 			if not found and not is_full then
@@ -215,6 +222,30 @@ feature -- Queries
 				end -- if
 				loop_counter := loop_counter + 1
 			end
+		end
+
+	next_available_quad: INTEGER
+		require
+			not is_full
+		local
+			loop_counter: INTEGER
+			occupant: ENTITY_ALPHABET
+			empty_space_found: BOOLEAN
+		do
+			empty_space_found := FALSE
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count or empty_space_found
+			loop
+				occupant := contents [loop_counter]
+				if not attached occupant then
+					empty_space_found := TRUE
+				else
+					loop_counter := loop_counter + 1
+				end
+			end
+			Result := loop_counter
 		end
 
 end
