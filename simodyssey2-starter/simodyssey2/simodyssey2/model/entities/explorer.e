@@ -34,11 +34,20 @@ feature --Commands
 	move(dest: SECTOR)
 		do
 			--remove from location, add to destination
+			dest.put (Current)
+			location.remove (Current)
 			location := dest
+
+			--use fuel
+			fuel := fuel - 1
+
 		end
 
 	check_post_move
 		do
+			if location.has_stationary then
+
+			end
 		end
 
 	reproduce

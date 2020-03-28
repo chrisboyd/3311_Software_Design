@@ -25,7 +25,7 @@ feature -- attributes
 
 	gen: RANDOM_GENERATOR_ACCESS
 
-	contents: ARRAYED_LIST [ENTITY_ALPHABET] --holds 4 quadrants
+	contents: ARRAYED_LIST [detachable ENTITY_ALPHABET] --holds 4 quadrants
 
 	row: INTEGER
 
@@ -124,9 +124,9 @@ feature -- commands
 			Result.append (column.out)
 		end
 
-feature {GALAXY} --command
+feature --command
 
-	put (new_component: ENTITY_ALPHABET)
+	put (entity: ENTITY_ALPHABET)
 			-- put `new_component' in contents array
 		local
 			loop_counter: INTEGER
@@ -137,18 +137,27 @@ feature {GALAXY} --command
 			until
 				loop_counter > contents.count or found
 			loop
-				if contents [loop_counter] = new_component then
+				if contents [loop_counter] = entity then
 					found := TRUE
 				end --if
 				loop_counter := loop_counter + 1
 			end -- loop
 
 			if not found and not is_full then
-				contents.extend (new_component)
+				contents.extend (entity)
 			end
 
 		ensure
-			component_put: not is_full implies contents.has (new_component)
+			component_put: not is_full implies contents.has (entity)
+		end
+
+	remove(entity: ENTITY_ALPHABET)
+		local
+			index_remove: INTEGER
+		do
+			index_remove := contents.index_of (entity, 1)
+			contents[index_remove] := Void
+
 		end
 
 feature -- Queries
