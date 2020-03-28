@@ -58,11 +58,15 @@ feature --Commands
 	set_play(b: BOOLEAN)
 		do
 			play_mode := b
+			game_state := game_state + 1
+			error_state := 0
 		end
 
 	set_test(b: BOOLEAN)
 		do
 			test_mode := b
+			game_state := game_state + 1
+			error_state := 0
 		end
 
 	set_error(msg: STRING)
@@ -94,7 +98,11 @@ feature --Commands
 	move_explorer(dest_row: INTEGER; dest_col: INTEGER)
 		do
 			board.explorer.move (board.grid[dest_row, dest_col])
-			board.explorer.check_post_move
+			game_state := game_state + 1
+			error_state := 0
+			--check then behave for other entities
+			--so can't use check to check for death then
+			--behave to refuel
 		end
 
 
@@ -102,11 +110,27 @@ feature -- queries
 	out : STRING
 		do
 			create Result.make_empty
-			if not error_msg.is_empty then
-				Result.append (error_msg)
-			else
-				Result.append (board.out)
+			Result.append ("  state:" + game_state.out + "." + error_state.out + ",")
+			if play_mode then
+				Result.append(" mode:play,")
+			elseif test_mode then
+				Result.append (" mode:test,")
 			end
+
+			if not error_msg.is_empty then
+				Result.append (" error%N")
+				Result.append ("  " + error_msg)
+			else
+				Result.append (" ok%N")
+				if not (play_mode or test_mode) then
+					Result.append ("  Welcome! Try test(3,5,7,15,30)")
+				else
+					Result.append (board.out)
+				end
+
+			end
+			--wipe messages
+			error_msg.wipe_out
 
 		end
 

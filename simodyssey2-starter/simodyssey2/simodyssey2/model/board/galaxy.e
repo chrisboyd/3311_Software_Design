@@ -149,7 +149,7 @@ feature -- query
 		create Result.make_empty
 		create string1.make(7*shared_info.number_rows)
 		create string2.make(7*shared_info.number_columns)
-		string1.append("%N")
+		--string1.append("%N")
 
 		from
 			row_counter := 1

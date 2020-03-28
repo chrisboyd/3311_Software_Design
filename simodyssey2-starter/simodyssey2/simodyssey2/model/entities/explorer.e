@@ -46,7 +46,7 @@ feature --Commands
 	check_post_move
 		do
 			if location.has_stationary then
-
+				
 			end
 		end
 
