@@ -75,8 +75,35 @@ feature --Commands
 			end
 		end
 
+	--Janitaur grabs up to two asteroids in the current sector
+	--taking them off the board until they can be dumped in a sector
+	--with a wormhole, from which they do not return
+	--Asteroid got imploded by janitaur (id: Z) at Sector:X:Y
 	behave
+		local
+			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
+			msg: STRING
 		do
+			movables := location.get_movables
+			create msg.make_empty
+			across
+				movables as entity
+			loop
+				if load_level < 2 then
+					if entity.item.is_asteroid then
+						load_level := load_level + 1
+						entity.item.kill
+						msg.append ("Asteroid got imploded by janitaur (id: " + id.out)
+						msg.append (") at Sector:" + location.print_sector)
+						entity.item.set_death_msg (msg)
+						location.remove (entity.item)
+					end
+				end
+			end
+			if location.has_wormhole then
+				load_level := 0
+			end
+
 		end
 
 	get_name: STRING

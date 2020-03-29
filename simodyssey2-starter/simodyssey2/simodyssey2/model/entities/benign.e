@@ -59,8 +59,9 @@ feature --Commands
 				movables as entity
 			loop
 				if entity.item.is_malevolent then
-					msg.append ("Malevolent got destroyed by benign (id:" + id.out)
+					msg.append ("Malevolent got destroyed by benign (id: " + id.out)
 					msg.append (") at Sector:" + location.print_sector)
+					entity.item.kill
 					entity.item.set_death_msg (msg)
 					location.remove (entity.item)
 				end

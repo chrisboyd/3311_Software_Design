@@ -112,7 +112,10 @@ feature --commands
 			if life > 0 then
 				life := life -1
 			end
-
+		end
+	kill
+		do
+			life := 0
 		end
 
 feature --deferred command

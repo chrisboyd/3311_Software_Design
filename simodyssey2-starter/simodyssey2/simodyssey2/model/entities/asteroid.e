@@ -40,8 +40,25 @@ feature --Commands
 		do
 		end
 
+	--seeks out other movable_entities other than other asteroids
+	--and planets and destroys in ascending id order
+	--entity got destroyed by asteroid (id: Z) at Sector:X:Y
 	behave
+		local
+			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
+			msg: STRING
 		do
+			movables := location.get_movables
+			create msg.make_empty
+			across
+				movables as entity
+			loop
+				if not (entity.item.is_asteroid or entity.item.is_planet) then
+					entity.item.kill
+					msg.append (entity.item.get_name + " got destroyed by asteroid (id: ")
+					msg.append (id.out + ") at Sector:" + location.print_sector)
+				end
+			end
 		end
 
 	get_name: STRING
