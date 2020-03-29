@@ -163,7 +163,7 @@ feature --support
 		end
 
 
-	get_new_coord (start: PAIR [INTEGER, INTEGER]; increment: PAIR [INTEGER, INTEGER]): PAIR [INTEGER, INTEGER]
+	get_dest_coord (start: PAIR [INTEGER, INTEGER]; increment: PAIR [INTEGER, INTEGER]): PAIR [INTEGER, INTEGER]
 		local
 			row_dest: INTEGER
 			col_dest: INTEGER
@@ -192,7 +192,11 @@ feature --support
 	update_movables
 		local
 			life: INTEGER
+			direction: INTEGER
 			gen: RANDOM_GENERATOR_ACCESS
+			dest: PAIR[INTEGER,INTEGER]
+			dir_coord: PAIR[INTEGER, INTEGER]
+			start: PAIR[INTEGER,INTEGER]
 		do
 			--perform updates for each movable entities
 			across
@@ -217,11 +221,21 @@ feature --support
 							else
 								--choose direction 1-8
 								--entity.item.move (dest: SECTOR)
+								direction := gen.rchoose (1, 8)
+								dir_coord := map_direction(direction)
+								start := create {PAIR[INTEGER,INTEGER]}.make (entity.item.location.row, entity.item.location.column)
+								dest := get_dest_coord(start, dir_coord)
+								if not board.grid[dest.first, dest.second].is_full then
+									entity.item.move (board.grid[dest.first, dest.second])
+								end
+
 							end
-							--entity.item.check
-							--if entitiy did not die
-								--reproduce entity
-								--behave entity
+							entity.item.check_post_move
+							if not entity.item.is_dead then
+								entity.item.reproduce
+								entity.item.behave
+							end
+							
 						end--either not a planet or a planet and no star in sector
 					else
 						entity.item.set_turns (entity.item.turns_left - 1)

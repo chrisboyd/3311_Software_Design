@@ -33,7 +33,7 @@ feature -- attributes
 
 	stationary_entities: SORTED_TWO_WAY_LIST [ENTITY_STATIONARY]
 
-	explorer: ENTITY_MOVABLE
+	explorer: EXPLORER
 
 feature --constructor
 
@@ -43,7 +43,6 @@ feature --constructor
 			row : INTEGER
 			column : INTEGER
 			blackhole: ENTITY_STATIONARY
-			planet: ENTITY_MOVABLE
 		do
 			--make an empty board
 			create grid.make_filled (create {SECTOR}.make_dummy, shared_info.number_rows, shared_info.number_columns)

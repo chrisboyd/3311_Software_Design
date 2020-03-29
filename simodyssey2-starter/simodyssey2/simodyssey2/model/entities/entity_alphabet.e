@@ -31,15 +31,15 @@ feature -- Attributes
 
 feature --Comparison
 
-	is_less alias "<" (other: LIKE CURRENT): BOOLEAN
+	is_less alias "<" (other: LIKE Current): BOOLEAN
 		do
 			Result := id < other.id
 		end
 
-	is_equal(other : LIKE CURRENT): BOOLEAN
+	is_equal(other : LIKE Current): BOOLEAN
         do
-            Result := current.item.is_equal (other.item) and
-            			current.id.is_equal (other.id)
+            Result := Current.item.is_equal (other.item) and
+            			Current.id.is_equal (other.id)
         end
 
 feature --Command

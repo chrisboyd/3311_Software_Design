@@ -23,20 +23,14 @@ feature -- Initialization
 			fuel := 3
 			repro_interval := 1
 			location := loc
+			life := 1
+			create death_msg.make_empty
 		end
 
 feature --attributes
 	repro_interval: INTEGER
-	fuel: INTEGER
 
 feature --Commands
-	move(dest: SECTOR)
-		do
-		end
-
-	check_post_move
-		do
-		end
 
 	reproduce
 		do
@@ -46,5 +40,9 @@ feature --Commands
 		do
 		end
 
+	get_name: STRING
+		do
+			create Result.make_from_string ("Benign")
+		end
 
 end

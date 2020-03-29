@@ -9,6 +9,9 @@ class
 
 inherit
 	ENTITY_MOVABLE
+		redefine
+			check_post_move
+		end
 
 create
 	make
@@ -23,15 +26,17 @@ feature --Initialization
 			item := 'P'
 			id := i
 			location := loc
+			life := 1
+			create death_msg.make_empty
 		end
 
 feature --Commands
-	move(dest: SECTOR)
-		do
-		end
 
 	check_post_move
 		do
+			if location.has_blackhole then
+				life := 0
+			end
 		end
 
 	reproduce
@@ -52,4 +57,10 @@ feature --Commands
 		do
 			supports_life := True
 		end
+
+	get_name: STRING
+		do
+			create Result.make_from_string ("Planet")
+		end
+
 end

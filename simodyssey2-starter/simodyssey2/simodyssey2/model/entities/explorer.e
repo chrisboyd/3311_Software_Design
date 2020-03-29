@@ -24,43 +24,13 @@ feature -- Initialization
 			fuel := 3
 			landed := False
 			location := loc
+			create death_msg.make_empty
 		end
 
 feature --Attributes
-	life: INTEGER
-	fuel: INTEGER
+	landed: BOOLEAN
 
 feature --Commands
-	move(dest: SECTOR)
-		do
-			--remove from location, add to destination
-			dest.put (Current)
-			location.remove (Current)
-			location := dest
-
-			--use fuel
-			fuel := fuel - 1
-
-		end
-
-	check_post_move
-		local
-			stationary: ENTITY_STATIONARY
-		do
-			if location.has_stationary then
-				stationary := location.get_stationary
-				if stationary.is_star then
-					check attached {STAR} stationary as s then
-						fuel := fuel + s.luminosity
-						if fuel > 3 then
-							fuel := 3
-						end
-					end
-				elseif stationary.is_blackhole then
-					life := 0
-				end
-			end
-		end
 
 	reproduce
 		do
@@ -83,6 +53,11 @@ feature --Commands
 			landed
 		do
 			landed := False
+		end
+
+	get_name: STRING
+		do
+			create Result.make_from_string ("Explorer")
 		end
 
 end

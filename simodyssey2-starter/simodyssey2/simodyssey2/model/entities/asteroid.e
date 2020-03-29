@@ -9,6 +9,9 @@ class
 
 inherit
 	ENTITY_MOVABLE
+		redefine
+			check_post_move
+		end
 
 create
 	make
@@ -18,15 +21,17 @@ feature --Initialization
 		do
 			item := 'A'
 			location := loc
+			life := 1
+			create death_msg.make_empty
 		end
 
 feature --Commands
-	move(dest: SECTOR)
-		do
-		end
 
 	check_post_move
+		local
+			stationary: ENTITY_STATIONARY
 		do
+			--if location.has_stationary
 		end
 
 	reproduce
@@ -35,6 +40,11 @@ feature --Commands
 
 	behave
 		do
+		end
+
+	get_name: STRING
+		do
+			create Result.make_from_string ("Asteroid")
 		end
 
 end

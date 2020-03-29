@@ -12,7 +12,9 @@ inherit
 
 feature --attributes
 	turns_left: INTEGER
-	landed: BOOLEAN
+	fuel: INTEGER
+	life: INTEGER
+	death_msg: STRING
 
 feature --commands
 	set_turns(i: INTEGER)
@@ -20,21 +22,41 @@ feature --commands
 			turns_left := i
 		end
 
-feature --deferred command
 	move(dest: SECTOR)
-		deferred
+		do
+			--remove from location, add to destination
+			dest.put (Current)
+			location.remove (Current)
+			location := dest
+
+			--use fuel planets and asteroids don't need this
+			fuel := fuel - 1
 		end
 
 	check_post_move
-		deferred
-		end
+		local
+			stationary: ENTITY_STATIONARY
+		do
+			if location.has_star then
+				stationary := location.get_stationary
+				check attached {STAR} stationary as s then
+					fuel := fuel + s.luminosity
+					if fuel > 3 then
+						fuel := 3
+					end
+				end
+			--handle situation of out of fuel and in blackhole sector,
+			--explorer dies by out of fuel first
+			elseif fuel = 0 then
+				life := 0
+			elseif location.has_blackhole then
+				life := 0
+			end
 
-	reproduce
-		deferred
-		end
+			if fuel = 0 then
+				life := 0
+			end
 
-	behave
-		deferred
 		end
 
 	wormhole(board: GALAXY)
@@ -60,6 +82,35 @@ feature --deferred command
 				end
 
 			end
+		end
+
+	get_death_msg: STRING
+		do
+			create Result.make_empty
+			Result.append (Current.get_name)
+		end
+
+	set_death_msg(msg: STRING)
+		do
+		end
+
+	is_dead: BOOLEAN
+		do
+			Result := life = 0
+		end
+
+feature --deferred command
+
+	reproduce
+		deferred
+		end
+
+	behave
+		deferred
+		end
+
+	get_name: STRING
+		deferred
 		end
 
 
