@@ -248,4 +248,58 @@ feature -- Queries
 			Result := loop_counter
 		end
 
+	get_stationary: ENTITY_STATIONARY
+		require
+			Current.has_stationary
+		local
+			loop_counter: INTEGER
+		do
+			--dummy entity
+			Result := create {WORMHOLE}.make(-15, create {SECTOR}.make_dummy)
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count
+			loop
+				if attached {ENTITY_STATIONARY} contents [loop_counter] as temp_item  then
+					if temp_item.is_stationary then
+						Result := temp_item
+					end
+				end -- if
+				loop_counter := loop_counter + 1
+			end
+		end
+
+	has_star: BOOLEAN
+		local
+			loop_counter: INTEGER
+		do
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count or Result
+			loop
+				if attached contents [loop_counter] as temp_item  then
+					Result := temp_item.is_yellow_dwarf or temp_item.is_blue_giant
+				end -- if
+				loop_counter := loop_counter + 1
+			end
+		end
+
+	has_wormhole: BOOLEAN
+		local
+			loop_counter: INTEGER
+		do
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count or Result
+			loop
+				if attached contents [loop_counter] as temp_item  then
+					Result := temp_item.is_wormhole
+				end -- if
+				loop_counter := loop_counter + 1
+			end
+		end
+
 end

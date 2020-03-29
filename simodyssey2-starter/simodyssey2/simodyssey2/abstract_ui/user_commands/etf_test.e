@@ -17,8 +17,8 @@ feature -- command
     	do
 			if (model.play_mode or model.test_mode) then
 				model.set_error ("To start a new mission, please abort the current one first.")
-			elseif not (a_threshold <= j_threshold and j_threshold <= m_threshold and
-						m_threshold <= b_threshold and b_threshold <= p_threshold) then
+			elseif not (0 < a_threshold and a_threshold <= j_threshold and j_threshold <= m_threshold and
+						m_threshold <= b_threshold and b_threshold <= p_threshold and p_threshold <= 101) then
 				model.set_error ("Thresholds should be non-decreasing order.")
 			else
 				model.set_test (True)

@@ -43,6 +43,7 @@ feature --constructor
 			row : INTEGER
 			column : INTEGER
 			blackhole: ENTITY_STATIONARY
+			planet: ENTITY_MOVABLE
 		do
 			--make an empty board
 			create grid.make_filled (create {SECTOR}.make_dummy, shared_info.number_rows, shared_info.number_columns)
@@ -78,9 +79,87 @@ feature --constructor
 			grid[3,3].put (blackhole)
 			stationary_entities.extend (blackhole)
 
+
 	end
 
 feature --commands
+
+	set_movable_items(a_thresh: INTEGER; j_thresh: INTEGER; m_thresh: INTEGER;
+					b_thresh: INTEGER; p_thresh: INTEGER)
+		local
+			threshold: INTEGER
+			number_items: INTEGER
+			loop_counter: INTEGER
+			component: ENTITY_MOVABLE
+			turn :INTEGER
+			movable_id: INTEGER
+		do
+			movable_id := 1 --since explorer is 0			
+			across
+				1 |..| shared_info.number_rows as r
+			loop
+				across
+					1 |..| shared_info.number_columns as c
+				loop
+					if not (r.item = 3 and c.item = 3) then
+
+						-- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
+						number_items := gen.rchoose (1, shared_info.max_capacity-1)
+						from
+							loop_counter := 1
+						until
+							loop_counter > number_items
+						loop
+							-- each iteration, generate a new value to compare against the threshold values
+							--provided by `test` or `play`
+							threshold := gen.rchoose (1, 100)
+
+							if threshold < a_thresh then
+								component :=	create {ASTEROID}.make(movable_id, grid[r.item,c.item])
+								movable_id := movable_id + 1
+							else
+								if threshold < j_thresh then
+									component :=	create {JANITAUR}.make(movable_id, grid[r.item,c.item])
+									movable_id := movable_id + 1
+								else
+									if threshold < m_thresh then
+										component :=	create {MALEVOLENT}.make(movable_id, grid[r.item,c.item])
+										movable_id := movable_id + 1
+									else
+										if threshold < b_thresh then
+											component :=	create {BENIGN}.make(movable_id, grid[r.item,c.item])
+											movable_id := movable_id + 1
+										else
+											if threshold < p_thresh then
+												component :=	create {PLANET}.make(movable_id, grid[r.item,c.item])
+												movable_id := movable_id + 1
+											end
+										end
+									end
+								end
+							end
+
+							if attached component as entity then
+								grid[r.item,c.item].put (entity) -- add new entity to the contents list
+
+								--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+								turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to movable entities
+								-- The turn value of a movable entity (except explorer) suggests the number of turns left before it can move.
+								--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+								component.set_turns (turn)
+								movable_entities.extend (component)
+								component := void -- reset component object
+							end
+
+							loop_counter := loop_counter + 1
+						end
+
+					end
+				end
+
+			end
+
+		end
 
 	set_stationary_items
 			-- distribute stationary items amongst the sectors in the grid.
@@ -90,7 +169,9 @@ feature --commands
 			check_sector: SECTOR
 			temp_row: INTEGER
 			temp_column: INTEGER
+			stationary_id: INTEGER
 		do
+			stationary_id := -2
 			from
 				loop_counter := 1
 			until
@@ -101,35 +182,33 @@ feature --commands
 				temp_column := gen.rchoose (1, shared_info.number_columns)
 				check_sector := grid[temp_row,temp_column]
 				if (not check_sector.has_stationary) and (not check_sector.is_full) then
-					grid[temp_row,temp_column].put (create_stationary_item (grid[temp_row, temp_column]))
+					grid[temp_row,temp_column].put (create_stationary_item (stationary_id, grid[temp_row, temp_column]))
+					stationary_id := stationary_id - 1
 					loop_counter := loop_counter + 1
 				end -- if
 			end -- loop
 		end -- feature set_stationary_items
 
-	create_stationary_item(location: SECTOR): ENTITY_STATIONARY
+	create_stationary_item(id: INTEGER; location: SECTOR): ENTITY_STATIONARY
 			-- this feature randomly creates one of the possible types of stationary actors
 		local
 			chance: INTEGER
-			stationary_id: INTEGER
+			entity: ENTITY_STATIONARY
 		do
-			stationary_id := -2
 			chance := gen.rchoose (1, 3)
 			inspect chance
 			when 1 then
-				Result := create {YELLOW_DWARF}.make(stationary_id, location)
-				stationary_id := stationary_id - 1
+				entity := create {YELLOW_DWARF}.make(id, location)
 			when 2 then
-				Result := create {BLUE_GIANT}.make(stationary_id, location)
-				stationary_id := stationary_id - 1
+				entity := create {BLUE_GIANT}.make(id, location)
 			when 3 then
-				Result := create {WORMHOLE}.make(stationary_id, location)
-				stationary_id := stationary_id - 1
+				entity := create {WORMHOLE}.make(id, location)
 			else
 				-- create more yellow dwarfs this will never happen, but create by default
-				Result := create {YELLOW_DWARF}.make(stationary_id, location)
-				stationary_id := stationary_id - 1
+				entity := create {YELLOW_DWARF}.make(id, location)
 			end -- inspect
+			stationary_entities.extend (entity)
+			Result := entity
 		end
 
 feature -- query

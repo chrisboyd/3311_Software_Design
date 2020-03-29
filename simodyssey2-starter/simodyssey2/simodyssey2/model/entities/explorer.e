@@ -44,9 +44,21 @@ feature --Commands
 		end
 
 	check_post_move
+		local
+			stationary: ENTITY_STATIONARY
 		do
 			if location.has_stationary then
-				
+				stationary := location.get_stationary
+				if stationary.is_star then
+					check attached {STAR} stationary as s then
+						fuel := fuel + s.luminosity
+						if fuel > 3 then
+							fuel := 3
+						end
+					end
+				elseif stationary.is_blackhole then
+					life := 0
+				end
 			end
 		end
 

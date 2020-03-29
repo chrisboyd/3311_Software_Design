@@ -25,6 +25,7 @@ feature {NONE} -- Initialization
 		do
 			create board.make
 			create error_msg.make_empty
+			create death_msg.make_empty
 		end
 
 feature -- model attributes
@@ -32,6 +33,7 @@ feature -- model attributes
 	play_mode: BOOLEAN
 	test_mode: BOOLEAN
 	error_msg: STRING
+	death_msg: STRING
 	game_state: INTEGER
 	error_state: INTEGER
 	shared_info_access : SHARED_INFORMATION_ACCESS
@@ -79,20 +81,11 @@ feature --Commands
 					b_thresh: INTEGER; p_thresh: INTEGER)
 		do
 			--initialize board with all movable entities
-			--currently uses RNG in blackholes sector, need to stop
-			across
-				board.grid as sect
-			loop
-
-				if not sect.item.contents.has (create {BLACKHOLE}.make (-1, sect.item)) then
-					sect.item.populate_movable (a_thresh, j_thresh, m_thresh, b_thresh, p_thresh)
-				end
-
-			end
-
+			board.set_movable_items (a_thresh, j_thresh, m_thresh, b_thresh, p_thresh)
 			--initialize board with all stationary entities
 			--do separate from movable due to random number generator
 			board.set_stationary_items
+
 		end
 
 	move_explorer(dest_row: INTEGER; dest_col: INTEGER)
@@ -100,9 +93,19 @@ feature --Commands
 			board.explorer.move (board.grid[dest_row, dest_col])
 			game_state := game_state + 1
 			error_state := 0
-			--check then behave for other entities
-			--so can't use check to check for death then
-			--behave to refuel
+			board.explorer.check_post_move
+			--check for explorer death
+			update_movables
+
+		end
+	wormhole_explorer
+		do
+			board.explorer.wormhole (board)
+			game_state := game_state + 1
+			error_state := 0
+			board.explorer.check_post_move
+			--check for explorer death
+			update_movables
 		end
 
 
@@ -184,6 +187,47 @@ feature --support
 				col_dest := 1
 			end
 			Result := create {PAIR [INTEGER, INTEGER]}.make (row_dest, col_dest)
+		end
+
+	update_movables
+		local
+			life: INTEGER
+			gen: RANDOM_GENERATOR_ACCESS
+		do
+			--perform updates for each movable entities
+			across
+				board.movable_entities as entity
+			loop
+				if not entity.item.is_explorer then
+					if entity.item.turns_left = 0 then
+						if entity.item.is_planet and entity.item.location.has_star then
+							check attached {PLANET} entity.item as p then
+								p.set_orbit
+								if entity.item.location.get_stationary.is_yellow_dwarf then
+									life := gen.rchoose (1, 2)
+									if life = 2 then
+										p.set_life
+									end
+								end
+							end--attached
+						else
+							if entity.item.location.has_wormhole and ( entity.item.is_malevolent
+							or entity.item.is_benign) then
+								entity.item.wormhole(board)
+							else
+								--choose direction 1-8
+								--entity.item.move (dest: SECTOR)
+							end
+							--entity.item.check
+							--if entitiy did not die
+								--reproduce entity
+								--behave entity
+						end--either not a planet or a planet and no star in sector
+					else
+						entity.item.set_turns (entity.item.turns_left - 1)
+					end
+				end
+			end
 		end
 
 end

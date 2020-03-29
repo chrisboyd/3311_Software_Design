@@ -13,6 +13,10 @@ inherit
 create
 	make
 
+feature --Attributes
+	orbiting: BOOLEAN
+	supports_life: BOOLEAN
+
 feature --Initialization
 	make(i: INTEGER; loc: SECTOR)
 		do
@@ -37,5 +41,15 @@ feature --Commands
 	behave
 		do
 			--print("plane behave %N")
+		end
+
+	set_orbit
+		do
+			orbiting := True
+		end
+
+	set_life
+		do
+			supports_life := True
 		end
 end

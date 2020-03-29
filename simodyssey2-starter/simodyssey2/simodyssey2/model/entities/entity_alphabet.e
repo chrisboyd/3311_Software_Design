@@ -137,6 +137,13 @@ feature -- Query
     		end
     	end
 
+    is_star: BOOLEAN
+    	do
+    		if item = 'Y' or item = '*' then
+    			Result := True
+    		end
+    	end
+
 
 
 invariant
