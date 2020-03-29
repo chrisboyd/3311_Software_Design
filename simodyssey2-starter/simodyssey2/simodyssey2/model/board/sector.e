@@ -318,4 +318,28 @@ feature -- Queries
 			end
 		end
 
+	get_movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
+		local
+			loop_counter: INTEGER
+		do
+			create Result.make
+
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count
+			loop
+				if attached contents [loop_counter] as entity  then
+					if entity.is_movable then
+						check attached {ENTITY_MOVABLE} entity as m then
+							Result.extend (m)
+							end
+					end
+
+				end -- if
+				loop_counter := loop_counter + 1
+			end
+
+		end
+
 end

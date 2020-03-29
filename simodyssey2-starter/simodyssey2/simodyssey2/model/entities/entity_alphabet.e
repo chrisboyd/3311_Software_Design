@@ -50,6 +50,19 @@ feature --Command
             Result := item.out
         end
 
+    id_out: STRING
+    	do
+    		create Result.make_empty
+    		Result.append ("[" + id.out + "," + item.out + "]")
+    	end
+
+    loc_out: STRING
+    	do
+    		create Result.make_empty
+    		Result.append ("[" + location.row.out + "," + location.column.out + "," )
+    		Result.append (location.contents.index_of (Current, 1).out + "]")
+    	end
+
 feature -- Query
 
     is_stationary: BOOLEAN

@@ -16,6 +16,7 @@ create
 feature --Initialization
 	make(i: INTEGER; loc: SECTOR)
 		do
+			id := i
 			item := 'O'
 			location := loc
 		end

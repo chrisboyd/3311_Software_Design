@@ -24,7 +24,7 @@ feature -- Initialization
 			item := 'J'
 			id := i
 			fuel := 5
-			repro_interval := 1
+			repro_interval := 2
 			location := loc
 			life := 1
 			load_level := 0
@@ -61,8 +61,18 @@ feature --Commands
 			end
 		end
 
-	reproduce
+	reproduce: detachable ENTITY_MOVABLE
 		do
+			if repro_interval = 0 then
+				if not location.is_full then
+					Result := create {JANITAUR}.make (shared_info.movable_id, location)
+					shared_info.inc_movable_id
+					location.put (Result)
+					repro_interval := 2
+				end
+			else
+				repro_interval := repro_interval - 1
+			end
 		end
 
 	behave

@@ -69,7 +69,8 @@ feature --constructor
 			stationary_entities.compare_objects
 
 			--put explorer in grid
-			explorer := create {EXPLORER}.make(0,grid[1,1])
+			explorer := create {EXPLORER}.make(shared_info.movable_id,grid[1,1])
+			shared_info.inc_movable_id
 			grid[1,1].put (explorer)
 			movable_entities.extend (explorer)
 
@@ -91,9 +92,7 @@ feature --commands
 			loop_counter: INTEGER
 			component: ENTITY_MOVABLE
 			turn :INTEGER
-			movable_id: INTEGER
 		do
-			movable_id := 1 --since explorer is 0			
 			across
 				1 |..| shared_info.number_rows as r
 			loop
@@ -114,24 +113,24 @@ feature --commands
 							threshold := gen.rchoose (1, 100)
 
 							if threshold < a_thresh then
-								component :=	create {ASTEROID}.make(movable_id, grid[r.item,c.item])
-								movable_id := movable_id + 1
+								component :=	create {ASTEROID}.make(shared_info.movable_id, grid[r.item,c.item])
+								shared_info.inc_movable_id
 							else
 								if threshold < j_thresh then
-									component :=	create {JANITAUR}.make(movable_id, grid[r.item,c.item])
-									movable_id := movable_id + 1
+									component :=	create {JANITAUR}.make(shared_info.movable_id, grid[r.item,c.item])
+									shared_info.inc_movable_id
 								else
 									if threshold < m_thresh then
-										component :=	create {MALEVOLENT}.make(movable_id, grid[r.item,c.item])
-										movable_id := movable_id + 1
+										component :=	create {MALEVOLENT}.make(shared_info.movable_id, grid[r.item,c.item])
+										shared_info.inc_movable_id
 									else
 										if threshold < b_thresh then
-											component :=	create {BENIGN}.make(movable_id, grid[r.item,c.item])
-											movable_id := movable_id + 1
+											component :=	create {BENIGN}.make(shared_info.movable_id, grid[r.item,c.item])
+											shared_info.inc_movable_id
 										else
 											if threshold < p_thresh then
-												component :=	create {PLANET}.make(movable_id, grid[r.item,c.item])
-												movable_id := movable_id + 1
+												component :=	create {PLANET}.make(shared_info.movable_id, grid[r.item,c.item])
+												shared_info.inc_movable_id
 											end
 										end
 									end

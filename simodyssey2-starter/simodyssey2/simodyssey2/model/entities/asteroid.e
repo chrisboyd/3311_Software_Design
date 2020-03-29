@@ -16,6 +16,7 @@ inherit
 create
 	make
 
+
 feature --Initialization
 	make(i: INTEGER; loc: SECTOR)
 		do
@@ -25,16 +26,17 @@ feature --Initialization
 			create death_msg.make_empty
 		end
 
+
 feature --Commands
 
 	check_post_move
-		local
-			stationary: ENTITY_STATIONARY
 		do
-			--if location.has_stationary
+			if location.has_blackhole then
+				life := 0
+			end
 		end
 
-	reproduce
+	reproduce: detachable ENTITY_MOVABLE
 		do
 		end
 

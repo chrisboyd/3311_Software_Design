@@ -39,7 +39,7 @@ feature --Commands
 			end
 		end
 
-	reproduce
+	reproduce: detachable ENTITY_MOVABLE
 		do
 		end
 

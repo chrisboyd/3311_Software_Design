@@ -98,6 +98,7 @@ feature --Commands
 			update_movables
 
 		end
+
 	wormhole_explorer
 		do
 			board.explorer.wormhole (board)
@@ -106,6 +107,18 @@ feature --Commands
 			board.explorer.check_post_move
 			--check for explorer death
 			update_movables
+		end
+
+	output_status
+		do
+			print("%NStationary%N")
+			across
+				board.stationary_entities as ent
+			loop
+				print(ent.item.id_out + ":")
+				print(ent.item.loc_out + "%N")
+			end
+
 		end
 
 
@@ -197,6 +210,8 @@ feature --support
 			dest: PAIR[INTEGER,INTEGER]
 			dir_coord: PAIR[INTEGER, INTEGER]
 			start: PAIR[INTEGER,INTEGER]
+			reproduce: ENTITY_MOVABLE
+			turns: INTEGER
 		do
 			--perform updates for each movable entities
 			across
@@ -204,6 +219,7 @@ feature --support
 			loop
 				if not entity.item.is_explorer then
 					if entity.item.turns_left = 0 then
+						--update this to planet.behave
 						if entity.item.is_planet and entity.item.location.has_star then
 							check attached {PLANET} entity.item as p then
 								p.set_orbit
@@ -232,10 +248,17 @@ feature --support
 							end
 							entity.item.check_post_move
 							if not entity.item.is_dead then
-								entity.item.reproduce
+								reproduce := entity.item.reproduce
+								if attached reproduce as r then
+									board.movable_entities.extend (r)
+								end
 								entity.item.behave
+								--move into behave after working
+								turns := gen.rchoose (0, 2)
+								entity.item.set_turns (turns)
 							end
-							
+							--add dead entities to a list of things that died this turn
+
 						end--either not a planet or a planet and no star in sector
 					else
 						entity.item.set_turns (entity.item.turns_left - 1)

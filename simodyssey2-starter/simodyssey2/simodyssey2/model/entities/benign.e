@@ -32,12 +32,40 @@ feature --attributes
 
 feature --Commands
 
-	reproduce
+	reproduce: detachable ENTITY_MOVABLE
 		do
+			if repro_interval = 0 then
+				if not location.is_full then
+					Result := create {BENIGN}.make (shared_info.movable_id, location)
+					shared_info.inc_movable_id
+					location.put (Result)
+					repro_interval := 1
+				end
+			else
+				repro_interval := repro_interval - 1
+			end
 		end
 
+	--destroy all malevolent in sector from low to high id
+	--Malevolent got destroyed by benign (id: Z) at Sector:X:Y
 	behave
+		local
+			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
+			msg: STRING
 		do
+			movables := location.get_movables
+			create msg.make_empty
+			across
+				movables as entity
+			loop
+				if entity.item.is_malevolent then
+					msg.append ("Malevolent got destroyed by benign (id:" + id.out)
+					msg.append (") at Sector:" + location.print_sector)
+					entity.item.set_death_msg (msg)
+					location.remove (entity.item)
+				end
+				msg.wipe_out
+			end
 		end
 
 	get_name: STRING

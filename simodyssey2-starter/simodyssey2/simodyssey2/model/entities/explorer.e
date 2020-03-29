@@ -32,7 +32,7 @@ feature --Attributes
 
 feature --Commands
 
-	reproduce
+	reproduce: detachable ENTITY_MOVABLE
 		do
 		end
 

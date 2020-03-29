@@ -16,6 +16,13 @@ feature --attributes
 	life: INTEGER
 	death_msg: STRING
 
+	shared_info_access : SHARED_INFORMATION_ACCESS
+
+	shared_info: SHARED_INFORMATION
+		attribute
+			Result:= shared_info_access.shared_info
+		end
+
 feature --commands
 	set_turns(i: INTEGER)
 		do
@@ -92,6 +99,7 @@ feature --commands
 
 	set_death_msg(msg: STRING)
 		do
+			death_msg := msg
 		end
 
 	is_dead: BOOLEAN
@@ -99,9 +107,17 @@ feature --commands
 			Result := life = 0
 		end
 
+	take_life
+		do
+			if life > 0 then
+				life := life -1
+			end
+
+		end
+
 feature --deferred command
 
-	reproduce
+	reproduce: detachable ENTITY_MOVABLE
 		deferred
 		end
 
