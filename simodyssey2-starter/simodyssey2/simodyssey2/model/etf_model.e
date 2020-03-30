@@ -26,6 +26,7 @@ feature {NONE} -- Initialization
 			create board.make
 			create error_msg.make_empty
 			create deaths.make
+			deaths.compare_objects
 			create move_list.make_empty
 		end
 
@@ -45,6 +46,7 @@ feature -- model attributes
 		end
 
 	deaths: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE]
+	aborted: BOOLEAN
 
 feature -- model operations
 	default_update
@@ -113,7 +115,7 @@ feature --Commands
 			update_movables
 		end
 
-	output_status
+	status
 		do
 			print("%NStationary%N")
 			across
@@ -123,6 +125,20 @@ feature --Commands
 				print(ent.item.loc_out + "%N")
 			end
 
+		end
+
+	pass
+		do
+			game_state := game_state + 1
+			error_state := 0
+			update_movables
+		end
+
+	abort
+		do
+			aborted := True
+			error_state := error_state + 1
+			reset
 		end
 
 
@@ -144,6 +160,8 @@ feature -- queries
 				Result.append (" ok%N")
 				if not (play_mode or test_mode) then
 					Result.append ("  Welcome! Try test(3,5,7,15,30)")
+				elseif aborted then
+					Result.append ("  Mission aborted. Try test(3,5,7,15,30)")
 				else
 					if board.explorer.is_dead then
 						Result.append ("   " + board.explorer.get_death_msg + "%N")
@@ -259,14 +277,14 @@ feature --support
 
 								entity.item.behave
 							end
-							--add dead entities to a list of things that died this turn
+
 							move_list.append (entity.item.get_move_info + "%N")
-							add_deaths
 
 						end--either not a planet or a planet and no star in sector
 					else
 						entity.item.set_turns (entity.item.turns_left - 1)
 					end
+					add_deaths
 
 				end--end of across
 			end-- end of if not explorer
@@ -279,9 +297,17 @@ feature --support
 				loop
 					if entity.item.is_dead then
 						deaths.extend (entity.item)
+					end
+				end
+
+				across
+					deaths as entity
+				loop
+					if board.movable_entities.has (entity.item) then
 						board.movable_entities.prune_all (entity.item)
 					end
 				end
+
 			end
 
 end

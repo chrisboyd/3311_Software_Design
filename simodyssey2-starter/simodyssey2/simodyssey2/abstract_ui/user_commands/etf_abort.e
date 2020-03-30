@@ -6,15 +6,19 @@ note
 
 class
 	ETF_ABORT
-inherit 
+inherit
 	ETF_ABORT_INTERFACE
 create
 	make
-feature -- command 
+feature -- command
 	abort
     	do
-			-- perform some update on the model state
-			model.default_update
+			if not model.play_mode or model.test_mode then
+				model.set_error ("Negative on that request:no mission in progress.")
+			else
+				model.abort
+			end
+
 			etf_cmd_container.on_change.notify ([Current])
     	end
 

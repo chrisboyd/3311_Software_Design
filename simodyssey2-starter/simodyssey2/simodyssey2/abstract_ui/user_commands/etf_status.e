@@ -13,8 +13,13 @@ create
 feature -- command
 	status
     	do
-			-- perform some update on the model state
-			model.output_status
+    		if not model.play_mode or model.test_mode then
+				model.set_error ("Negative on that request:no mission in progress.")
+			else
+				model.status
+			end
+
+
 			etf_cmd_container.on_change.notify ([Current])
     	end
 
