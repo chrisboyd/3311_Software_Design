@@ -10,7 +10,7 @@ expanded class
 feature
 	m: ETF_MODEL
 		once
-			create Result.make
+			create Result.make(0)
 		end
 
 invariant

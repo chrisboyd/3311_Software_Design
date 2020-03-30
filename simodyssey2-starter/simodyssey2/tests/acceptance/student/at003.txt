@@ -1,0 +1,14 @@
+--test abort and play
+play
+abort
+abort
+abort
+abort
+abort
+play
+abort
+abort
+abort
+abort
+abort
+

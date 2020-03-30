@@ -76,15 +76,11 @@ feature --Commands
 		end
 
 	land
-		require
-			not landed
 		do
 			landed := True
 		end
 
 	liftoff
-		require
-			landed
 		do
 			landed := False
 		end

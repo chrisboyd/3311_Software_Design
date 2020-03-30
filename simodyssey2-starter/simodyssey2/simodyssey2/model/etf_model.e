@@ -21,13 +21,15 @@ feature {NONE} -- Initialization
     --info: SHARED_INFORMATION
 
     -- Initialization for `Current'
-	make
+	make(init_state: INTEGER)
 		do
 			create board.make
 			create error_msg.make_empty
 			create deaths.make
 			deaths.compare_objects
 			create move_list.make_empty
+			game_state := init_state
+			create status_msg.make_empty
 		end
 
 feature -- model attributes
@@ -39,6 +41,7 @@ feature -- model attributes
 	error_state: INTEGER
 	shared_info_access : SHARED_INFORMATION_ACCESS
 	move_list: STRING
+	status_msg: STRING
 
 	shared_info: SHARED_INFORMATION
 		attribute
@@ -58,7 +61,7 @@ feature -- model operations
 	reset
 			-- Reset model state.
 		do
-			make
+			make(game_state)
 		end
 
 feature --Commands
@@ -67,6 +70,7 @@ feature --Commands
 			play_mode := b
 			game_state := game_state + 1
 			error_state := 0
+			aborted := False
 		end
 
 	set_test(b: BOOLEAN)
@@ -74,6 +78,7 @@ feature --Commands
 			test_mode := b
 			game_state := game_state + 1
 			error_state := 0
+			aborted := False
 		end
 
 	set_error(msg: STRING)
@@ -117,14 +122,17 @@ feature --Commands
 
 	status
 		do
-			print("%NStationary%N")
-			across
-				board.stationary_entities as ent
-			loop
-				print(ent.item.id_out + ":")
-				print(ent.item.loc_out + "%N")
+			error_state := error_state + 1
+			if not board.explorer.landed then
+				status_msg.append ("  Explorer status report:Travelling at cruise speed at " +
+					board.explorer.loc_out + "%N")
+				status_msg.append ("  Life units left:" + board.explorer.life.out +
+				", Fuel units left:" + board.explorer.fuel.out)
+			else
+				status_msg.append ("  Explorer status report:Stationary on planet surface at " +
+					board.explorer.loc_out + "%N")
+				status_msg.append ("  Life units left:3, Fuel units left:3")
 			end
-
 		end
 
 	pass
@@ -138,7 +146,13 @@ feature --Commands
 		do
 			aborted := True
 			error_state := error_state + 1
-			reset
+			create board.make
+			play_mode := False
+			test_mode := False
+			error_msg.wipe_out
+			deaths.wipe_out
+			move_list.wipe_out
+			status_msg.wipe_out
 		end
 
 
@@ -158,19 +172,29 @@ feature -- queries
 				Result.append ("  " + error_msg)
 			else
 				Result.append (" ok%N")
-				if not (play_mode or test_mode) then
+				if not (play_mode or test_mode) and not aborted then
 					Result.append ("  Welcome! Try test(3,5,7,15,30)")
 				elseif aborted then
 					Result.append ("  Mission aborted. Try test(3,5,7,15,30)")
+				elseif not status_msg.is_empty then
+					Result.append (status_msg)
 				else
 					if board.explorer.is_dead then
 						Result.append ("   " + board.explorer.get_death_msg + "%N")
 						Result.append ("   The game has ended. You can start a new game.%N")
 						test_mode := False
 						play_mode := False
+						------------
+						--actually reset game, ie abort
+						------------
 					end
-					Result.append ("Movement:%N")
-					Result.append (move_list)
+					Result.append ("  Movement:")
+					if move_list.is_empty then
+						Result.append("none%N")
+					else
+						Result.append ("%N" + move_list)
+					end
+
 					Result.append (board.out)
 				end
 
@@ -179,6 +203,7 @@ feature -- queries
 			error_msg.wipe_out
 			move_list.wipe_out
 			deaths.wipe_out
+			status_msg.wipe_out
 
 		end
 
