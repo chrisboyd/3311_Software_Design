@@ -25,6 +25,7 @@ feature -- Initialization
 			location := loc
 			life := 1
 			create death_msg.make_empty
+			create move_info.make_empty
 		end
 
 feature --attributes

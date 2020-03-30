@@ -25,7 +25,8 @@ feature {NONE} -- Initialization
 		do
 			create board.make
 			create error_msg.make_empty
-			create death_msg.make_empty
+			create deaths.make
+			create move_list.make_empty
 		end
 
 feature -- model attributes
@@ -33,15 +34,17 @@ feature -- model attributes
 	play_mode: BOOLEAN
 	test_mode: BOOLEAN
 	error_msg: STRING
-	death_msg: STRING
 	game_state: INTEGER
 	error_state: INTEGER
 	shared_info_access : SHARED_INFORMATION_ACCESS
+	move_list: STRING
 
 	shared_info: SHARED_INFORMATION
 		attribute
 			Result:= shared_info_access.shared_info
 		end
+
+	deaths: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE]
 
 feature -- model operations
 	default_update
@@ -91,6 +94,7 @@ feature --Commands
 	move_explorer(dest_row: INTEGER; dest_col: INTEGER)
 		do
 			board.explorer.move (board.grid[dest_row, dest_col])
+			move_list.append (board.explorer.get_move_info + "%N")
 			game_state := game_state + 1
 			error_state := 0
 			board.explorer.check_post_move
@@ -141,12 +145,16 @@ feature -- queries
 				if not (play_mode or test_mode) then
 					Result.append ("  Welcome! Try test(3,5,7,15,30)")
 				else
+					Result.append ("Movement:%N")
+					Result.append (move_list)
 					Result.append (board.out)
 				end
 
 			end
 			--wipe messages
 			error_msg.wipe_out
+			move_list.wipe_out
+			deaths.wipe_out
 
 		end
 
@@ -214,6 +222,7 @@ feature --support
 			turns: INTEGER
 		do
 			--perform updates for each movable entities
+
 			across
 				board.movable_entities as entity
 			loop
@@ -241,10 +250,8 @@ feature --support
 								dir_coord := map_direction(direction)
 								start := create {PAIR[INTEGER,INTEGER]}.make (entity.item.location.row, entity.item.location.column)
 								dest := get_dest_coord(start, dir_coord)
-								if not board.grid[dest.first, dest.second].is_full then
-									entity.item.move (board.grid[dest.first, dest.second])
-								end
-
+								entity.item.move (board.grid[dest.first, dest.second])
+								move_list.append (entity.item.get_move_info + "%N")
 							end
 							entity.item.check_post_move
 							if not entity.item.is_dead then
@@ -258,14 +265,28 @@ feature --support
 								entity.item.set_turns (turns)
 							end
 							--add dead entities to a list of things that died this turn
+							add_deaths
 
 						end--either not a planet or a planet and no star in sector
 					else
 						entity.item.set_turns (entity.item.turns_left - 1)
 					end
+
+				end--end of across
+			end-- end of if not explorer
+		end--end of do
+
+		add_deaths
+			do
+				across
+					board.movable_entities as entity
+				loop
+					if entity.item.is_dead then
+						deaths.extend (entity.item)
+						board.movable_entities.prune_all (entity.item)
+					end
 				end
 			end
-		end
 
 end
 

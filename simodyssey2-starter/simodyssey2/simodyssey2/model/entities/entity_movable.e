@@ -15,7 +15,7 @@ feature --attributes
 	fuel: INTEGER
 	life: INTEGER
 	death_msg: STRING
-
+	move_info: STRING
 	shared_info_access : SHARED_INFORMATION_ACCESS
 
 	shared_info: SHARED_INFORMATION
@@ -31,15 +31,21 @@ feature --commands
 
 	move(dest: SECTOR)
 		do
-			--remove from location, add to destination
-			dest.put (Current)
-			location.remove (Current)
-			location := dest
+			move_info.wipe_out
+			move_info.append ("    " + Current.id_out + ":" + Current.loc_out)
+			if not dest.is_full then
+				dest.put (Current)
+				location.remove (Current)
+				location := dest
+				move_info.append ("->" + Current.loc_out)
+				--use fuel planets and asteroids don't need this
+				fuel := fuel - 1
+			end
 
-			--use fuel planets and asteroids don't need this
-			fuel := fuel - 1
+
 		end
 
+	--switch to deferred for death message
 	check_post_move
 		local
 			stationary: ENTITY_STATIONARY
@@ -93,8 +99,8 @@ feature --commands
 
 	get_death_msg: STRING
 		do
-			create Result.make_empty
-			Result.append (Current.get_name)
+			Result := death_msg
+			death_msg.wipe_out
 		end
 
 	set_death_msg(msg: STRING)
@@ -116,6 +122,11 @@ feature --commands
 	kill
 		do
 			life := 0
+		end
+
+	get_move_info:STRING
+		do
+			Result := move_info
 		end
 
 feature --deferred command

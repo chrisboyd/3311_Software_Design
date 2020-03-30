@@ -10,7 +10,8 @@ class
 inherit
 	ENTITY_MOVABLE
 		redefine
-			check_post_move
+			check_post_move,
+			move
 		end
 
 create
@@ -28,9 +29,23 @@ feature --Initialization
 			location := loc
 			life := 1
 			create death_msg.make_empty
+			create move_info.make_empty
 		end
 
 feature --Commands
+
+	move(dest: SECTOR)
+		do
+			move_info.wipe_out
+			if not location.has_star then
+				--remove from location, add to destination
+				move_info.append ("    " + Current.id_out + ":" + Current.loc_out)
+				dest.put (Current)
+				location.remove (Current)
+				location := dest
+				move_info.append ("->" + Current.loc_out)
+			end
+		end
 
 	check_post_move
 		do

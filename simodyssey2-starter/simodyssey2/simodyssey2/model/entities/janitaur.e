@@ -29,6 +29,7 @@ feature -- Initialization
 			life := 1
 			load_level := 0
 			create death_msg.make_empty
+			create move_info.make_empty
 		end
 
 feature --attributes
