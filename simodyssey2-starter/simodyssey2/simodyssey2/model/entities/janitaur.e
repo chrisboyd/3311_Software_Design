@@ -108,6 +108,7 @@ feature --Commands
 						location.remove (entity.item)
 					end
 				end
+				create msg.make_empty
 			end
 			if location.has_wormhole then
 				load_level := 0
@@ -126,7 +127,7 @@ feature --Queries
 		do
 			create Result.make_empty
 			Result.append ("    " + id_out + "->fuel:" + fuel.out + "/5, load:" + load_level.out)
-			Result.append ("/2, actions_left_until_reproduction:" + repro_interval.out + "/1, turns_left:")
+			Result.append ("/2, actions_left_until_reproduction:" + repro_interval.out + "/2, turns_left:")
 			if life = 0 then
 				Result.append("N/A")
 			else

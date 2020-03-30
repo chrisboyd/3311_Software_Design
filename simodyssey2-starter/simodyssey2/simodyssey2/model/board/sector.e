@@ -125,6 +125,43 @@ feature -- commands
 			Result.append (column.out)
 		end
 
+	contents_out: STRING
+		local
+
+			printed_symbols: INTEGER
+			component: ENTITY_ALPHABET
+		do
+			create Result.make_empty
+
+			printed_symbols := 0
+			Result.append ("    [" + row.out + "," + column.out + "]->")
+
+			across
+				contents as quadrant
+			loop
+				component := quadrant.item
+				if attached component as entity then
+					Result.append ("[" + entity.id.out + "," + entity.item.out + "]")
+				else
+					Result.append ("-")
+				end
+				printed_symbols := printed_symbols + 1
+				if (shared_info.max_capacity - printed_symbols) /= 0 then
+					Result.append (",")
+				end
+			end
+			from
+			until
+				(shared_info.max_capacity - printed_symbols) = 0
+			loop
+				Result.append ("-")
+				printed_symbols := printed_symbols + 1
+				if (shared_info.max_capacity - printed_symbols) /= 0 then
+					Result.append (",")
+				end
+			end
+		end
+
 feature --command
 
 	put (entity: ENTITY_ALPHABET)

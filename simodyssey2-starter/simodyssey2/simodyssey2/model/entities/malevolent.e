@@ -92,6 +92,7 @@ feature --Commands
 			exp_ind: INTEGER
 			benign_present: BOOLEAN
 		do
+			--double check this all
 			movables := location.get_movables
 			create msg.make_empty
 			exp_ind := movables.index_of (create {EXPLORER}.make (0, location), 1)

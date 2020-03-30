@@ -102,6 +102,7 @@ feature --Commands
 					entity.item.set_death_msg (msg)
 					location.remove (entity.item)
 				end
+				create msg.make_empty
 			end
 			turns_left := gen.rchoose (0, 2)
 		end

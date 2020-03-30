@@ -76,6 +76,7 @@ feature --Commands
 					end
 
 				end
+				create msg.make_empty
 			end
 			turns_left :=  gen.rchoose (0, 2)
 		end

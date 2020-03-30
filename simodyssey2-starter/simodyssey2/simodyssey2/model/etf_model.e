@@ -320,10 +320,10 @@ feature --support
 							entity.item.check_post_move
 							if not entity.item.is_dead then
 								next_id := board.movable_id
-								board.inc_movable_id
 								reproduce := entity.item.reproduce (next_id)
 								if attached reproduce as r then
 									board.movable_entities.extend (r)
+									board.inc_movable_id
 								end
 
 								entity.item.behave

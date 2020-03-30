@@ -219,40 +219,13 @@ feature --commands
 feature -- query
 
 	get_sector_desc: STRING
-		local
-			component: ENTITY_ALPHABET
-			printed_symbols: INTEGER
 		do
 			create Result.make_empty
 			across
 				grid as sector
 			loop
-				printed_symbols := 0
-				Result.append ("    [" + sector.item.row.out + "," + sector.item.column.out + "]->")
-				across
-					sector.item.contents as quadrant
-				loop
-					component := quadrant.item
-					if attached component as entity then
-						Result.append ("[" + entity.id.out + "," + entity.item.out + "]")
-					else
-						Result.append ("-")
-					end
-					if not quadrant.after then
-						Result.append (",")
-					end
-					printed_symbols := printed_symbols + 1
-				end
-				from
-				until
-					(shared_info.max_capacity - printed_symbols) = 0
-				loop
-					Result.append ("-")
-					printed_symbols := printed_symbols + 1
-					if (shared_info.max_capacity - printed_symbols) /= 0 then
-						Result.append (",")
-					end
-				end
+				Result.append (sector.item.contents_out)
+
 				if not sector.after then
 					Result.append ("%N")
 				end
@@ -266,13 +239,7 @@ feature -- query
 			across
 				stationary_entities as s
 			loop
-				Result.append ("    [" + s.item.id.out + "," + s.item.item.out + "]->")
-				if s.item.is_star then
-					check attached {STAR} s.item as star then
-						Result.append ("Luminosity:" + star.luminosity.out)
-						end
-				end
-				Result.append ("%N")
+				Result.append (s.item.get_status + "%N")
 			end
 
 			across
