@@ -120,8 +120,9 @@
     [23,J]:[3,2,2]->[3,1,3]
     [24,J]:[3,2,3]->[2,1,3]
       destroyed [10,A] at [2,1,1]
-
+    [29,B]:[4,1,1]->[2,4,1]
     [40,M]:[5,2,3]->[1,1,3]
+      attacked [0,E] at [1,1,1]
     [48,B]:[5,5,2]->[1,1,4]
       destroyed [40,M] at [1,1,3]
   Sectors:
@@ -162,7 +163,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [1,J]->fuel:5/5, load:0/2, actions_left_until_reproduction:2/2, turns_left:0
     [2,B]->fuel:3/3, actions_left_until_reproduction:1/1, turns_left:0
     [4,B]->fuel:3/3, actions_left_until_reproduction:1/1, turns_left:1
@@ -276,7 +277,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [1,J]->fuel:4/5, load:0/2, actions_left_until_reproduction:1/2, turns_left:2
     [2,B]->fuel:3/3, actions_left_until_reproduction:0/1, turns_left:1
     [4,B]->fuel:3/3, actions_left_until_reproduction:1/1, turns_left:0
@@ -382,7 +383,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [1,J]->fuel:4/5, load:0/2, actions_left_until_reproduction:1/2, turns_left:1
     [2,B]->fuel:3/3, actions_left_until_reproduction:0/1, turns_left:0
     [4,B]->fuel:3/3, actions_left_until_reproduction:0/1, turns_left:1
@@ -510,7 +511,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [1,J]->fuel:4/5, load:0/2, actions_left_until_reproduction:1/2, turns_left:0
     [2,B]->fuel:2/3, actions_left_until_reproduction:1/1, turns_left:0
     [4,B]->fuel:3/3, actions_left_until_reproduction:0/1, turns_left:0
@@ -602,7 +603,7 @@
       destroyed [14,B] at [1,3,3]
       destroyed [41,M] at [1,3,1]
     [44,A]:[5,4,1]->[5,3,1]
-
+    [45,M]:[5,4,2]->[2,1,1]
     [46,J]:[5,4,3]->[4,5,1]
     [48,B]:[1,1,4]->[2,5,1]
       reproduced [55,B] at [2,5,4]
@@ -648,7 +649,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [2,B]->fuel:3/3, actions_left_until_reproduction:0/1, turns_left:2
     [4,B]->fuel:3/3, actions_left_until_reproduction:0/1, turns_left:1
     [7,A]->turns_left:0
@@ -754,7 +755,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [2,B]->fuel:3/3, actions_left_until_reproduction:0/1, turns_left:1
     [4,B]->fuel:3/3, actions_left_until_reproduction:0/1, turns_left:0
     [7,A]->turns_left:2
@@ -861,7 +862,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [2,B]->fuel:3/3, actions_left_until_reproduction:0/1, turns_left:0
     [4,B]->fuel:3/3, actions_left_until_reproduction:1/1, turns_left:0
     [7,A]->turns_left:1
@@ -947,7 +948,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [2,B]->fuel:2/3, actions_left_until_reproduction:0/1, turns_left:2
     [7,A]->turns_left:1
     [12,A]->turns_left:1
@@ -1033,7 +1034,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [2,B]->fuel:2/3, actions_left_until_reproduction:0/1, turns_left:1
     [7,A]->turns_left:0
     [12,A]->turns_left:0
@@ -1126,7 +1127,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [2,B]->fuel:2/3, actions_left_until_reproduction:0/1, turns_left:0
     [7,A]->turns_left:0
     [12,A]->turns_left:1
@@ -1198,7 +1199,7 @@
     [63,B]:[3,4,2]->[2,4,1]
     [64,B]:[2,1,3]->[1,1,2]
     [65,B]:[1,4,2]->[2,4,2]
-
+    [66,B]:[5,4,2]->[4,4,1]
   Sectors:
     [1,1]->[0,E],[64,B],-,-
     [1,2]->[44,A],-,-,-
@@ -1237,7 +1238,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [2,B]->fuel:1/3, actions_left_until_reproduction:1/1, turns_left:0
     [7,A]->turns_left:2
     [12,A]->turns_left:0
@@ -1291,12 +1292,11 @@
       destroyed [56,B] at [1,3,1]
     [44,A]:[1,2,1]->[2,2,1]
     [49,P]:[5,1,1]->[5,5,1]
-    [60,B]:[4,3,2]->[5,4,1]
-      reproduced [66,B] at [5,4,2]
+    [60,B]:[5,4,1]->[1,3,1]
     [61,J]:[4,1,1]->[4,2,1]
     [62,B]:[2,5,2]->[3,5,3]
       reproduced [67,B] at [3,5,4]
-
+    [66,B]:[4,4,1]->[5,3,1]
       reproduced [68,B] at [5,3,2]
     [67,B]:[3,5,4]->[3,1,1]
     [68,B]:[5,3,2]->[4,4,1]
@@ -1338,7 +1338,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [2,B]->fuel:3/3, actions_left_until_reproduction:0/1, turns_left:0
     [7,A]->turns_left:1
     [12,A]->turns_left:1
@@ -1398,7 +1398,7 @@
     [64,B]:[1,1,2]->[1,2,2]
       reproduced [70,B] at [1,2,3]
     [66,B]:[5,3,1]->[4,4,4]
-    [68,B]:[5,3,2]->[4,4,1]
+    [68,B]:[4,4,1]->[4,5,1]
       reproduced [71,B] at [4,5,2]
     [69,B]:[2,2,3]->[1,3,1]
     [70,B]:[1,2,3]->[1,1,2]
@@ -1441,7 +1441,7 @@
     [-3,*]->Luminosity:5
     [-2,Y]->Luminosity:2
     [-1,O]->
-    [0,E]->fuel:3/3, life:3/3, landed?:F
+    [0,E]->fuel:3/3, life:2/3, landed?:F
     [2,B]->fuel:3/3, actions_left_until_reproduction:1/1, turns_left:0
     [7,A]->turns_left:0
     [12,A]->turns_left:0

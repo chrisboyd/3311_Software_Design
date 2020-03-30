@@ -284,7 +284,6 @@ feature --support
 
 	update_movables
 		local
-			life: INTEGER
 			direction: INTEGER
 			gen: RANDOM_GENERATOR_ACCESS
 			dest: PAIR[INTEGER,INTEGER]
@@ -325,7 +324,7 @@ feature --support
 									board.movable_entities.extend (r)
 									board.inc_movable_id
 								end
-
+								
 								entity.item.behave
 							end
 

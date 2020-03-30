@@ -355,6 +355,23 @@ feature -- Queries
 			end
 		end
 
+	has_benign: BOOLEAN
+		local
+			loop_counter: INTEGER
+		do
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count or Result
+			loop
+				if attached contents [loop_counter] as temp_item  then
+					Result := temp_item.is_benign
+				end -- if
+				loop_counter := loop_counter + 1
+			end
+		end
+
+
 	get_movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
 		local
 			loop_counter: INTEGER

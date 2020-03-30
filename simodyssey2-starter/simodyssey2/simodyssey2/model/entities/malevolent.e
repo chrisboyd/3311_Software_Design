@@ -95,26 +95,20 @@ feature --Commands
 			--double check this all
 			movables := location.get_movables
 			create msg.make_empty
-			exp_ind := movables.index_of (create {EXPLORER}.make (0, location), 1)
 
-			if exp_ind > 0 then
-				check attached {EXPLORER} movables.i_th (exp_ind) as exp then
-					if not exp.landed then
-						across
-							movables as entity
-						loop
-							if entity.item.is_benign then
-								benign_present := True
-							end
-						end
-						if not benign_present then
-							movables.i_th (exp_ind).take_life
-							move_info.append ("%N      attacked " + movables.i_th (exp_ind).id_out + " at " + movables.i_th (exp_ind).loc_out)
-							if movables.i_th (exp_ind).is_dead then
+			across
+				movables as entity
+			loop
+				if entity.item.is_explorer then
+					check attached {EXPLORER} entity.item as exp then
+						if not (exp.landed and location.has_benign) then
+							exp.take_life
+							move_info.append ("%N      attacked " + exp.id_out + " at " + exp.loc_out)
+							if exp.is_dead then
 								msg.append ("Explorer got lost in space - out of life support at Sector:")
 								msg.append (location.print_sector)
-								movables.i_th (exp_ind).set_death_msg (msg)
-								location.remove (movables.i_th (exp_ind))
+								exp.set_death_msg (msg)
+								location.remove (exp)
 							end
 						end
 					end

@@ -52,6 +52,8 @@ feature --commands
 			temp_row: INTEGER
 			temp_col: INTEGER
 		do
+			move_info.wipe_out
+			move_info.append ("    " + Current.id_out + ":" + Current.loc_out)
 			from
 				added := False
 			until
@@ -68,6 +70,7 @@ feature --commands
 				end
 
 			end
+			move_info.append ("->" + Current.loc_out)
 		end
 
 	get_death_msg: STRING
