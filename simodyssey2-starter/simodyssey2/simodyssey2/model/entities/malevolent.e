@@ -60,6 +60,10 @@ feature --Commands
 				death_msg.append ("Malevolent got lost in space - out of fuel at Sector:" + location.out)
 			end
 
+			if life = 0 then
+				location.remove (Current)
+			end
+
 		end
 
 	reproduce: detachable ENTITY_MOVABLE
@@ -105,7 +109,7 @@ feature --Commands
 						end
 						if not benign_present then
 							movables.i_th (exp_ind).take_life
-							move_info.append ("%N   attacked " + movables.i_th (exp_ind).id_out + " at " + movables.i_th (exp_ind).loc_out)
+							move_info.append ("%N      attacked " + movables.i_th (exp_ind).id_out + " at " + movables.i_th (exp_ind).loc_out)
 							if movables.i_th (exp_ind).is_dead then
 								msg.append ("Explorer got lost in space - out of life support at Sector:")
 								msg.append (location.print_sector)
@@ -116,6 +120,7 @@ feature --Commands
 					end
 				end
 			end
+			turns_left := gen.rchoose (0, 2)
 		end
 
 	get_name: STRING

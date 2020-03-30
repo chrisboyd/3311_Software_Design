@@ -59,6 +59,10 @@ feature --Commands
 				death_msg.append ("Benign got lost in space - out of fuel at Sector:" + location.out)
 			end
 
+			if life = 0 then
+				location.remove (Current)
+			end
+
 		end
 
 	reproduce: detachable ENTITY_MOVABLE
@@ -94,13 +98,13 @@ feature --Commands
 				if entity.item.is_malevolent then
 					msg.append ("Malevolent got destroyed by benign (id: " + id.out)
 					msg.append (") at Sector:" + location.print_sector)
-					move_info.append ("%N   destroyed " + entity.item.id_out + " at " + entity.item.loc_out)
+					move_info.append ("%N      destroyed " + entity.item.id_out + " at " + entity.item.loc_out)
 					entity.item.kill
 					entity.item.set_death_msg (msg)
 					location.remove (entity.item)
 				end
-				msg.wipe_out
 			end
+			turns_left := gen.rchoose (0, 2)
 		end
 
 	get_name: STRING

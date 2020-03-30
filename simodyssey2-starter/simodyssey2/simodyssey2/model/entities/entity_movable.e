@@ -22,6 +22,7 @@ feature --attributes
 		attribute
 			Result:= shared_info_access.shared_info
 		end
+	gen: RANDOM_GENERATOR_ACCESS
 
 feature --commands
 	set_turns(i: INTEGER)
@@ -52,7 +53,6 @@ feature --commands
 
 	wormhole(board: GALAXY)
 		local
-			gen: RANDOM_GENERATOR_ACCESS
 			added: BOOLEAN
 			temp_row: INTEGER
 			temp_col: INTEGER
@@ -78,7 +78,6 @@ feature --commands
 	get_death_msg: STRING
 		do
 			Result := death_msg
-			death_msg.wipe_out
 		end
 
 	set_death_msg(msg: STRING)
@@ -92,10 +91,10 @@ feature --commands
 		end
 
 	take_life
+		require
+			life > 0
 		do
-			if life > 0 then
-				life := life -1
-			end
+			life := life -1
 		end
 	kill
 		do

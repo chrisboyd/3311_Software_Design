@@ -19,6 +19,7 @@ create
 feature --Attributes
 	orbiting: BOOLEAN
 	supports_life: BOOLEAN
+	has_set: BOOLEAN
 
 feature --Initialization
 	make(i: INTEGER; loc: SECTOR)
@@ -51,6 +52,7 @@ feature --Commands
 			if location.has_blackhole then
 				life := 0
 				death_msg.append ("Planet got devoured by blackhole (id: -1) at Sector:3:3")
+				location.remove (Current)
 			end
 		end
 
@@ -59,8 +61,22 @@ feature --Commands
 		end
 
 	behave
+		local
+			odds_life: INTEGER
 		do
-			--print("plane behave %N")
+			if location.has_star then
+				orbiting := True
+				if location.get_stationary.is_yellow_dwarf and not has_set then
+					odds_life := gen.rchoose (1, 2)
+					if odds_life = 2 then
+						supports_life := True
+					end
+					has_set := True
+				end
+			end
+			if not orbiting then
+				turns_left := gen.rchoose (0, 2)
+			end
 		end
 
 	set_orbit

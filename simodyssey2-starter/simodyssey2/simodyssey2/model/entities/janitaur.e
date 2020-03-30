@@ -60,6 +60,10 @@ feature --Commands
 				life := 0
 				death_msg.append ("Janitaur got lost in space - out of fuel at Sector:" + location.out)
 			end
+
+			if life = 0 then
+				location.remove (Current)
+			end
 		end
 
 	reproduce: detachable ENTITY_MOVABLE
@@ -100,7 +104,7 @@ feature --Commands
 						entity.item.kill
 						msg.append ("Asteroid got imploded by janitaur (id: " + id.out)
 						msg.append (") at Sector:" + location.print_sector)
-						move_info.append ("%N   destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
+						move_info.append ("%N      destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
 						entity.item.set_death_msg (msg)
 						location.remove (entity.item)
 					end
@@ -109,7 +113,7 @@ feature --Commands
 			if location.has_wormhole then
 				load_level := 0
 			end
-
+			turns_left := gen.rchoose (0, 2)
 		end
 
 	get_name: STRING

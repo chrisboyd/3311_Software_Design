@@ -32,6 +32,7 @@ feature --Commands
 			if location.has_blackhole then
 				life := 0
 				death_msg.append ("Asteroid got devoured by blackhole (id: -1) at Sector:3:3")
+				location.remove (Current)
 			end
 		end
 
@@ -53,14 +54,29 @@ feature --Commands
 				movables as entity
 			loop
 				if not (entity.item.is_asteroid or entity.item.is_planet) then
-					entity.item.kill
-					move_info.append ("%N   destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
-					msg.append (entity.item.get_name + " got destroyed by asteroid (id: ")
-					msg.append (id.out + ") at Sector:" + location.print_sector)
-					location.remove (entity.item)
-					entity.item.set_death_msg (msg)
+					if entity.item.is_explorer then
+						check attached {EXPLORER} entity.item as exp then
+							if not exp.landed then
+								entity.item.kill
+								move_info.append ("%N      destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
+								msg.append (entity.item.get_name + " got destroyed by asteroid (id: ")
+								msg.append (id.out + ") at Sector:" + location.print_sector)
+								location.remove (entity.item)
+								entity.item.set_death_msg (msg)
+							end
+						end
+					else
+						entity.item.kill
+						move_info.append ("%N      destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
+						msg.append (entity.item.get_name + " got destroyed by asteroid (id: ")
+						msg.append (id.out + ") at Sector:" + location.print_sector)
+						location.remove (entity.item)
+						entity.item.set_death_msg (msg)
+					end
+
 				end
 			end
+			turns_left :=  gen.rchoose (0, 2)
 		end
 
 	get_name: STRING

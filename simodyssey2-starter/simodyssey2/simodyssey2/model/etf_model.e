@@ -145,6 +145,12 @@ feature -- queries
 				if not (play_mode or test_mode) then
 					Result.append ("  Welcome! Try test(3,5,7,15,30)")
 				else
+					if board.explorer.is_dead then
+						Result.append ("   " + board.explorer.get_death_msg + "%N")
+						Result.append ("   The game has ended. You can start a new game.%N")
+						test_mode := False
+						play_mode := False
+					end
 					Result.append ("Movement:%N")
 					Result.append (move_list)
 					Result.append (board.out)
@@ -230,15 +236,7 @@ feature --support
 					if entity.item.turns_left = 0 then
 						--update this to planet.behave
 						if entity.item.is_planet and entity.item.location.has_star then
-							check attached {PLANET} entity.item as p then
-								p.set_orbit
-								if entity.item.location.get_stationary.is_yellow_dwarf then
-									life := gen.rchoose (1, 2)
-									if life = 2 then
-										p.set_life
-									end
-								end
-							end--attached
+							entity.item.behave
 						else
 							if entity.item.location.has_wormhole and ( entity.item.is_malevolent
 							or entity.item.is_benign) then
@@ -258,10 +256,8 @@ feature --support
 								if attached reproduce as r then
 									board.movable_entities.extend (r)
 								end
+
 								entity.item.behave
-								--move into behave after working
-								turns := gen.rchoose (0, 2)
-								entity.item.set_turns (turns)
 							end
 							--add dead entities to a list of things that died this turn
 							move_list.append (entity.item.get_move_info + "%N")

@@ -52,12 +52,16 @@ feature --Commands
 				death_msg.append ("Explorer got lost in space - out of fuel at Sector:" + location.out)
 			elseif location.has_blackhole then
 				life := 0
-				death_msg.append ("Benign got devoured by blackhole (id: -1) at Sector:3:3")
+				death_msg.append ("Explorer got devoured by blackhole (id: -1) at Sector:3:3")
 			end
 
 			if fuel = 0 and death_msg.is_empty then
 				life := 0
 				death_msg.append ("Explorer got lost in space - out of fuel at Sector:" + location.out)
+			end
+
+			if life = 0 then
+				location.remove (Current)
 			end
 
 		end
