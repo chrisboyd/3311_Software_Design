@@ -9,9 +9,6 @@ class
 
 inherit
 	ENTITY_MOVABLE
-		redefine
-			check_post_move
-		end
 
 create
 	make
@@ -53,23 +50,30 @@ feature --Commands
 			-- dies by out of fuel first
 			elseif fuel = 0 then
 				life := 0
+				death_msg.append ("Janitaur got lost in space - out of fuel at Sector:" + location.out)
 			elseif location.has_blackhole then
 				life := 0
+				death_msg.append ("Janitaur got devoured by blackhole (id: -1) at Sector:3:3")
 			end
 
-			if fuel = 0 then
+			if fuel = 0 and death_msg.is_empty then
 				life := 0
+				death_msg.append ("Janitaur got lost in space - out of fuel at Sector:" + location.out)
 			end
 		end
 
 	reproduce: detachable ENTITY_MOVABLE
+		local
+			temp: JANITAUR
 		do
 			if repro_interval = 0 then
 				if not location.is_full then
-					Result := create {JANITAUR}.make (shared_info.movable_id, location)
+					create temp.make (shared_info.movable_id, location)
 					shared_info.inc_movable_id
-					location.put (Result)
+					location.put (temp)
+					move_info.append ("%N      reproduced " + temp.id_out + " at " + temp.loc_out)
 					repro_interval := 2
+					Result := temp
 				end
 			else
 				repro_interval := repro_interval - 1
@@ -96,6 +100,7 @@ feature --Commands
 						entity.item.kill
 						msg.append ("Asteroid got imploded by janitaur (id: " + id.out)
 						msg.append (") at Sector:" + location.print_sector)
+						move_info.append ("%N   destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
 						entity.item.set_death_msg (msg)
 						location.remove (entity.item)
 					end

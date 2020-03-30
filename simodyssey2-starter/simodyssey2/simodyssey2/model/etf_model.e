@@ -251,7 +251,6 @@ feature --support
 								start := create {PAIR[INTEGER,INTEGER]}.make (entity.item.location.row, entity.item.location.column)
 								dest := get_dest_coord(start, dir_coord)
 								entity.item.move (board.grid[dest.first, dest.second])
-								move_list.append (entity.item.get_move_info + "%N")
 							end
 							entity.item.check_post_move
 							if not entity.item.is_dead then
@@ -265,6 +264,7 @@ feature --support
 								entity.item.set_turns (turns)
 							end
 							--add dead entities to a list of things that died this turn
+							move_list.append (entity.item.get_move_info + "%N")
 							add_deaths
 
 						end--either not a planet or a planet and no star in sector

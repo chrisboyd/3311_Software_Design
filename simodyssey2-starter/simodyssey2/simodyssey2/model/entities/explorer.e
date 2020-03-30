@@ -33,6 +33,35 @@ feature --Attributes
 
 feature --Commands
 
+	check_post_move
+		local
+			stationary: ENTITY_STATIONARY
+		do
+			if location.has_star then
+				stationary := location.get_stationary
+				check attached {STAR} stationary as s then
+					fuel := fuel + s.luminosity
+					if fuel > 3 then
+						fuel := 3
+					end
+				end
+			--handle situation of out of fuel and in blackhole sector,
+			--explorer dies by out of fuel first
+			elseif fuel = 0 then
+				life := 0
+				death_msg.append ("Explorer got lost in space - out of fuel at Sector:" + location.out)
+			elseif location.has_blackhole then
+				life := 0
+				death_msg.append ("Benign got devoured by blackhole (id: -1) at Sector:3:3")
+			end
+
+			if fuel = 0 and death_msg.is_empty then
+				life := 0
+				death_msg.append ("Explorer got lost in space - out of fuel at Sector:" + location.out)
+			end
+
+		end
+
 	reproduce: detachable ENTITY_MOVABLE
 		do
 		end

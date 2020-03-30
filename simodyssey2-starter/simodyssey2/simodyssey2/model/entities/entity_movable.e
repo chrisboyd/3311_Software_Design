@@ -47,29 +47,7 @@ feature --commands
 
 	--switch to deferred for death message
 	check_post_move
-		local
-			stationary: ENTITY_STATIONARY
-		do
-			if location.has_star then
-				stationary := location.get_stationary
-				check attached {STAR} stationary as s then
-					fuel := fuel + s.luminosity
-					if fuel > 3 then
-						fuel := 3
-					end
-				end
-			--handle situation of out of fuel and in blackhole sector,
-			--explorer dies by out of fuel first
-			elseif fuel = 0 then
-				life := 0
-			elseif location.has_blackhole then
-				life := 0
-			end
-
-			if fuel = 0 then
-				life := 0
-			end
-
+		deferred
 		end
 
 	wormhole(board: GALAXY)

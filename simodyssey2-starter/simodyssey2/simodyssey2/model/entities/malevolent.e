@@ -33,14 +33,47 @@ feature --attributes
 
 feature --Commands
 
+	check_post_move
+		local
+			stationary: ENTITY_STATIONARY
+		do
+			if location.has_star then
+				stationary := location.get_stationary
+				check attached {STAR} stationary as s then
+					fuel := fuel + s.luminosity
+					if fuel > 3 then
+						fuel := 3
+					end
+				end
+			--handle situation of out of fuel and in blackhole sector,
+			--explorer dies by out of fuel first
+			elseif fuel = 0 then
+				life := 0
+				death_msg.append ("Malevolent got lost in space - out of fuel at Sector:" + location.out)
+			elseif location.has_blackhole then
+				life := 0
+				death_msg.append ("Malevolent got devoured by blackhole (id: -1) at Sector:3:3")
+			end
+
+			if fuel = 0 and death_msg.is_empty then
+				life := 0
+				death_msg.append ("Malevolent got lost in space - out of fuel at Sector:" + location.out)
+			end
+
+		end
+
 	reproduce: detachable ENTITY_MOVABLE
+		local
+			temp: MALEVOLENT
 		do
 			if repro_interval = 0 then
 				if not location.is_full then
-					Result := create {MALEVOLENT}.make (shared_info.movable_id, location)
+					create temp.make (shared_info.movable_id, location)
 					shared_info.inc_movable_id
-					location.put (Result)
+					location.put (temp)
+					move_info.append ("%N      reproduced " + temp.id_out + " at " + temp.loc_out)
 					repro_interval := 1
+					Result := temp
 				end
 			else
 				repro_interval := repro_interval - 1
@@ -72,10 +105,12 @@ feature --Commands
 						end
 						if not benign_present then
 							movables.i_th (exp_ind).take_life
+							move_info.append ("%N   attacked " + movables.i_th (exp_ind).id_out + " at " + movables.i_th (exp_ind).loc_out)
 							if movables.i_th (exp_ind).is_dead then
 								msg.append ("Explorer got lost in space - out of life support at Sector:")
 								msg.append (location.print_sector)
 								movables.i_th (exp_ind).set_death_msg (msg)
+								location.remove (movables.i_th (exp_ind))
 							end
 						end
 					end
