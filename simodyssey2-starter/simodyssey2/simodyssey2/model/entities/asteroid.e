@@ -20,6 +20,7 @@ feature --Initialization
 			item := 'A'
 			location := loc
 			life := 1
+			id := i
 			create death_msg.make_empty
 			create move_info.make_empty
 		end
@@ -36,7 +37,7 @@ feature --Commands
 			end
 		end
 
-	reproduce: detachable ENTITY_MOVABLE
+	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
 		do
 		end
 
@@ -79,9 +80,23 @@ feature --Commands
 			turns_left :=  gen.rchoose (0, 2)
 		end
 
+feature --Queries
+
 	get_name: STRING
 		do
 			create Result.make_from_string ("Asteroid")
+		end
+
+	get_status: STRING
+		do
+			create Result.make_empty
+
+			Result.append ("    " + id_out + "->turns_left:")
+			if life = 0 then
+				Result.append("N/A")
+			else
+				Result.append(turns_left.out)
+			end
 		end
 
 end

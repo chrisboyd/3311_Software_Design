@@ -46,11 +46,6 @@ feature --commands
 
 		end
 
-	--switch to deferred for death message
-	check_post_move
-		deferred
-		end
-
 	wormhole(board: GALAXY)
 		local
 			added: BOOLEAN
@@ -108,7 +103,7 @@ feature --commands
 
 feature --deferred command
 
-	reproduce: detachable ENTITY_MOVABLE
+	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
 		deferred
 		end
 
@@ -117,6 +112,14 @@ feature --deferred command
 		end
 
 	get_name: STRING
+		deferred
+		end
+
+	check_post_move
+		deferred
+		end
+
+	get_status: STRING
 		deferred
 		end
 

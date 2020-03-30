@@ -13,7 +13,7 @@ create
 feature -- command
 	abort
     	do
-			if not model.play_mode or model.test_mode then
+			if not (model.play_mode or model.test_mode) then
 				model.set_error ("Negative on that request:no mission in progress.")
 			else
 				model.abort

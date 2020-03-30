@@ -66,14 +66,13 @@ feature --Commands
 
 		end
 
-	reproduce: detachable ENTITY_MOVABLE
+	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
 		local
 			temp: MALEVOLENT
 		do
 			if repro_interval = 0 then
 				if not location.is_full then
-					create temp.make (shared_info.movable_id, location)
-					shared_info.inc_movable_id
+					create temp.make (next_id, location)
 					location.put (temp)
 					move_info.append ("%N      reproduced " + temp.id_out + " at " + temp.loc_out)
 					repro_interval := 1
@@ -123,9 +122,23 @@ feature --Commands
 			turns_left := gen.rchoose (0, 2)
 		end
 
+feature --Queries
+
 	get_name: STRING
 		do
 			create Result.make_from_string ("Malevolent")
+		end
+
+	get_status: STRING
+		do
+			create Result.make_empty
+			Result.append ("    " + id_out + "->fuel:" + fuel.out + "/3, actions_left_until_reproduction:")
+			Result.append (repro_interval.out + "/1, turns_left:")
+			if life = 0 then
+				Result.append("N/A")
+			else
+				Result.append(turns_left.out)
+			end
 		end
 
 end

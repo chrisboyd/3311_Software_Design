@@ -20,6 +20,7 @@ feature --Attributes
 	orbiting: BOOLEAN
 	supports_life: BOOLEAN
 	has_set: BOOLEAN
+	visited: BOOLEAN
 
 feature --Initialization
 	make(i: INTEGER; loc: SECTOR)
@@ -56,7 +57,7 @@ feature --Commands
 			end
 		end
 
-	reproduce: detachable ENTITY_MOVABLE
+	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
 		do
 		end
 
@@ -89,9 +90,29 @@ feature --Commands
 			supports_life := True
 		end
 
+	set_visited
+		do
+			visited := True
+		end
+
+feature --Queries
+
 	get_name: STRING
 		do
 			create Result.make_from_string ("Planet")
+		end
+
+	get_status: STRING
+		do
+			create Result.make_empty
+			Result.append ("    " + id_out + "->attached?:" + orbiting.out.at (1).out + ", support_life?:")
+			Result.append (supports_life.out.at (1).out + ", visited?:" + visited.out.at (1).out)
+			Result.append (", turns_left:")
+			if orbiting or (life = 0) then
+				Result.append("N/A")
+			else
+				Result.append (turns_left.out)
+			end
 		end
 
 end

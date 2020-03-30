@@ -35,6 +35,8 @@ feature -- attributes
 
 	explorer: EXPLORER
 
+	movable_id: INTEGER
+
 feature --constructor
 
 	make
@@ -69,11 +71,11 @@ feature --constructor
 			stationary_entities.compare_objects
 
 			--put explorer in grid
-			explorer := create {EXPLORER}.make(shared_info.movable_id,grid[1,1])
-			shared_info.inc_movable_id
+			movable_id := 0
+			explorer := create {EXPLORER}.make(movable_id,grid[1,1])
+			movable_id := movable_id + 1
 			grid[1,1].put (explorer)
 			movable_entities.extend (explorer)
-
 			--put blackhole in grid
 			blackhole := create {BLACKHOLE}.make (-1, grid[3,3])
 			grid[3,3].put (blackhole)
@@ -113,24 +115,24 @@ feature --commands
 							threshold := gen.rchoose (1, 100)
 
 							if threshold < a_thresh then
-								component :=	create {ASTEROID}.make(shared_info.movable_id, grid[r.item,c.item])
-								shared_info.inc_movable_id
+								component :=	create {ASTEROID}.make(movable_id, grid[r.item,c.item])
+								movable_id := movable_id + 1
 							else
 								if threshold < j_thresh then
-									component :=	create {JANITAUR}.make(shared_info.movable_id, grid[r.item,c.item])
-									shared_info.inc_movable_id
+									component :=	create {JANITAUR}.make(movable_id, grid[r.item,c.item])
+									movable_id := movable_id + 1
 								else
 									if threshold < m_thresh then
-										component :=	create {MALEVOLENT}.make(shared_info.movable_id, grid[r.item,c.item])
-										shared_info.inc_movable_id
+										component :=	create {MALEVOLENT}.make(movable_id, grid[r.item,c.item])
+										movable_id := movable_id + 1
 									else
 										if threshold < b_thresh then
-											component :=	create {BENIGN}.make(shared_info.movable_id, grid[r.item,c.item])
-											shared_info.inc_movable_id
+											component :=	create {BENIGN}.make(movable_id, grid[r.item,c.item])
+											movable_id := movable_id + 1
 										else
 											if threshold < p_thresh then
-												component :=	create {PLANET}.make(shared_info.movable_id, grid[r.item,c.item])
-												shared_info.inc_movable_id
+												component :=	create {PLANET}.make(movable_id, grid[r.item,c.item])
+												movable_id := movable_id + 1
 											end
 										end
 									end
@@ -209,80 +211,149 @@ feature --commands
 			Result := entity
 		end
 
+	inc_movable_id
+		do
+			movable_id := movable_id + 1
+		end
+
 feature -- query
+
+	get_sector_desc: STRING
+		local
+			component: ENTITY_ALPHABET
+			printed_symbols: INTEGER
+		do
+			create Result.make_empty
+			across
+				grid as sector
+			loop
+				printed_symbols := 0
+				Result.append ("    [" + sector.item.row.out + "," + sector.item.column.out + "]->")
+				across
+					sector.item.contents as quadrant
+				loop
+					component := quadrant.item
+					if attached component as entity then
+						Result.append ("[" + entity.id.out + "," + entity.item.out + "]")
+					else
+						Result.append ("-")
+					end
+					if not quadrant.after then
+						Result.append (",")
+					end
+					printed_symbols := printed_symbols + 1
+				end
+				from
+				until
+					(shared_info.max_capacity - printed_symbols) = 0
+				loop
+					Result.append ("-")
+					printed_symbols := printed_symbols + 1
+					if (shared_info.max_capacity - printed_symbols) /= 0 then
+						Result.append (",")
+					end
+				end
+				if not sector.after then
+					Result.append ("%N")
+				end
+			end
+		end
+
+	get_entity_desc: STRING
+		do
+			create Result.make_empty
+
+			across
+				stationary_entities as s
+			loop
+				Result.append ("    [" + s.item.id.out + "," + s.item.item.out + "]->")
+				if s.item.is_star then
+					check attached {STAR} s.item as star then
+						Result.append ("Luminosity:" + star.luminosity.out)
+						end
+				end
+				Result.append ("%N")
+			end
+
+			across
+				movable_entities as m
+			loop
+				Result.append (m.item.get_status + "%N")
+			end
+		end
+
 	out: STRING
 	--Returns grid in string form
-	local
-		string1: STRING
-		string2: STRING
-		row_counter: INTEGER
-		column_counter: INTEGER
-		contents_counter: INTEGER
-		temp_sector: SECTOR
-		temp_component: ENTITY_ALPHABET
-		printed_symbols_counter: INTEGER
-	do
-		create Result.make_empty
-		create string1.make(7*shared_info.number_rows)
-		create string2.make(7*shared_info.number_columns)
-		--string1.append("%N")
-
-		from
-			row_counter := 1
-		until
-			row_counter > shared_info.number_rows
-		loop
-			string1.append("    ")
-			string2.append("    ")
+		local
+			string1: STRING
+			string2: STRING
+			row_counter: INTEGER
+			column_counter: INTEGER
+			contents_counter: INTEGER
+			temp_sector: SECTOR
+			temp_component: ENTITY_ALPHABET
+			printed_symbols_counter: INTEGER
+		do
+			create Result.make_empty
+			create string1.make(7*shared_info.number_rows)
+			create string2.make(7*shared_info.number_columns)
+			--string1.append("%N")
 
 			from
-				column_counter := 1
+				row_counter := 1
 			until
-				column_counter > shared_info.number_columns
+				row_counter > shared_info.number_rows
 			loop
-				temp_sector:= grid[row_counter, column_counter]
-			    string1.append("(")
-            	string1.append(temp_sector.print_sector)
-                string1.append(")")
-			    string1.append("  ")
+				string1.append("    ")
+				string2.append("    ")
+
 				from
-					contents_counter := 1
-					printed_symbols_counter:=0
+					column_counter := 1
 				until
-					contents_counter > temp_sector.contents.count
+					column_counter > shared_info.number_columns
 				loop
-					temp_component := temp_sector.contents[contents_counter]
-					if attached temp_component as character then
-						string2.append_character(character.item)
-					else
-						string2.append("-")
-					end -- if
-					printed_symbols_counter:=printed_symbols_counter+1
-					contents_counter := contents_counter + 1
-				end -- loop
-
-				from
-				until (shared_info.max_capacity - printed_symbols_counter)=0
-				loop
-						string2.append("-")
+					temp_sector:= grid[row_counter, column_counter]
+				    string1.append("(")
+	            	string1.append(temp_sector.print_sector)
+	                string1.append(")")
+				    string1.append("  ")
+					from
+						contents_counter := 1
+						printed_symbols_counter:=0
+					until
+						contents_counter > temp_sector.contents.count
+					loop
+						temp_component := temp_sector.contents[contents_counter]
+						if attached temp_component as character then
+							string2.append_character(character.item)
+						else
+							string2.append("-")
+						end -- if
 						printed_symbols_counter:=printed_symbols_counter+1
+						contents_counter := contents_counter + 1
+					end -- loop
 
+					from
+					until (shared_info.max_capacity - printed_symbols_counter)=0
+					loop
+							string2.append("-")
+							printed_symbols_counter:=printed_symbols_counter+1
+
+					end
+					string2.append("   ")
+					column_counter := column_counter + 1
+				end -- loop
+				string1.append("%N")
+				if not (row_counter = shared_info.number_rows) then
+					string2.append("%N")
 				end
-				string2.append("   ")
-				column_counter := column_counter + 1
-			end -- loop
-			string1.append("%N")
-			if not (row_counter = shared_info.number_rows) then
-				string2.append("%N")
+				Result.append (string1.twin)
+				Result.append (string2.twin)
+
+				row_counter := row_counter + 1
+				string1.wipe_out
+				string2.wipe_out
 			end
-			Result.append (string1.twin)
-			Result.append (string2.twin)
-
-			row_counter := row_counter + 1
-			string1.wipe_out
-			string2.wipe_out
 		end
-	end
-
 
 end

@@ -1,0 +1,17 @@
+--test various test inputs
+test(3,5,7,15,30)
+abort
+test(30,25,15,3,6)
+abort
+test(3,3,3,3,3)
+abort
+test(1,1,1,1,1)
+abort
+test(101,101,101,101,101)
+abort
+test(97,98,99,100,101)
+abort
+
+
+
+

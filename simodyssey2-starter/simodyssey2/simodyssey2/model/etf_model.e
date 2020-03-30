@@ -21,14 +21,13 @@ feature {NONE} -- Initialization
     --info: SHARED_INFORMATION
 
     -- Initialization for `Current'
-	make(init_state: INTEGER)
+	make
 		do
 			create board.make
 			create error_msg.make_empty
 			create deaths.make
 			deaths.compare_objects
 			create move_list.make_empty
-			game_state := init_state
 			create status_msg.make_empty
 		end
 
@@ -48,20 +47,15 @@ feature -- model attributes
 			Result:= shared_info_access.shared_info
 		end
 
-	deaths: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE]
+	deaths: LINKED_LIST [ENTITY_MOVABLE]
 	aborted: BOOLEAN
 
 feature -- model operations
-	default_update
-			-- Perform update to the model state.
-		do
-
-		end
 
 	reset
 			-- Reset model state.
 		do
-			make(game_state)
+			make
 		end
 
 feature --Commands
@@ -105,7 +99,7 @@ feature --Commands
 			game_state := game_state + 1
 			error_state := 0
 			board.explorer.check_post_move
-			--check for explorer death
+			--check for explorer death, does
 			update_movables
 
 		end
@@ -155,6 +149,17 @@ feature --Commands
 			status_msg.wipe_out
 		end
 
+	game_ended
+		do
+			create board.make
+			play_mode := False
+			test_mode := False
+			error_msg.wipe_out
+			deaths.wipe_out
+			move_list.wipe_out
+			status_msg.wipe_out
+		end
+
 
 feature -- queries
 	out : STRING
@@ -180,10 +185,11 @@ feature -- queries
 					Result.append (status_msg)
 				else
 					if board.explorer.is_dead then
-						Result.append ("   " + board.explorer.get_death_msg + "%N")
-						Result.append ("   The game has ended. You can start a new game.%N")
+						Result.append ("  " + board.explorer.get_death_msg + "%N")
+						Result.append ("  The game has ended. You can start a new game.%N")
 						test_mode := False
 						play_mode := False
+						--abort
 						------------
 						--actually reset game, ie abort
 						------------
@@ -193,6 +199,20 @@ feature -- queries
 						Result.append("none%N")
 					else
 						Result.append ("%N" + move_list)
+					end
+					if test_mode then
+						--sectors information
+						Result.append ("  Sectors:%N")
+						Result.append(board.get_sector_desc)
+						--entity descriptiones
+						Result.append ("  Descriptions:%N")
+						Result.append (board.get_entity_desc)
+						Result.append ("  Deaths This Turn:")
+						if deaths.is_empty then
+							Result.append ("none%N")
+						else
+							Result.append ("%N" + get_death_msgs)
+						end
 					end
 
 					Result.append (board.out)
@@ -204,6 +224,9 @@ feature -- queries
 			move_list.wipe_out
 			deaths.wipe_out
 			status_msg.wipe_out
+			if board.explorer.is_dead then
+				game_ended
+			end
 
 		end
 
@@ -269,6 +292,7 @@ feature --support
 			start: PAIR[INTEGER,INTEGER]
 			reproduce: ENTITY_MOVABLE
 			turns: INTEGER
+			next_id: INTEGER
 		do
 			--perform updates for each movable entities
 
@@ -295,7 +319,9 @@ feature --support
 							end
 							entity.item.check_post_move
 							if not entity.item.is_dead then
-								reproduce := entity.item.reproduce
+								next_id := board.movable_id
+								board.inc_movable_id
+								reproduce := entity.item.reproduce (next_id)
 								if attached reproduce as r then
 									board.movable_entities.extend (r)
 								end
@@ -333,6 +359,17 @@ feature --support
 					end
 				end
 
+			end
+
+		get_death_msgs: STRING
+			do
+				create Result.make_empty
+				across
+					deaths as entity
+				loop
+					Result.append (entity.item.get_status + ",%N")
+					Result.append ("      " + entity.item.death_msg + "%N")
+				end
 			end
 
 end

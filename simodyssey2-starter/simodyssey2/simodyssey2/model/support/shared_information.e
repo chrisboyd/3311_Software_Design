@@ -63,10 +63,10 @@ feature
 	max_capacity: INTEGER = 4
 		 -- max number of objects that can be stored in a location
 
-	movable_id: INTEGER
-		attribute
-			Result := 0
-		end
+--	movable_id: INTEGER
+--		attribute
+--			Result := 0
+--		end
 
 feature --commands
 	test(a_threshold: INTEGER; j_threshold: INTEGER; m_threshold: INTEGER; b_threshold: INTEGER; p_threshold: INTEGER)
@@ -107,9 +107,14 @@ feature --commands
 			benign_threshold:=threshhold
 		end
 
-	inc_movable_id
-		do
-			movable_id := movable_id + 1
-		end
+--	inc_movable_id
+--		do
+--			movable_id := movable_id + 1
+--		end
+
+--	reset_movable_id
+--		do
+--			movable_id := 0
+--		end
 
 end

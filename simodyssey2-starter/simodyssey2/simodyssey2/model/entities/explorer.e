@@ -66,7 +66,7 @@ feature --Commands
 
 		end
 
-	reproduce: detachable ENTITY_MOVABLE
+	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
 		do
 		end
 
@@ -85,9 +85,18 @@ feature --Commands
 			landed := False
 		end
 
+feature --Queries
+
 	get_name: STRING
 		do
 			create Result.make_from_string ("Explorer")
+		end
+
+	get_status: STRING
+		do
+			create Result.make_empty
+			Result.append ("    " + id_out + "->fuel:" + fuel.out + "/3, life:" + life.out)
+			Result.append ("/3, landed?:" + landed.out.at (1).out)
 		end
 
 end

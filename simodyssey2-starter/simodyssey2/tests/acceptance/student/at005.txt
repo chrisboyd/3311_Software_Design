@@ -1,0 +1,9 @@
+--test explorer death due to blackhole
+play
+move(E)
+move(SE)
+move(S)
+
+
+
+
