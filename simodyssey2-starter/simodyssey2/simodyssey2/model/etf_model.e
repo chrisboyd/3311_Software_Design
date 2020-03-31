@@ -336,7 +336,7 @@ feature --support
 				if not entity.item.is_explorer then
 					if entity.item.turns_left = 0 and not entity.item.is_dead then
 						--special case for planet
-						if entity.item.is_planet then
+						if entity.item.is_planet and entity.item.location.has_star then
 							--planet can't kill anything so don't need to check if
 							--any items were returns by behave
 							create entities_killed.make_from_iterable (entity.item.behave)

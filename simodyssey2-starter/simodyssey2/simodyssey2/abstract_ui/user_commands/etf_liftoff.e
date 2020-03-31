@@ -15,10 +15,11 @@ feature -- command
     	do
 			if not (model.play_mode or model.test_mode) then
 				model.set_error ("Negative on that request:no mission in progress.")
-			elseif model.board.explorer.landed then
+			elseif not model.board.explorer.landed then
 				model.set_error ("Negative on that request:you are not on a planet at Sector:" +
 								model.board.explorer.location.out)
 			else
+				print("%Nlanded: " +  model.board.explorer.landed.out + "%N")
 				model.liftoff_explorer
 			end
 

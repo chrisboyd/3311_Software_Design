@@ -38,9 +38,9 @@ feature --Commands
 	move(dest: SECTOR)
 		do
 			move_info.wipe_out
-			if not location.has_star then
-				--remove from location, add to destination
-				move_info.append ("    " + Current.id_out + ":" + Current.loc_out)
+			--remove from location, add to destination
+			move_info.append ("    " + Current.id_out + ":" + Current.loc_out)
+			if not dest.is_full then
 				dest.put (Current)
 				location.remove (Current)
 				location := dest

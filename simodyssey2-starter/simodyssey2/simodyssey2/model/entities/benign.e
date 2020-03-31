@@ -68,12 +68,15 @@ feature --Commands
 	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
 		local
 			temp: BENIGN
+			turns : INTEGER
 		do
 			if repro_interval = 0 then
 				if not location.is_full then
 					create temp.make (next_id, location)
-					location.put (temp)
 					repro_interval := 1
+					turns := gen.rchoose (0, 2)
+					location.put (temp)
+					temp.set_turns (turns)
 					move_info.append ("%N      reproduced " + temp.id_out + " at " + temp.loc_out)
 					Result := temp
 				end
