@@ -19,7 +19,6 @@ feature -- command
 				model.set_error ("Negative on that request:you are not on a planet at Sector:" +
 								model.board.explorer.location.out)
 			else
-				print("%Nlanded: " +  model.board.explorer.landed.out + "%N")
 				model.liftoff_explorer
 			end
 

@@ -73,10 +73,10 @@ feature --Commands
 			if repro_interval = 0 then
 				if not location.is_full then
 					create temp.make (next_id, location)
-					repro_interval := 1
-					turns := gen.rchoose (0, 2)
 					location.put (temp)
+					turns := gen.rchoose (0, 2)
 					temp.set_turns (turns)
+					repro_interval := 1
 					move_info.append ("%N      reproduced " + temp.id_out + " at " + temp.loc_out)
 					Result := temp
 				end
