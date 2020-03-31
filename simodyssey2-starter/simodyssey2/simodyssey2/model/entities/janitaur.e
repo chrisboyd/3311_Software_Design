@@ -106,7 +106,7 @@ feature --Commands
 					if entity.item.is_asteroid then
 						load_level := load_level + 1
 						entity.item.kill
-						msg.append ("Asteroid imploded by janitaur (id: " + id.out)
+						msg.append ("Asteroid got imploded by janitaur (id: " + id.out)
 						msg.append (") at Sector:" + location.print_sector)
 						move_info.append ("%N      destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
 						entity.item.set_entity_msg (msg)
