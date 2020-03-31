@@ -131,6 +131,15 @@ feature --Commands
 			end
 		end
 
+	liftoff_explorer
+		do
+			board.explorer.liftoff
+			game_state := game_state + 1
+			error_state := 0
+			--board.explorer.check_post_move
+			update_movables
+		end
+
 	status
 		do
 			error_state := error_state + 1
@@ -333,8 +342,8 @@ feature --support
 							create entities_killed.make_from_iterable (entity.item.behave)
 						else
 
-							if entity.item.location.has_wormhole and ( entity.item.is_malevolent
-							or entity.item.is_benign) then
+							if entity.item.location.has_wormhole and
+							( entity.item.is_malevolent or entity.item.is_benign) then
 								entity.item.wormhole(board)
 							else
 								--choose direction 1-8

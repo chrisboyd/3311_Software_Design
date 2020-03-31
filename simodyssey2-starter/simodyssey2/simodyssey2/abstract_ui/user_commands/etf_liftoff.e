@@ -13,7 +13,17 @@ create
 feature -- command
 	liftoff
     	do
-			--to do
+			if not (model.play_mode or model.test_mode) then
+				model.set_error ("Negative on that request:no mission in progress.")
+			elseif model.board.explorer.landed then
+				model.set_error ("Negative on that request:you are not on a planet at Sector:" +
+								model.board.explorer.location.out)
+			else
+				model.liftoff_explorer
+			end
+
+
+
 			etf_cmd_container.on_change.notify ([Current])
     	end
 
