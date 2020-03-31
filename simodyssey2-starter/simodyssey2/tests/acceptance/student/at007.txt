@@ -1,0 +1,9 @@
+--test quick death
+test(50,70,80,90,100)
+move(S)
+
+
+
+
+
+

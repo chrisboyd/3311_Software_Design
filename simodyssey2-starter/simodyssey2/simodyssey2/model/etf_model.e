@@ -114,6 +114,23 @@ feature --Commands
 			update_movables
 		end
 
+	land_explorer
+		local
+			msg: STRING
+		do
+			msg := board.explorer.land
+			if msg.is_empty then
+				game_state := game_state + 1
+				error_state := 0
+				board.explorer.check_post_move
+				if not board.explorer.found_life then
+					update_movables
+				end
+			else
+				set_error(msg)
+			end
+		end
+
 	status
 		do
 			error_state := error_state + 1
@@ -140,6 +157,11 @@ feature --Commands
 		do
 			aborted := True
 			error_state := error_state + 1
+			end_game
+		end
+
+	end_game
+		do
 			create board.make
 			play_mode := False
 			test_mode := False
@@ -183,16 +205,14 @@ feature -- queries
 					Result.append ("  Mission aborted. Try test(3,5,7,15,30)")
 				elseif not status_msg.is_empty then
 					Result.append (status_msg)
+				elseif board.explorer.found_life then
+					Result.append ("  Tranquility base here - we've got a life!")
+					end_game
 				else
 					if board.explorer.is_dead then
 						Result.append ("  " + board.explorer.get_death_msg + "%N")
 						Result.append ("  The game has ended. You can start a new game.%N")
-						test_mode := False
-						play_mode := False
-						--abort
-						------------
-						--actually reset game, ie abort
-						------------
+
 					end
 					Result.append ("  Movement:")
 					if move_list.is_empty then
@@ -216,6 +236,13 @@ feature -- queries
 					end
 
 					Result.append (board.out)
+					if test_mode and board.explorer.is_dead then
+						Result.append ("%N  " + board.explorer.get_death_msg + "%N")
+						Result.append ("  The game has ended. You can start a new game.")
+					end
+					if board.explorer.is_dead then
+						end_game
+					end
 				end
 
 			end
@@ -300,7 +327,7 @@ feature --support
 				if not entity.item.is_explorer then
 					if entity.item.turns_left = 0 and not entity.item.is_dead then
 						--special case for planet
-						if entity.item.is_planet and entity.item.location.has_star then
+						if entity.item.is_planet then
 							--planet can't kill anything so don't need to check if
 							--any items were returns by behave
 							create entities_killed.make_from_iterable (entity.item.behave)

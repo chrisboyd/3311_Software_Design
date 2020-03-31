@@ -69,15 +69,14 @@ feature --Commands
 			Result.compare_objects
 			if location.has_star then
 				orbiting := True
-				if location.get_stationary.is_yellow_dwarf and not has_set then
+				if location.has_yellow_dwarf and not has_set then
 					odds_life := gen.rchoose (1, 2)
 					if odds_life = 2 then
 						supports_life := True
 					end
 					has_set := True
 				end
-			end
-			if not orbiting then
+			else
 				turns_left := gen.rchoose (0, 2)
 			end
 		end

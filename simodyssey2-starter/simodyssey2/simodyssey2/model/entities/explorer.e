@@ -30,6 +30,7 @@ feature -- Initialization
 
 feature --Attributes
 	landed: BOOLEAN
+	found_life: BOOLEAN
 
 feature --Commands
 
@@ -45,6 +46,9 @@ feature --Commands
 						fuel := 3
 					end
 				end
+			elseif landed then
+				fuel := 3
+				life := 3
 			--handle situation of out of fuel and in blackhole sector,
 			--explorer dies by out of fuel first
 			elseif fuel = 0 then
@@ -76,9 +80,45 @@ feature --Commands
 			Result.compare_objects
 		end
 
-	land
+	land: STRING
+		local
+			valid_planet: BOOLEAN
+			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
 		do
-			landed := True
+			create Result.make_empty
+			movables := location.get_movables
+			if not location.has_yellow_dwarf then
+				Result.append ("Negative on that request:no yellow dwarf at Sector:")
+				Result.append (location.out)
+			elseif not location.has_planet then
+				Result.append ("Negative on that request:no planets at Sector:")
+				Result.append (location.out)
+			else
+				from
+					movables.start
+				until
+					movables.after or landed
+				loop
+					if movables.item.is_planet then
+						check attached {PLANET} movables.item as p then
+							if p.orbiting then
+								if not p.visited then
+									p.set_visited
+									valid_planet := True
+									landed := True
+								end
+							end
+						end
+					end --if
+					movables.forth
+				end--loop
+
+				if not landed then
+					Result.append("Negative on that request:no unvisited attached planet at Sector:")
+					Result.append (location.out)
+				end
+			end
+
 		end
 
 	liftoff
