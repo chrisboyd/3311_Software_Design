@@ -51,9 +51,11 @@ feature --commands
 			added: BOOLEAN
 			temp_row: INTEGER
 			temp_col: INTEGER
+			start: STRING
 		do
 			move_info.wipe_out
 			move_info.append ("    " + Current.id_out + ":" + Current.loc_out)
+			start := Current.loc_out
 			from
 				added := False
 			until
@@ -70,7 +72,10 @@ feature --commands
 				end
 
 			end
-			move_info.append ("->" + Current.loc_out)
+			if not (start.is_equal (Current.loc_out)) then
+				move_info.append ("->" + Current.loc_out)
+			end
+
 		end
 
 	get_entity_msg: STRING
