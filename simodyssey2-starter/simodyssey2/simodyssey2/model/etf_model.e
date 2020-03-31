@@ -107,6 +107,7 @@ feature --Commands
 	wormhole_explorer
 		do
 			board.explorer.wormhole(board)
+			move_list.append (board.explorer.get_move_info + "%N")
 			game_state := game_state + 1
 			error_state := 0
 			board.explorer.check_post_move
@@ -317,7 +318,6 @@ feature --support
 			dir_coord: PAIR[INTEGER, INTEGER]
 			start: PAIR[INTEGER,INTEGER]
 			reproduce: ENTITY_MOVABLE
-			turns: INTEGER
 			next_id: INTEGER
 			entities_killed: LINKED_LIST [ENTITY_MOVABLE]
 			created_entities: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE]

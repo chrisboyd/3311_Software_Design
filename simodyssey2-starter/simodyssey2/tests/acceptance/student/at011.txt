@@ -1,0 +1,19 @@
+--test going through a wormhole
+test(3,5,7,15,30)
+move(N)
+wormhole
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+pass
+wormhole
