@@ -329,7 +329,10 @@ feature --support
 			turns: INTEGER
 			next_id: INTEGER
 			entities_killed: LINKED_LIST [ENTITY_MOVABLE]
+			created_entities: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE]
 		do
+			create created_entities.make
+			created_entities.compare_objects
 			across
 				board.movable_entities as entity
 			loop
@@ -358,7 +361,12 @@ feature --support
 								next_id := board.movable_id
 								reproduce := entity.item.reproduce (next_id)
 								if attached reproduce as r then
-									board.movable_entities.extend (r)
+									--board.movable_entities.extend (r)
+									--add created entities to a separate list, then add
+									--all of the new entities to the movable list AFTER
+									--update_movables is done so they don't act in turn they are
+									--created
+									created_entities.extend (r)
 									board.inc_movable_id
 								end
 								create entities_killed.make_from_iterable (entity.item.behave)
@@ -381,8 +389,19 @@ feature --support
 					end
 				end-- end of if not explorer
 			end--end of across
+			add_produced_entities(created_entities)
 			remove_dead_entities
 		end--end of do
+
+		add_produced_entities(created: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE])
+			do
+				across
+					created as to_add
+				loop
+					board.movable_entities.extend (to_add.item)
+				end
+
+			end
 
 		remove_dead_entities
 			do
