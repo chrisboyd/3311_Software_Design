@@ -292,6 +292,8 @@ feature --support
 			reproduce: ENTITY_MOVABLE
 			turns: INTEGER
 			next_id: INTEGER
+
+			temp: INTEGER
 		do
 			--perform updates for each movable entities
 
@@ -299,11 +301,12 @@ feature --support
 				board.movable_entities as entity
 			loop
 				if not entity.item.is_explorer then
-					if entity.item.turns_left = 0 then
+					if entity.item.turns_left = 0 and not entity.item.is_dead then
 						--update this to planet.behave
 						if entity.item.is_planet and entity.item.location.has_star then
 							entity.item.behave
 						else
+
 							if entity.item.location.has_wormhole and ( entity.item.is_malevolent
 							or entity.item.is_benign) then
 								entity.item.wormhole(board)
@@ -324,8 +327,10 @@ feature --support
 									board.movable_entities.extend (r)
 									board.inc_movable_id
 								end
-								
+
 								entity.item.behave
+							else
+								deaths.extend (entity.item)
 							end
 
 							move_list.append (entity.item.get_move_info + "%N")
@@ -334,22 +339,21 @@ feature --support
 					else
 						entity.item.set_turns (entity.item.turns_left - 1)
 					end
-					add_deaths
 
 				end--end of across
 			end-- end of if not explorer
 		end--end of do
 
-		add_deaths
+		remove_dead_entities
 			do
+				--remove items that were killed by the last entity to act
 				across
-					board.movable_entities as entity
+					board.movable_entities as m
 				loop
-					if entity.item.is_dead then
-						deaths.extend (entity.item)
+					if m.item.is_dead and not deaths.has (m.item)then
+						deaths.extend (m.item)
 					end
 				end
-
 				across
 					deaths as entity
 				loop
