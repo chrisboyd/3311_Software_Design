@@ -29,7 +29,7 @@ feature --Initialization
 			id := i
 			location := loc
 			life := 1
-			create death_msg.make_empty
+			create entity_msg.make_empty
 			create move_info.make_empty
 		end
 
@@ -52,7 +52,7 @@ feature --Commands
 		do
 			if location.has_blackhole then
 				life := 0
-				death_msg.append ("Planet got devoured by blackhole (id: -1) at Sector:3:3")
+				entity_msg.append ("Planet got devoured by blackhole (id: -1) at Sector:3:3")
 				location.remove (Current)
 			end
 		end

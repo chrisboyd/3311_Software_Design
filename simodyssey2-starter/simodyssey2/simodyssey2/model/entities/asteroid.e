@@ -21,7 +21,7 @@ feature --Initialization
 			location := loc
 			life := 1
 			id := i
-			create death_msg.make_empty
+			create entity_msg.make_empty
 			create move_info.make_empty
 		end
 
@@ -32,7 +32,7 @@ feature --Commands
 		do
 			if location.has_blackhole then
 				life := 0
-				death_msg.append ("Asteroid got devoured by blackhole (id: -1) at Sector:3:3")
+				entity_msg.append ("Asteroid got devoured by blackhole (id: -1) at Sector:3:3")
 
 				location.remove (Current)
 			end
@@ -66,7 +66,7 @@ feature --Commands
 								msg.append (entity.item.get_name + " got destroyed by asteroid (id: ")
 								msg.append (id.out + ") at Sector:" + location.print_sector)
 								location.remove (entity.item)
-								entity.item.set_death_msg (msg)
+								entity.item.set_entity_msg (msg)
 								Result.extend (entity.item)
 							end
 						end
@@ -76,7 +76,7 @@ feature --Commands
 						msg.append (entity.item.get_name + " got destroyed by asteroid (id: ")
 						msg.append (id.out + ") at Sector:" + location.print_sector)
 						location.remove (entity.item)
-						entity.item.set_death_msg (msg)
+						entity.item.set_entity_msg (msg)
 						Result.extend (entity.item)
 					end
 

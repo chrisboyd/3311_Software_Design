@@ -180,20 +180,10 @@ feature --Commands
 			status_msg.wipe_out
 		end
 
-	game_ended
-		do
-			create board.make
-			play_mode := False
-			test_mode := False
-			error_msg.wipe_out
-			deaths.wipe_out
-			move_list.wipe_out
-			status_msg.wipe_out
-		end
-
-
 feature -- queries
 	out : STRING
+		local
+			victory: BOOLEAN
 		do
 			create Result.make_empty
 			Result.append ("  state:" + game_state.out + "." + error_state.out + ",")
@@ -214,54 +204,55 @@ feature -- queries
 					Result.append ("  Mission aborted. Try test(3,5,7,15,30)")
 				elseif not status_msg.is_empty then
 					Result.append (status_msg)
-				elseif board.explorer.found_life then
-					Result.append ("  Tranquility base here - we've got a life!")
-					end_game
 				else
 					if board.explorer.is_dead then
-						Result.append ("  " + board.explorer.get_death_msg + "%N")
+						Result.append ("  " + board.explorer.get_entity_msg + "%N")
 						Result.append ("  The game has ended. You can start a new game.%N")
+					elseif board.explorer.found_life then
+						Result.append ("  " + board.explorer.get_entity_msg)
+						victory := True
+					elseif not board.explorer.entity_msg.is_empty then
+						Result.append ("  " + board.explorer.get_entity_msg + "%N")
+					end
 
-					end
-					Result.append ("  Movement:")
-					if move_list.is_empty then
-						Result.append("none%N")
-					else
-						Result.append ("%N" + move_list)
-					end
-					if test_mode then
-						--sectors information
-						Result.append ("  Sectors:%N")
-						Result.append(board.get_sector_desc)
-						--entity descriptiones
-						Result.append ("  Descriptions:%N")
-						Result.append (board.get_entity_desc)
-						Result.append ("  Deaths This Turn:")
-						if deaths.is_empty then
-							Result.append ("none%N")
+					if not victory then
+						Result.append ("  Movement:")
+						if move_list.is_empty then
+							Result.append("none%N")
 						else
-							Result.append ("%N" + get_death_msgs)
+							Result.append ("%N" + move_list)
+						end
+						if test_mode then
+							--sectors information
+							Result.append ("  Sectors:%N")
+							Result.append(board.get_sector_desc)
+							--entity descriptiones
+							Result.append ("  Descriptions:%N")
+							Result.append (board.get_entity_desc)
+							Result.append ("  Deaths This Turn:")
+							if deaths.is_empty then
+								Result.append ("none%N")
+							else
+								Result.append ("%N" + get_death_msgs)
+							end
+						end
+
+						Result.append (board.out)
+						if test_mode and board.explorer.is_dead then
+							Result.append ("%N  " + board.explorer.get_entity_msg + "%N")
+							Result.append ("  The game has ended. You can start a new game.")
 						end
 					end
-
-					Result.append (board.out)
-					if test_mode and board.explorer.is_dead then
-						Result.append ("%N  " + board.explorer.get_death_msg + "%N")
-						Result.append ("  The game has ended. You can start a new game.")
-					end
-					if board.explorer.is_dead then
-						end_game
-					end
 				end
-
 			end
 			--wipe messages
 			error_msg.wipe_out
 			move_list.wipe_out
 			deaths.wipe_out
 			status_msg.wipe_out
-			if board.explorer.is_dead then
-				game_ended
+			board.explorer.entity_msg.wipe_out
+			if board.explorer.is_dead or victory then
+				end_game
 			end
 
 		end
@@ -425,7 +416,7 @@ feature --support
 					deaths as entity
 				loop
 					Result.append (entity.item.get_status + ",%N")
-					Result.append ("      " + entity.item.death_msg + "%N")
+					Result.append ("      " + entity.item.entity_msg + "%N")
 				end
 			end
 

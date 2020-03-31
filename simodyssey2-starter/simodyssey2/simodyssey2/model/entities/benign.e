@@ -24,7 +24,7 @@ feature -- Initialization
 			repro_interval := 1
 			location := loc
 			life := 1
-			create death_msg.make_empty
+			create entity_msg.make_empty
 			create move_info.make_empty
 		end
 
@@ -48,15 +48,15 @@ feature --Commands
 			--explorer dies by out of fuel first
 			elseif fuel = 0 then
 				life := 0
-				death_msg.append ("Benign got lost in space - out of fuel at Sector:" + location.out)
+				entity_msg.append ("Benign got lost in space - out of fuel at Sector:" + location.out)
 			elseif location.has_blackhole then
 				life := 0
-				death_msg.append ("Benign got devoured by blackhole (id: -1) at Sector:3:3")
+				entity_msg.append ("Benign got devoured by blackhole (id: -1) at Sector:3:3")
 			end
 
-			if fuel = 0 and death_msg.is_empty then
+			if fuel = 0 and entity_msg.is_empty then
 				life := 0
-				death_msg.append ("Benign got lost in space - out of fuel at Sector:" + location.out)
+				entity_msg.append ("Benign got lost in space - out of fuel at Sector:" + location.out)
 			end
 
 			if life = 0 then
@@ -100,11 +100,11 @@ feature --Commands
 				movables as entity
 			loop
 				if entity.item.is_malevolent then
-					msg.append ("Malevolent got destroyed by benign (id: " + id.out)
+					msg.append ("Malevolent destroyed by benign (id: " + id.out)
 					msg.append (") at Sector:" + location.print_sector)
 					move_info.append ("%N      destroyed " + entity.item.id_out + " at " + entity.item.loc_out)
 					entity.item.kill
-					entity.item.set_death_msg (msg)
+					entity.item.set_entity_msg (msg)
 					location.remove (entity.item)
 					Result.extend (entity.item)
 				end

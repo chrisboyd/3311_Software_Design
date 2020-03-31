@@ -25,7 +25,7 @@ feature -- Initialization
 			location := loc
 			life := 1
 			load_level := 0
-			create death_msg.make_empty
+			create entity_msg.make_empty
 			create move_info.make_empty
 		end
 
@@ -50,15 +50,15 @@ feature --Commands
 			-- dies by out of fuel first
 			elseif fuel = 0 then
 				life := 0
-				death_msg.append ("Janitaur got lost in space - out of fuel at Sector:" + location.out)
+				entity_msg.append ("Janitaur got lost in space - out of fuel at Sector:" + location.out)
 			elseif location.has_blackhole then
 				life := 0
-				death_msg.append ("Janitaur got devoured by blackhole (id: -1) at Sector:3:3")
+				entity_msg.append ("Janitaur got devoured by blackhole (id: -1) at Sector:3:3")
 			end
 
-			if fuel = 0 and death_msg.is_empty then
+			if fuel = 0 and entity_msg.is_empty then
 				life := 0
-				death_msg.append ("Janitaur got lost in space - out of fuel at Sector:" + location.out)
+				entity_msg.append ("Janitaur got lost in space - out of fuel at Sector:" + location.out)
 			end
 
 			if life = 0 then
@@ -106,10 +106,10 @@ feature --Commands
 					if entity.item.is_asteroid then
 						load_level := load_level + 1
 						entity.item.kill
-						msg.append ("Asteroid got imploded by janitaur (id: " + id.out)
+						msg.append ("Asteroid imploded by janitaur (id: " + id.out)
 						msg.append (") at Sector:" + location.print_sector)
 						move_info.append ("%N      destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
-						entity.item.set_death_msg (msg)
+						entity.item.set_entity_msg (msg)
 						location.remove (entity.item)
 						Result.extend (entity.item)
 					end

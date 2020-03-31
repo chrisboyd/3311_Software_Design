@@ -14,7 +14,7 @@ feature --attributes
 	turns_left: INTEGER
 	fuel: INTEGER
 	life: INTEGER
-	death_msg: STRING
+	entity_msg: STRING
 	move_info: STRING
 	shared_info_access : SHARED_INFORMATION_ACCESS
 
@@ -73,14 +73,14 @@ feature --commands
 			move_info.append ("->" + Current.loc_out)
 		end
 
-	get_death_msg: STRING
+	get_entity_msg: STRING
 		do
-			Result := death_msg
+			Result := entity_msg
 		end
 
-	set_death_msg(msg: STRING)
+	set_entity_msg(msg: STRING)
 		do
-			death_msg := msg
+			entity_msg := msg
 		end
 
 	is_dead: BOOLEAN

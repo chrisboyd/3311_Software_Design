@@ -24,7 +24,7 @@ feature -- Initialization
 			fuel := 3
 			landed := False
 			location := loc
-			create death_msg.make_empty
+			create entity_msg.make_empty
 			create move_info.make_empty
 		end
 
@@ -53,15 +53,15 @@ feature --Commands
 			--explorer dies by out of fuel first
 			elseif fuel = 0 then
 				life := 0
-				death_msg.append ("Explorer got lost in space - out of fuel at Sector:" + location.out)
+				entity_msg.append ("Explorer got lost in space - out of fuel at Sector:" + location.out)
 			elseif location.has_blackhole then
 				life := 0
-				death_msg.append ("Explorer got devoured by blackhole (id: -1) at Sector:3:3")
+				entity_msg.append ("Explorer got devoured by blackhole (id: -1) at Sector:3:3")
 			end
 
-			if fuel = 0 and death_msg.is_empty then
+			if fuel = 0 and entity_msg.is_empty then
 				life := 0
-				death_msg.append ("Explorer got lost in space - out of fuel at Sector:" + location.out)
+				entity_msg.append ("Explorer got lost in space - out of fuel at Sector:" + location.out)
 			end
 
 			if life = 0 then
@@ -106,6 +106,16 @@ feature --Commands
 									p.set_visited
 									valid_planet := True
 									landed := True
+									if p.supports_life then
+										found_life := True
+										entity_msg.append ("Tranquility base here - we've got a life!")
+									else
+										found_life := False
+										entity_msg.append ("Explorer found no life as we know it at Sector:"
+											+ location.out)
+										fuel := 3
+										life := 3
+									end
 								end
 							end
 						end
@@ -124,7 +134,9 @@ feature --Commands
 	liftoff
 		do
 			landed := False
+			entity_msg.append ("Explorer has lifted off from planet at Sector:" + location.out)
 		end
+
 
 feature --Queries
 
