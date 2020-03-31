@@ -110,7 +110,7 @@ feature --deferred command
 		deferred
 		end
 
-	behave
+	behave: LINKED_LIST [ENTITY_MOVABLE]
 		deferred
 		end
 

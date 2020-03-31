@@ -70,9 +70,10 @@ feature --Commands
 		do
 		end
 
-	behave
+	behave: LINKED_LIST [ENTITY_MOVABLE]
 		do
-			--print("explorer behave %N")
+			create Result.make
+			Result.compare_objects
 		end
 
 	land

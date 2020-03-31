@@ -85,13 +85,13 @@ feature --Commands
 
 	--attack explorer, if present and not landed and no benign in sector
 	--Explorer got lost in space - out of life support at Sector:X:Y
-	behave
+	behave: LINKED_LIST [ENTITY_MOVABLE]
 		local
 			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
 			msg: STRING
-			exp_ind: INTEGER
-			benign_present: BOOLEAN
 		do
+			create Result.make
+			Result.compare_objects
 			--double check this all
 			movables := location.get_movables
 			create msg.make_empty
@@ -109,6 +109,7 @@ feature --Commands
 								msg.append (location.print_sector)
 								exp.set_death_msg (msg)
 								location.remove (exp)
+								Result.extend (exp)
 							end
 						end
 					end

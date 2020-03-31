@@ -84,11 +84,13 @@ feature --Commands
 
 	--destroy all malevolent in sector from low to high id
 	--Malevolent got destroyed by benign (id: Z) at Sector:X:Y
-	behave
+	behave: LINKED_LIST [ENTITY_MOVABLE]
 		local
 			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
 			msg: STRING
 		do
+			create Result.make
+			Result.compare_objects
 			movables := location.get_movables
 			create msg.make_empty
 			across
@@ -101,6 +103,7 @@ feature --Commands
 					entity.item.kill
 					entity.item.set_death_msg (msg)
 					location.remove (entity.item)
+					Result.extend (entity.item)
 				end
 				create msg.make_empty
 			end

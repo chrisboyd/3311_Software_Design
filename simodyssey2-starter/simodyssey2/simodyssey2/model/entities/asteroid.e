@@ -33,6 +33,7 @@ feature --Commands
 			if location.has_blackhole then
 				life := 0
 				death_msg.append ("Asteroid got devoured by blackhole (id: -1) at Sector:3:3")
+
 				location.remove (Current)
 			end
 		end
@@ -44,11 +45,13 @@ feature --Commands
 	--seeks out other movable_entities other than other asteroids
 	--and planets and destroys in ascending id order
 	--entity got destroyed by asteroid (id: Z) at Sector:X:Y
-	behave
+	behave: LINKED_LIST [ENTITY_MOVABLE]
 		local
 			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
 			msg: STRING
 		do
+			create Result.make
+			Result.compare_objects
 			movables := location.get_movables
 			create msg.make_empty
 			across
@@ -64,6 +67,7 @@ feature --Commands
 								msg.append (id.out + ") at Sector:" + location.print_sector)
 								location.remove (entity.item)
 								entity.item.set_death_msg (msg)
+								Result.extend (entity.item)
 							end
 						end
 					else
@@ -73,6 +77,7 @@ feature --Commands
 						msg.append (id.out + ") at Sector:" + location.print_sector)
 						location.remove (entity.item)
 						entity.item.set_death_msg (msg)
+						Result.extend (entity.item)
 					end
 
 				end

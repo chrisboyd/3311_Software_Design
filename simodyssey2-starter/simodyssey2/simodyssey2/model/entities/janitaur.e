@@ -87,11 +87,13 @@ feature --Commands
 	--taking them off the board until they can be dumped in a sector
 	--with a wormhole, from which they do not return
 	--Asteroid got imploded by janitaur (id: Z) at Sector:X:Y
-	behave
+	behave: LINKED_LIST [ENTITY_MOVABLE]
 		local
 			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
 			msg: STRING
 		do
+			create Result.make
+			Result.compare_objects
 			movables := location.get_movables
 			create msg.make_empty
 			across
@@ -106,6 +108,7 @@ feature --Commands
 						move_info.append ("%N      destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
 						entity.item.set_death_msg (msg)
 						location.remove (entity.item)
+						Result.extend (entity.item)
 					end
 				end
 				create msg.make_empty

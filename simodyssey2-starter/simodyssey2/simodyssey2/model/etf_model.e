@@ -106,7 +106,7 @@ feature --Commands
 
 	wormhole_explorer
 		do
-			board.explorer.wormhole (board)
+			board.explorer.wormhole(board)
 			game_state := game_state + 1
 			error_state := 0
 			board.explorer.check_post_move
@@ -292,19 +292,18 @@ feature --support
 			reproduce: ENTITY_MOVABLE
 			turns: INTEGER
 			next_id: INTEGER
-
-			temp: INTEGER
+			entities_killed: LINKED_LIST [ENTITY_MOVABLE]
 		do
-			--perform updates for each movable entities
-
 			across
 				board.movable_entities as entity
 			loop
 				if not entity.item.is_explorer then
 					if entity.item.turns_left = 0 and not entity.item.is_dead then
-						--update this to planet.behave
+						--special case for planet
 						if entity.item.is_planet and entity.item.location.has_star then
-							entity.item.behave
+							--planet can't kill anything so don't need to check if
+							--any items were returns by behave
+							create entities_killed.make_from_iterable (entity.item.behave)
 						else
 
 							if entity.item.location.has_wormhole and ( entity.item.is_malevolent
@@ -312,7 +311,6 @@ feature --support
 								entity.item.wormhole(board)
 							else
 								--choose direction 1-8
-								--entity.item.move (dest: SECTOR)
 								direction := gen.rchoose (1, 8)
 								dir_coord := map_direction(direction)
 								start := create {PAIR[INTEGER,INTEGER]}.make (entity.item.location.row, entity.item.location.column)
@@ -327,8 +325,12 @@ feature --support
 									board.movable_entities.extend (r)
 									board.inc_movable_id
 								end
+								create entities_killed.make_from_iterable (entity.item.behave)
+								if not entities_killed.is_empty then
+									deaths.finish
+									deaths.merge_right (entities_killed)
+								end
 
-								entity.item.behave
 							else
 								deaths.extend (entity.item)
 							end
@@ -336,32 +338,29 @@ feature --support
 							move_list.append (entity.item.get_move_info + "%N")
 
 						end--either not a planet or a planet and no star in sector
+					elseif entity.item.is_dead and not deaths.has (entity.item)then
+						deaths.extend (entity.item)
 					else
 						entity.item.set_turns (entity.item.turns_left - 1)
 					end
-
-				end--end of across
-			end-- end of if not explorer
+				end-- end of if not explorer
+			end--end of across
+			remove_dead_entities
 		end--end of do
 
 		remove_dead_entities
 			do
-				--remove items that were killed by the last entity to act
-				across
-					board.movable_entities as m
+				from
+					board.movable_entities.start
+				until
+					board.movable_entities.exhausted
 				loop
-					if m.item.is_dead and not deaths.has (m.item)then
-						deaths.extend (m.item)
+					if board.movable_entities.item.is_dead then
+						board.movable_entities.remove
+					else
+						board.movable_entities.forth
 					end
 				end
-				across
-					deaths as entity
-				loop
-					if board.movable_entities.has (entity.item) then
-						board.movable_entities.prune_all (entity.item)
-					end
-				end
-
 			end
 
 		get_death_msgs: STRING

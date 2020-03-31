@@ -61,10 +61,12 @@ feature --Commands
 		do
 		end
 
-	behave
+	behave: LINKED_LIST [ENTITY_MOVABLE]
 		local
 			odds_life: INTEGER
 		do
+			create Result.make
+			Result.compare_objects
 			if location.has_star then
 				orbiting := True
 				if location.get_stationary.is_yellow_dwarf and not has_set then
