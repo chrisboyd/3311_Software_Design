@@ -110,7 +110,7 @@ feature --Commands
 							move_info.append ("%N      attacked " + exp.id_out + " at " + exp.loc_out)
 							if exp.is_dead then
 								msg.append ("Explorer got lost in space - out of life support at Sector:")
-								msg.append (location.print_sector)
+								msg.append (location.out)
 								exp.set_entity_msg (msg)
 								location.remove (exp)
 								Result.extend (exp)

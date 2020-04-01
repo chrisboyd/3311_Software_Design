@@ -53,73 +53,6 @@ feature -- commands
 			contents.compare_objects
 		end
 
-	populate_movable(a_thresh: INTEGER; j_thresh: INTEGER; m_thresh: INTEGER;
-					b_thresh: INTEGER; p_thresh: INTEGER)
-		--create a random number of movable entities in the sector
-		--remove, do this in galaxy
-		require
-			valid_threshold:
-				0 < a_thresh and a_thresh <= j_thresh and j_thresh <= m_thresh
-				and m_thresh <= b_thresh and b_thresh <= p_thresh and p_thresh <= 101
-		local
-			threshold: INTEGER
-			number_items: INTEGER
-			loop_counter: INTEGER
-			component: ENTITY_MOVABLE
-			turn :INTEGER
-			movable_id: INTEGER
-		do
-			movable_id := 1 --since explorer is 0
-			-- MUST decrease max_capacity by 1 to leave space for Explorer (so a max of 3)
-			number_items := gen.rchoose (1, shared_info.max_capacity-1)
-			from
-				loop_counter := 1
-			until
-				loop_counter > number_items
-			loop
-				-- each iteration, generate a new value to compare against the threshold values
-				--provided by `test` or `play`
-				threshold := gen.rchoose (1, 100)
-
-				if threshold < a_thresh then
-					component :=	create {ASTEROID}.make(movable_id, Current)
-					movable_id := movable_id + 1
-				else
-					if threshold < j_thresh then
-						component :=	create {JANITAUR}.make(movable_id, Current)
-						movable_id := movable_id + 1
-					else
-						if threshold < m_thresh then
-							component :=	create {MALEVOLENT}.make(movable_id, Current)
-							movable_id := movable_id + 1
-						else
-							if threshold < b_thresh then
-								component :=	create {BENIGN}.make(movable_id, Current)
-								movable_id := movable_id + 1
-							else
-								if threshold < p_thresh then
-									component :=	create {PLANET}.make(movable_id, Current)
-									movable_id := movable_id + 1
-								end
-							end
-						end
-					end
-				end
-
-				if attached component as entity then
-					put (entity) -- add new entity to the contents list
-
-					--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-					turn:=gen.rchoose (0, 2) -- Hint: Use this number for assigning turn values to movable entities
-					-- The turn value of a movable entity (except explorer) suggests the number of turns left before it can move.
-					--@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-					component.set_turns (turn)
-					component := void -- reset component object
-				end
-
-				loop_counter := loop_counter + 1
-			end
-		end
 
 	out: STRING
 		--build a string with [row,col] for the sector
@@ -215,15 +148,15 @@ feature --command
 
 feature -- Queries
 
-	print_sector: STRING
-			-- Printable version of location's coordinates with different formatting
-			--REPLACE USAGE WITH OUT
-		do
-			Result := ""
-			Result.append (row.out)
-			Result.append (":")
-			Result.append (column.out)
-		end
+--	print_sector: STRING
+--			-- Printable version of location's coordinates with different formatting
+--			--REPLACE USAGE WITH OUT
+--		do
+--			Result := ""
+--			Result.append (row.out)
+--			Result.append (":")
+--			Result.append (column.out)
+--		end
 
 	is_full: BOOLEAN
 			-- Is the location currently full?

@@ -112,7 +112,7 @@ feature --Commands
 						load_level := load_level + 1
 						entity.item.kill
 						msg.append ("Asteroid got imploded by janitaur (id: " + id.out)
-						msg.append (") at Sector:" + location.print_sector)
+						msg.append (") at Sector:" + location.out)
 						move_info.append ("%N      destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
 						entity.item.set_entity_msg (msg)
 						location.remove (entity.item)

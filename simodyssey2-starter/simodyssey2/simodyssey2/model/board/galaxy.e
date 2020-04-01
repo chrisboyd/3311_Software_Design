@@ -281,7 +281,6 @@ feature -- query
 			create Result.make_empty
 			create string1.make(7*shared_info.number_rows)
 			create string2.make(7*shared_info.number_columns)
-			--string1.append("%N")
 
 			from
 				row_counter := 1
@@ -298,7 +297,7 @@ feature -- query
 				loop
 					temp_sector:= grid[row_counter, column_counter]
 				    string1.append("(")
-	            	string1.append(temp_sector.print_sector)
+	            	string1.append(temp_sector.out)
 	                string1.append(")")
 				    string1.append("  ")
 					from

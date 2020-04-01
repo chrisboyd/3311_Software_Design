@@ -107,7 +107,7 @@ feature --Commands
 			loop
 				if entity.item.is_malevolent then
 					msg.append ("Malevolent got destroyed by benign (id: " + id.out)
-					msg.append (") at Sector:" + location.print_sector)
+					msg.append (") at Sector:" + location.out)
 					move_info.append ("%N      destroyed " + entity.item.id_out + " at " + entity.item.loc_out)
 					entity.item.kill
 					entity.item.set_entity_msg (msg)

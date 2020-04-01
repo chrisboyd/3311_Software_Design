@@ -68,7 +68,7 @@ feature --Commands
 								entity.item.kill
 								move_info.append ("%N      destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
 								msg.append (entity.item.get_name + " got destroyed by asteroid (id: ")
-								msg.append (id.out + ") at Sector:" + location.print_sector)
+								msg.append (id.out + ") at Sector:" + location.out)
 								location.remove (entity.item)
 								entity.item.set_entity_msg (msg)
 								Result.extend (entity.item)
@@ -78,7 +78,7 @@ feature --Commands
 						entity.item.kill
 						move_info.append ("%N      destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
 						msg.append (entity.item.get_name + " got destroyed by asteroid (id: ")
-						msg.append (id.out + ") at Sector:" + location.print_sector)
+						msg.append (id.out + ") at Sector:" + location.out)
 						location.remove (entity.item)
 						entity.item.set_entity_msg (msg)
 						Result.extend (entity.item)

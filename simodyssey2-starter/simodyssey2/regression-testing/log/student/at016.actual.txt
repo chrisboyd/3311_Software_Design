@@ -1,0 +1,2 @@
+Type Error: specification of command executions is not type-correct
+test(1, 2, 3, 4) does not conform to declaration test(a_threshold: THRESHOLD = 1 .. 101 ; j_threshold: THRESHOLD = 1 .. 101 ; m_threshold: THRESHOLD = 1 .. 101 ; b_threshold: THRESHOLD = 1 .. 101 ; p_threshold: THRESHOLD = 1 .. 101)
