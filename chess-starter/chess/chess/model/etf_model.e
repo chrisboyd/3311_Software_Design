@@ -1,6 +1,6 @@
 note
-	description: "A default business model."
-	author: "Jackie Wang"
+	description: "Root for the business logic of game"
+	author: "JSO"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -16,39 +16,50 @@ inherit
 create {ETF_MODEL_ACCESS}
 	make
 
-feature {NONE} -- Initialization
+feature {NONE} -- create
 	make
 			-- Initialization for `Current'.
 		do
-			create s.make_empty
-			i := 0
+			message := "ok, K = King and N = Knight"
+			make_board (5) -- minimum size
 		end
 
-feature -- model attributes
-	s : STRING
-	i : INTEGER
+feature -- board
 
-feature -- model operations
-	default_update
-			-- Perform update to the model state.
+    make_board(a_size:INTEGER)
+    	require
+    		5 <= a_size and a_size <= 8
+    	do
+    		create board.make (a_size)
+    	end
+
+	board: BOARD
+
+
+feature -- message
+	message: STRING
+
+	set_message(a_message: STRING)
 		do
-			i := i + 1
+			message := a_message
 		end
 
+feature -- out
 	reset
 			-- Reset model state.
 		do
 			make
 		end
 
-feature -- queries
 	out : STRING
+			-- obtain board layout from board.out
 		do
-			create Result.make_from_string ("  ")
-			Result.append ("System State: default model state ")
-			Result.append ("(")
-			Result.append (i.out)
-			Result.append (")")
+			create Result.make_from_string ("  " + message + ":")
+			if message ~ "ok" and board.started then
+				Result.append ("%N")
+				Result.append (board.out)
+			end
+
 		end
 
 end

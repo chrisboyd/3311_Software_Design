@@ -15,6 +15,9 @@ inherit ANY
 create
 	make, make_dummy
 
+feature {NONE} --hiddent attributes
+	contents: ARRAYED_LIST [detachable ENTITY_ALPHABET] --holds 4 quadrants
+
 feature -- attributes
 	shared_info_access : SHARED_INFORMATION_ACCESS
 
@@ -24,8 +27,6 @@ feature -- attributes
 		end
 
 	gen: RANDOM_GENERATOR_ACCESS
-
-	contents: ARRAYED_LIST [detachable ENTITY_ALPHABET] --holds 4 quadrants
 
 	row: INTEGER
 
@@ -100,9 +101,9 @@ feature -- commands
 					Result.append (",")
 				end
 			end
+		ensure
+			not_empty: not Result.is_empty
 		end
-
-feature --command
 
 	put (entity: ENTITY_ALPHABET)
 			-- put `new_component' in contents array at the first available quadrant
@@ -138,7 +139,7 @@ feature --command
 	remove(entity: ENTITY_ALPHABET)
 		--remove entity from the quadrant by setting the index of entity to void
 		require
-			in_sector: contents.index_of (entity, 1) > 0
+			contains_entity: has(entity)
 		local
 			index_remove: INTEGER
 		do
@@ -148,15 +149,38 @@ feature --command
 
 feature -- Queries
 
---	print_sector: STRING
---			-- Printable version of location's coordinates with different formatting
---			--REPLACE USAGE WITH OUT
---		do
---			Result := ""
---			Result.append (row.out)
---			Result.append (":")
---			Result.append (column.out)
---		end
+	has(entity: ENTITY_ALPHABET): BOOLEAN
+		local
+			loop_counter: INTEGER
+		do
+			from
+				loop_counter := 1
+			until
+				loop_counter > contents.count or Result
+			loop
+				if attached contents [loop_counter] as temp_item  then
+					Result := temp_item.is_equal(entity)
+				end -- if
+				loop_counter := loop_counter + 1
+			end
+		--ensure if true, loop_counter > 0 and <= shared_info
+		end
+
+	item_at(index: INTEGER): detachable ENTITY_ALPHABET
+		require
+			valid_index: index > 0 and index <= shared_info.max_capacity
+		do
+			Result := contents[index]
+		end
+
+	index_of(entity: ENTITY_ALPHABET): INTEGER
+		require
+			valid_entity: has(entity)
+		do
+			Result := contents.index_of (entity, 1)
+		ensure
+			entity_present: Result > 0 and Result <= shared_info.max_capacity
+		end
 
 	is_full: BOOLEAN
 			-- Is the location currently full?
@@ -202,6 +226,7 @@ feature -- Queries
 				end -- if
 				loop_counter := loop_counter + 1
 			end
+		--ensure if true, counter > 0 and counter <= max
 		end
 
 	next_available_quad: INTEGER
@@ -227,6 +252,8 @@ feature -- Queries
 				end
 			end
 			Result := loop_counter
+		ensure
+			valid_index: Result > 0 and Result <= shared_info.max_capacity
 		end
 
 	get_stationary: ENTITY_STATIONARY
@@ -238,7 +265,7 @@ feature -- Queries
 			loop_counter: INTEGER
 		do
 			--dummy entity
-			Result := create {WORMHOLE}.make(-15, create {SECTOR}.make_dummy)
+			Result := create {WORMHOLE}.make(-999, create {SECTOR}.make_dummy)
 			from
 				loop_counter := 1
 			until
@@ -251,6 +278,8 @@ feature -- Queries
 				end -- if
 				loop_counter := loop_counter + 1
 			end
+		ensure
+			found_stationary: Result.id /= -999
 		end
 
 	has_star: BOOLEAN
@@ -378,7 +407,14 @@ feature -- Queries
 				end -- if
 				loop_counter := loop_counter + 1
 			end
+		end
 
+	number_entities: INTEGER
+		do
+			Result := contents.count
+
+		ensure
+			valid_result: Result = contents.count
 		end
 
 end

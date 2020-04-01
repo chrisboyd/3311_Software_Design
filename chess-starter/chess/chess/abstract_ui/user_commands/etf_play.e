@@ -1,22 +1,35 @@
 note
 	description: ""
-	author: ""
+	author: "JSO"
 	date: "$Date$"
 	revision: "$Revision$"
 
 class
 	ETF_PLAY
-inherit 
+inherit
 	ETF_PLAY_INTERFACE
+--		redefine play end
 create
 	make
-feature -- command 
+feature -- command
+
 	play(size: INTEGER_32)
-		require else 
+		require else
 			play_precond(size)
+		local
+			square: SQUARE
     	do
-			-- perform some update on the model state
-			model.default_update
+			-- setup board
+			if not model.board.started then
+				model.make_board (size)
+				model.board.set_started
+				create square.make (size,size)
+				model.set_message ("ok")
+			else
+				model.set_message("game already started")
+			end
+
+			-- push
 			etf_cmd_container.on_change.notify ([Current])
     	end
 

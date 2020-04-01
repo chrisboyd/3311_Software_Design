@@ -1,0 +1,9 @@
+--test king moving onto knight square and redo
+play(5)
+move_king([5,5])
+redo
+redo
+redo
+undo
+undo
+move_knight([4,3])

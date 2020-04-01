@@ -70,10 +70,10 @@ feature --commands
 				temp_row := gen.rchoose (1, 5)
 				temp_col := gen.rchoose (1, 5)
 
-				if not board.grid[temp_row, temp_col].is_full then
-					board.grid[location.row, location.column].remove (Current)
-					board.grid[temp_row, temp_col].put (Current)
-					location := board.grid[temp_row, temp_col]
+				if not board.get_sector (temp_row, temp_col).is_full then
+					board.get_sector (location.row, location.column).remove (Current)
+					board.get_sector (temp_row, temp_col).put (Current)
+					location := board.get_sector (temp_row, temp_col)
 					added := True
 				end
 

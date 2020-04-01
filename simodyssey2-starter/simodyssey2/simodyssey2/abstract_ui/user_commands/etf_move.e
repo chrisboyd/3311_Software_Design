@@ -31,7 +31,7 @@ feature -- command
 
 				dest := model.get_dest_coord (start, inc)
 
-				if model.board.grid[dest.first, dest.second].is_full then
+				if model.board.get_sector (dest.first, dest.second).is_full then
 					model.set_error ("Cannot transfer to new location as it is full.")
 				else
 					model.move_explorer (dest.first, dest.second)

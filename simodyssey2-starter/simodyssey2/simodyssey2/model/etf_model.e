@@ -106,7 +106,8 @@ feature --Commands
 			--increment game state and reset error state
 			--complete a turn of all movable entities in the game
 		do
-			board.explorer.move (board.grid[dest_row, dest_col])
+			--board.explorer.move (board.grid[dest_row, dest_col])
+			board.explorer.move (board.get_sector (dest_row, dest_col))
 			move_list.append (board.explorer.get_move_info + "%N")
 			game_state := game_state + 1
 			error_state := 0
@@ -392,7 +393,8 @@ feature --support
 								dir_coord := map_direction(direction)
 								start := create {PAIR[INTEGER,INTEGER]}.make (entity.item.location.row, entity.item.location.column)
 								dest := get_dest_coord(start, dir_coord)
-								entity.item.move (board.grid[dest.first, dest.second])
+								--entity.item.move (board.grid[dest.first, dest.second])
+								entity.item.move (board.get_sector (dest.first, dest.second))
 							end
 							--post move, check for refuel, out of fuel, devoured by blackhole
 							entity.item.check_post_move

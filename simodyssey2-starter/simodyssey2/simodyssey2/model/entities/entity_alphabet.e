@@ -62,7 +62,8 @@ feature --Command
     	do
     		create Result.make_empty
     		Result.append ("[" + location.row.out + "," + location.column.out + "," )
-    		Result.append (location.contents.index_of (Current, 1).out + "]")
+    		--Result.append (location.contents.index_of (Current, 1).out + "]")
+    		Result.append (location.index_of (Current).out + "]")
     	end
 
 feature -- Query

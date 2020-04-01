@@ -14,11 +14,12 @@ inherit ANY
 
 create
 	make
-
-feature -- attributes
-
+feature {NONE} --hidden attributes
 	grid: ARRAY2 [SECTOR]
 			-- the board
+
+feature -- attributes
+	movable_id: INTEGER
 
 	gen: RANDOM_GENERATOR_ACCESS
 
@@ -35,7 +36,6 @@ feature -- attributes
 
 	explorer: EXPLORER
 
-	movable_id: INTEGER
 
 feature --constructor
 
@@ -229,6 +229,13 @@ feature --commands
 
 feature -- query
 
+	get_sector(row: INTEGER; col: INTEGER): SECTOR
+		require
+			in_bounds: row <= shared_info.number_rows and col <= shared_info.number_columns
+		do
+			Result := grid[row, col]
+		end
+
 	get_sector_desc: STRING
 			--Builds a string representation of all of the entity id's and
 			--sybmols at each quadrant of each sector
@@ -304,9 +311,9 @@ feature -- query
 						contents_counter := 1
 						printed_symbols_counter:=0
 					until
-						contents_counter > temp_sector.contents.count
+						contents_counter > temp_sector.number_entities
 					loop
-						temp_component := temp_sector.contents[contents_counter]
+						temp_component := temp_sector.item_at(contents_counter)
 						if attached temp_component as character then
 							string2.append_character(character.item)
 						else
