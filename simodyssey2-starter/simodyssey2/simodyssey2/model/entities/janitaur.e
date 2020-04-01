@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {JANITAUR}."
-	author: ""
+	description: "Entity that seeks out and destroys asteroids"
+	author: "Chris Boyd : 216 869 356 : chris360"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -35,6 +35,8 @@ feature --attributes
 feature --Commands
 
 	check_post_move
+		--Check for a star to refuel at, if run out of fuel or enter
+		--sector with a blackhole, dies
 		local
 			stationary: ENTITY_STATIONARY
 		do
@@ -67,6 +69,8 @@ feature --Commands
 		end
 
 	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
+		--if reproduce timer is up, create a new janitaur in
+		--current location (if not full)
 		local
 			temp: JANITAUR
 			turns: INTEGER
@@ -86,11 +90,12 @@ feature --Commands
 			end
 		end
 
-	--Janitaur grabs up to two asteroids in the current sector
-	--taking them off the board until they can be dumped in a sector
-	--with a wormhole, from which they do not return
-	--Asteroid got imploded by janitaur (id: Z) at Sector:X:Y
+
 	behave: LINKED_LIST [ENTITY_MOVABLE]
+		--Janitaur grabs up to two asteroids in the current sector
+		--taking them off the board until they can be dumped in a sector
+		--with a wormhole, from which they do not return
+		--Asteroid got imploded by janitaur (id: Z) at Sector:X:Y
 		local
 			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
 			msg: STRING
@@ -125,11 +130,15 @@ feature --Commands
 feature --Queries
 
 	get_name: STRING
+		--Return string represation of this class
 		do
 			create Result.make_from_string ("Janitaur")
 		end
 
 	get_status: STRING
+		--Returns current status of the benign for
+		--outputing in test mode
+		--[id,J]->fuel:fF/3, actions_left_until_reproduction:A/2, turns_left:X
 		do
 			create Result.make_empty
 			Result.append ("    " + id_out + "->fuel:" + fuel.out + "/5, load:" + load_level.out)
@@ -140,5 +149,9 @@ feature --Queries
 				Result.append(turns_left.out)
 			end
 		end
+
+invariant
+    allowable_symbols:
+        item = 'J'
 
 end

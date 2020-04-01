@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {MALEVOLENT}."
-	author: ""
+	description: "Evil entity that seeks out and attacks"
+	author: "Chris Boyd : 216 869 356 : chris360"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -86,9 +86,10 @@ feature --Commands
 			end
 		end
 
-	--attack explorer, if present and not landed and no benign in sector
-	--Explorer got lost in space - out of life support at Sector:X:Y
+
 	behave: LINKED_LIST [ENTITY_MOVABLE]
+		--attack explorer, if present and not landed and no benign in sector
+		--Explorer got lost in space - out of life support at Sector:X:Y
 		local
 			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
 			msg: STRING
@@ -124,11 +125,15 @@ feature --Commands
 feature --Queries
 
 	get_name: STRING
+		--Return string represation of this class
 		do
 			create Result.make_from_string ("Malevolent")
 		end
 
 	get_status: STRING
+		--Returns current status of the benign for
+		--outputing in test mode
+		--[id,M]->fuel:fF/3, actions_left_until_reproduction:A/1, turns_left:X
 		do
 			create Result.make_empty
 			Result.append ("    " + id_out + "->fuel:" + fuel.out + "/3, actions_left_until_reproduction:")
@@ -139,5 +144,9 @@ feature --Queries
 				Result.append(turns_left.out)
 			end
 		end
+
+invariant
+    allowable_symbols:
+        item = 'M'
 
 end

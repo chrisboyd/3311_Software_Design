@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {PLANET}."
-	author: ""
+	description: "Planets travel the galaxy seeking out stars to orbit"
+	author: "Chris Boyd : 216 869 356 : chris360"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -36,19 +36,25 @@ feature --Initialization
 feature --Commands
 
 	move(dest: SECTOR)
+		--Redefine move for planets because once they enter an orbit, don't
+		--move
 		do
 			move_info.wipe_out
 			--remove from location, add to destination
-			move_info.append ("    " + Current.id_out + ":" + Current.loc_out)
-			if not dest.is_full then
-				dest.put (Current)
-				location.remove (Current)
-				location := dest
-				move_info.append ("->" + Current.loc_out)
+			if not orbiting then
+				move_info.append ("    " + Current.id_out + ":" + Current.loc_out)
+				if not dest.is_full then
+					dest.put (Current)
+					location.remove (Current)
+					location := dest
+					move_info.append ("->" + Current.loc_out)
+				end
 			end
+
 		end
 
 	check_post_move
+		--if planet moves into a sector with blackhole, dies
 		do
 			if location.has_blackhole then
 				life := 0
@@ -58,10 +64,14 @@ feature --Commands
 		end
 
 	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
+		--planets don't reproduce
 		do
 		end
 
 	behave: LINKED_LIST [ENTITY_MOVABLE]
+		--If sector has a star, orbit it, if the star is a yellow dwarf
+		--randomly assign if planet supports life (50% chance)
+		--Once this value is set, it will not change
 		local
 			odds_life: INTEGER
 		do
@@ -82,16 +92,19 @@ feature --Commands
 		end
 
 	set_orbit
+		--Planet is now orbiting a star
 		do
 			orbiting := True
 		end
 
 	set_life
+		--planet supports life
 		do
 			supports_life := True
 		end
 
 	set_visited
+		--planet has been visited by explorer
 		do
 			visited := True
 		end
@@ -99,11 +112,15 @@ feature --Commands
 feature --Queries
 
 	get_name: STRING
+		--Return string represation of this class
 		do
 			create Result.make_from_string ("Planet")
 		end
 
 	get_status: STRING
+		--Returns current status of the benign for
+		--outputing in test mode
+		--[id,P]->attached?:t|f, support_life?:t|f, visited?:t|f, turns_left:X
 		do
 			create Result.make_empty
 			Result.append ("    " + id_out + "->attached?:" + orbiting.out.at (1).out + ", support_life?:")
@@ -115,5 +132,9 @@ feature --Queries
 				Result.append (turns_left.out)
 			end
 		end
+
+invariant
+    allowable_symbols:
+        item = 'P'
 
 end

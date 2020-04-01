@@ -1,6 +1,6 @@
 note
-	description: "A default business model."
-	author: "Jackie Wang"
+	description: "Primary business logic of SimOdyssey2 Boardgame"
+	author: "Chris Boyd : 216 869 356 : chris360"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -17,10 +17,6 @@ create {ETF_MODEL_ACCESS}
 	make
 
 feature {NONE} -- Initialization
-
-    --info: SHARED_INFORMATION
-
-    -- Initialization for `Current'
 	make
 		do
 			create board.make
@@ -60,6 +56,8 @@ feature -- model operations
 
 feature --Commands
 	set_play(b: BOOLEAN)
+			--Turn on play mode, increment the current game state
+			--and reset the error state
 		do
 			play_mode := b
 			game_state := game_state + 1
@@ -68,6 +66,9 @@ feature --Commands
 		end
 
 	set_test(b: BOOLEAN)
+			--Turn on test mode which provides the user with additional
+			--information as to what each entity is doing every turn.
+			--Increment the game state and reset the error state
 		do
 			test_mode := b
 			game_state := game_state + 1
@@ -76,6 +77,7 @@ feature --Commands
 		end
 
 	set_error(msg: STRING)
+			--User command triggered an error, increment error state
 		do
 			error_msg := msg
 			error_state := error_state + 1
@@ -83,6 +85,12 @@ feature --Commands
 
 	initialize_game(a_thresh: INTEGER; j_thresh: INTEGER; m_thresh: INTEGER;
 					b_thresh: INTEGER; p_thresh: INTEGER)
+		require
+			valid_threshold:
+				0 < a_thresh and a_thresh <= j_thresh and j_thresh <= m_thresh
+				and m_thresh <= b_thresh and b_thresh <= p_thresh and p_thresh <= 101
+			--Place all movable and stationary entities the game board
+			--according to thresholds defined as input
 		do
 			--initialize board with all movable entities
 			board.set_movable_items (a_thresh, j_thresh, m_thresh, b_thresh, p_thresh)
@@ -93,29 +101,38 @@ feature --Commands
 		end
 
 	move_explorer(dest_row: INTEGER; dest_col: INTEGER)
+			--move the explorer to the first available quadrant in
+			--[dest_row, dest_col]
+			--increment game state and reset error state
+			--complete a turn of all movable entities in the game
 		do
 			board.explorer.move (board.grid[dest_row, dest_col])
 			move_list.append (board.explorer.get_move_info + "%N")
 			game_state := game_state + 1
 			error_state := 0
 			board.explorer.check_post_move
-			--check for explorer death, does
 			update_movables
 
 		end
 
 	wormhole_explorer
+			--send the explorer through the wormhole to a random location
+			--increment game state and reset error state
+			--complete a turn of all movable entities in the game			
 		do
 			board.explorer.wormhole(board)
 			move_list.append (board.explorer.get_move_info + "%N")
 			game_state := game_state + 1
 			error_state := 0
 			board.explorer.check_post_move
-			--check for explorer death
 			update_movables
 		end
 
 	land_explorer
+			--land the explorer at the first unvisited plane in the
+			--sector and check to see if life was found
+			--increment game state and reset error state
+			--complete a turn for all movable entities if no life found
 		local
 			msg: STRING
 		do
@@ -133,6 +150,9 @@ feature --Commands
 		end
 
 	liftoff_explorer
+			--lift the explorer back into space in the current sector
+			--increment game state and reset error state
+			--complete a turn for all movable entities
 		do
 			board.explorer.liftoff
 			game_state := game_state + 1
@@ -142,6 +162,10 @@ feature --Commands
 		end
 
 	status
+			--update the status of the explorer, including
+			--if explorer is flying, landed and their current life, fuel and location
+			--counts as an error state as it does not cause a turn of all the
+			--movable entities to occur
 		do
 			error_state := error_state + 1
 			if not board.explorer.landed then
@@ -157,6 +181,9 @@ feature --Commands
 		end
 
 	pass
+			--the explorer does not move or act this turn
+			--increments the game state and resets the error state
+			--causes a turn for all movable entities to occur
 		do
 			game_state := game_state + 1
 			error_state := 0
@@ -164,6 +191,10 @@ feature --Commands
 		end
 
 	abort
+			--quit the current game and remove all pieces from the board
+			--increment the error state
+		require
+			active_game: play_mode or test_mode
 		do
 			aborted := True
 			error_state := error_state + 1
@@ -171,6 +202,10 @@ feature --Commands
 		end
 
 	end_game
+			--Reset the board to base configuration of only the
+			--explorer at [1,1] and the blackhole at [3,3].
+			--Happens after the user aborts or the explorer lands
+			--on a planet with life.
 		do
 			create board.make
 			play_mode := False
@@ -183,6 +218,7 @@ feature --Commands
 
 feature -- queries
 	out : STRING
+			--Output the state of the game to the user
 		local
 			victory: BOOLEAN
 		do
@@ -230,6 +266,7 @@ feature -- queries
 							--entity descriptiones
 							Result.append ("  Descriptions:%N")
 							Result.append (board.get_entity_desc)
+							--deaths this turn
 							Result.append ("  Deaths This Turn:")
 							if deaths.is_empty then
 								Result.append ("none%N")
@@ -238,6 +275,7 @@ feature -- queries
 							end
 						end
 
+						--output the game board
 						Result.append (board.out)
 						if test_mode and board.explorer.is_dead then
 							Result.append ("%N  " + board.explorer.get_entity_msg + "%N")
@@ -260,6 +298,9 @@ feature -- queries
 
 feature --support
 	map_direction(direction: INTEGER):PAIR[INTEGER, INTEGER]
+			--Map a given single integer value [1,8] to a increment
+			--representing a direction change from [0,0].
+			--Start with 1 = N, 2 = NE until 8 = NW
 		do
 			inspect direction
 				when 1 then --N
@@ -285,6 +326,9 @@ feature --support
 
 
 	get_dest_coord (start: PAIR [INTEGER, INTEGER]; increment: PAIR [INTEGER, INTEGER]): PAIR [INTEGER, INTEGER]
+				--Given a start coordinate as [x,y] and the direction to move as [x_inc,y_inc],
+				--determine the destinattion of [x + x_inc, y + y_inc]. Wraps around the edges
+				--of the board in all directions
 		local
 			row_dest: INTEGER
 			col_dest: INTEGER
@@ -311,6 +355,9 @@ feature --support
 		end
 
 	update_movables
+			--Completes a turn for each movable entity in the game.
+			--At the end all newly produced entities and all entities killed during the
+			--current turn are removed from the list of movable entities
 		local
 			direction: INTEGER
 			gen: RANDOM_GENERATOR_ACCESS
@@ -335,7 +382,7 @@ feature --support
 							--any items were returns by behave
 							create entities_killed.make_from_iterable (entity.item.behave)
 						else
-
+							--malevolent and benign entities always take the wormhole, if present							
 							if entity.item.location.has_wormhole and
 							( entity.item.is_malevolent or entity.item.is_benign) then
 								entity.item.wormhole(board)
@@ -347,6 +394,7 @@ feature --support
 								dest := get_dest_coord(start, dir_coord)
 								entity.item.move (board.grid[dest.first, dest.second])
 							end
+							--post move, check for refuel, out of fuel, devoured by blackhole
 							entity.item.check_post_move
 							if not entity.item.is_dead then
 								next_id := board.movable_id
@@ -360,41 +408,53 @@ feature --support
 									created_entities.extend (r)
 									board.inc_movable_id
 								end
+								--add all entities that current entity killed during its behave
 								create entities_killed.make_from_iterable (entity.item.behave)
 								if not entities_killed.is_empty then
 									deaths.finish
 									deaths.merge_right (entities_killed)
 								end
 
+							--entity died during the turn
 							else
 								deaths.extend (entity.item)
 							end
-
+							--add current entities move information to the list
+							--even if it did not move during the turn
 							move_list.append (entity.item.get_move_info + "%N")
 
 						end--either not a planet or a planet and no star in sector
 					elseif entity.item.is_dead and not deaths.has (entity.item)then
 						deaths.extend (entity.item)
+					--remove a turn (entity did not act this round)
 					else
 						entity.item.set_turns (entity.item.turns_left - 1)
 					end
 				end-- end of if not explorer
 			end--end of across
+			--add newly created entities to the list of all alive movable entities
 			add_produced_entities(created_entities)
+			--remove any entities that died this turn
 			remove_dead_entities
 		end--end of do
 
 		add_produced_entities(created: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE])
+				--Add all of the newly produced entities in the last turn to
+				--the list of all movable entities
 			do
 				across
 					created as to_add
 				loop
 					board.movable_entities.extend (to_add.item)
 				end
-
+			ensure
+				produced_added: board.movable_entities.count = old (board.movable_entities.count +
+																created.count)
 			end
 
 		remove_dead_entities
+				--Remove all entities that died during the turn
+				--from the list of all movable entities
 			do
 				from
 					board.movable_entities.start
@@ -407,9 +467,13 @@ feature --support
 						board.movable_entities.forth
 					end
 				end
+			ensure
+				no_dead: across board.movable_entities as entity all not entity.item.is_dead  end
 			end
 
 		get_death_msgs: STRING
+				--Returns a list of all of the entities that died during
+				--the turn
 			do
 				create Result.make_empty
 				across

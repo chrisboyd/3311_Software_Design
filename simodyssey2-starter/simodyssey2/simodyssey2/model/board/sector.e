@@ -33,7 +33,7 @@ feature -- attributes
 
 feature -- constructor
 	make(row_input: INTEGER; column_input: INTEGER)
-		--initialization
+		--Create an empty sector
 		require
 			valid_row: (row_input >= 1) and (row_input <= shared_info.number_rows)
 			valid_column: (column_input >= 1) and (column_input <= shared_info.number_columns)
@@ -55,8 +55,12 @@ feature -- commands
 
 	populate_movable(a_thresh: INTEGER; j_thresh: INTEGER; m_thresh: INTEGER;
 					b_thresh: INTEGER; p_thresh: INTEGER)
-			-- this feature creates 1 to max_capacity-1 components to be intially stored in the
-			-- sector. The component may be a planet or nothing at all.
+		--create a random number of movable entities in the sector
+		--remove, do this in galaxy
+		require
+			valid_threshold:
+				0 < a_thresh and a_thresh <= j_thresh and j_thresh <= m_thresh
+				and m_thresh <= b_thresh and b_thresh <= p_thresh and p_thresh <= 101
 		local
 			threshold: INTEGER
 			number_items: INTEGER
@@ -118,6 +122,7 @@ feature -- commands
 		end
 
 	out: STRING
+		--build a string with [row,col] for the sector
 		do
 			create Result.make_empty
 			Result.append (row.out)
@@ -126,6 +131,8 @@ feature -- commands
 		end
 
 	contents_out: STRING
+		--build a string of [row,col]->[id,symbol],[id,symbol],[id,symbol],[id,symbol]
+		--or a '-' in quadrants with no entity
 		local
 
 			printed_symbols: INTEGER
@@ -165,7 +172,7 @@ feature -- commands
 feature --command
 
 	put (entity: ENTITY_ALPHABET)
-			-- put `new_component' in contents array
+			-- put `new_component' in contents array at the first available quadrant
 		local
 			loop_counter: INTEGER
 			found: BOOLEAN
@@ -196,18 +203,21 @@ feature --command
 		end
 
 	remove(entity: ENTITY_ALPHABET)
+		--remove entity from the quadrant by setting the index of entity to void
+		require
+			in_sector: contents.index_of (entity, 1) > 0
 		local
 			index_remove: INTEGER
 		do
 			index_remove := contents.index_of (entity, 1)
 			contents[index_remove] := Void
-
 		end
 
 feature -- Queries
 
 	print_sector: STRING
 			-- Printable version of location's coordinates with different formatting
+			--REPLACE USAGE WITH OUT
 		do
 			Result := ""
 			Result.append (row.out)
@@ -262,6 +272,7 @@ feature -- Queries
 		end
 
 	next_available_quad: INTEGER
+		--find the next empty quadrant of the sector
 		require
 			not is_full
 		local
@@ -286,6 +297,8 @@ feature -- Queries
 		end
 
 	get_stationary: ENTITY_STATIONARY
+		--Return a reference to the ENTITY_STATIONARY in this sector,
+		--must contain an ENTITY_STATIONARY
 		require
 			Current.has_stationary
 		local
@@ -308,6 +321,7 @@ feature -- Queries
 		end
 
 	has_star: BOOLEAN
+		--Returns TRUE if this sector contains a star
 		local
 			loop_counter: INTEGER
 		do
@@ -324,6 +338,7 @@ feature -- Queries
 		end
 
 	has_wormhole: BOOLEAN
+		--Returns TRUE if this sector contains a wormhole
 		local
 			loop_counter: INTEGER
 		do
@@ -340,6 +355,7 @@ feature -- Queries
 		end
 
 	has_blackhole: BOOLEAN
+		--Returns TRUE if this sector contains a blackhole
 		local
 			loop_counter: INTEGER
 		do
@@ -356,6 +372,7 @@ feature -- Queries
 		end
 
 	has_benign: BOOLEAN
+		--Returns TRUE if this sector contains a Benign entity
 		local
 			loop_counter: INTEGER
 		do
@@ -372,6 +389,7 @@ feature -- Queries
 		end
 
 	has_yellow_dwarf: BOOLEAN
+		--Returns TRUE if this sector contains a Yellow Dwarf star
 		local
 			loop_counter: INTEGER
 		do
@@ -388,6 +406,7 @@ feature -- Queries
 		end
 
 	has_planet: BOOLEAN
+		--Returns TRUE if this sector contains a Planet
 		local
 			loop_counter: INTEGER
 		do
@@ -404,6 +423,8 @@ feature -- Queries
 		end
 
 	get_movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
+		--Return a list of the movable entities in this sector sorted by id.
+		--Can be an empty list
 		local
 			loop_counter: INTEGER
 		do

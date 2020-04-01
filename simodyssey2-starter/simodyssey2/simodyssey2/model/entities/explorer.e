@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {EXPLORER}."
-	author: ""
+	description: "Intrepid explorer that travels the galaxy seeking new life"
+	author: "Chris Boyd : 216 869 356 : chris360"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -35,6 +35,9 @@ feature --Attributes
 feature --Commands
 
 	check_post_move
+		--Checks if explorers new location contains a blackhole, which will
+		--kill the explorer, checks for a star to refuel, if life or fuel
+		--reach 0, dies
 		local
 			stationary: ENTITY_STATIONARY
 		do
@@ -71,16 +74,23 @@ feature --Commands
 		end
 
 	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
+		--Explorer does not reproduce, sad explorer
 		do
 		end
 
 	behave: LINKED_LIST [ENTITY_MOVABLE]
+		--Explorer does not behave without user input
 		do
 			create Result.make
 			Result.compare_objects
 		end
 
 	land: STRING
+		--Attemp to land on an unvisited planet in the sector to seek out life
+		--must be a yellow star in the sector
+		--Can attempt to land during successive turns on each planet in current sector
+		--until all are visited
+		--Cannot move again until the explorer lifts off
 		local
 			valid_planet: BOOLEAN
 			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
@@ -106,9 +116,11 @@ feature --Commands
 									p.set_visited
 									valid_planet := True
 									landed := True
+									--Game will be over, found a planet to support life
 									if p.supports_life then
 										found_life := True
 										entity_msg.append ("Tranquility base here - we've got a life!")
+									--Planet does not support life, heal and refuel
 									else
 										found_life := False
 										entity_msg.append ("Explorer found no life as we know it at Sector:"
@@ -132,6 +144,9 @@ feature --Commands
 		end
 
 	liftoff
+		--Explorer leaves the planet for new adventures
+		require
+			landed
 		do
 			landed := False
 			entity_msg.append ("Explorer has lifted off from planet at Sector:" + location.out)
@@ -141,15 +156,23 @@ feature --Commands
 feature --Queries
 
 	get_name: STRING
+		--Return string represation of this class
 		do
 			create Result.make_from_string ("Explorer")
 		end
 
 	get_status: STRING
+		--Returns current status of the benign for
+		--outputing in test mode
+		--[id,E]->fuel:F/3, life:L/3, landed?:t|f, turns_left:X
 		do
 			create Result.make_empty
 			Result.append ("    " + id_out + "->fuel:" + fuel.out + "/3, life:" + life.out)
 			Result.append ("/3, landed?:" + landed.out.at (1).out)
 		end
+
+invariant
+    allowable_symbols:
+        item = 'E'
 
 end

@@ -23,13 +23,13 @@ inherit
             is_equal
         end
 
-feature -- Attributes
+feature -- Attributes common to all entities
 
     item: CHARACTER
     location: SECTOR
     id: INTEGER
 
-feature --Comparison
+feature --Comparison for sorting entities by id
 
 	is_less alias "<" (other: LIKE Current): BOOLEAN
 		do
@@ -45,18 +45,20 @@ feature --Comparison
 feature --Command
 
 	out: STRING
-            -- Return string representation of alphabet.
+            -- Return string representation of the entity
         do
             Result := item.out
         end
 
     id_out: STRING
+    	--Returns a string of form: [id,symbol]
     	do
     		create Result.make_empty
     		Result.append ("[" + id.out + "," + item.out + "]")
     	end
 
     loc_out: STRING
+    	--Returns the full address of the entity [row,column,quadrant]
     	do
     		create Result.make_empty
     		Result.append ("[" + location.row.out + "," + location.column.out + "," )
@@ -74,6 +76,7 @@ feature -- Query
         end
 
     is_movable: BOOLEAN
+    	-- Return if current item is movable
     	do
     		if item = 'E' or item = 'A' or item = 'P' or item = 'B' or item = 'M' or item = 'J' then
     			Result := True
@@ -81,6 +84,7 @@ feature -- Query
     	end
 
    	is_planet: BOOLEAN
+   		-- Return if current item is a planet
     	do
     		if item = 'P' then
     			Result := True
@@ -88,6 +92,7 @@ feature -- Query
     	end
 
     is_explorer: BOOLEAN
+    	-- Return if current item is the explorer
     	do
     		if item = 'E' then
     			Result := True
@@ -95,6 +100,7 @@ feature -- Query
     	end
 
     is_blackhole: BOOLEAN
+    	-- Return if current item is a blackhole
     	do
     		if item = 'O' then
     			Result := True
@@ -102,6 +108,7 @@ feature -- Query
     	end
 
     is_yellow_dwarf: BOOLEAN
+    	-- Return if current item is a yellow dwarf star
     	do
     		if item = 'Y' then
     			Result := True
@@ -109,6 +116,7 @@ feature -- Query
     	end
 
     is_blue_giant: BOOLEAN
+    	-- Return if current item is a blue giant star
     	do
     		if item = '*' then
     			Result := True
@@ -116,6 +124,7 @@ feature -- Query
     	end
 
     is_wormhole: BOOLEAN
+    	-- Return if current item is a wormhole
     	do
     		if item = 'W' then
     			Result := True
@@ -123,6 +132,7 @@ feature -- Query
     	end
 
     is_benign: BOOLEAN
+    	-- Return if current item is benign
     	do
     		if item = 'B' then
     			Result := True
@@ -130,6 +140,7 @@ feature -- Query
     	end
 
     is_malevolent: BOOLEAN
+    	-- Return if current item is malevolent
     	do
     		if item = 'M' then
     			Result := True
@@ -137,6 +148,7 @@ feature -- Query
     	end
 
     is_janitaur: BOOLEAN
+    	-- Return if current item is janitaur
     	do
     		if item = 'J' then
     			Result := True
@@ -144,6 +156,7 @@ feature -- Query
     	end
 
     is_asteroid: BOOLEAN
+    	-- Return if current item is an asteroid
     	do
     		if item = 'A' then
     			Result := True
@@ -151,13 +164,12 @@ feature -- Query
     	end
 
     is_star: BOOLEAN
+    	-- Return if current item is a star
     	do
     		if item = 'Y' or item = '*' then
     			Result := True
     		end
     	end
-
-
 
 invariant
     allowable_symbols:

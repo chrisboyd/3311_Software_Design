@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {YELLOW_DWARF}."
-	author: ""
+	description: "Star that provides 2 fuel and can support life"
+	author: "Chris Boyd : 216 869 356 : chris360"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -21,5 +21,9 @@ feature --Initialization
 			luminosity := 2
 			location := loc
 		end
+
+invariant
+    allowable_symbols:
+        item = 'Y'
 
 end

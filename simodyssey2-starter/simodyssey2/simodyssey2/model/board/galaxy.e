@@ -40,7 +40,8 @@ feature -- attributes
 feature --constructor
 
 	make
-		-- creates a dummy of galaxy grid
+			-- creates a dummy of galaxy grid
+			-- Places the explorer at [1,] and a blackhole at [3,3]
 		local
 			row : INTEGER
 			column : INTEGER
@@ -85,9 +86,17 @@ feature --constructor
 	end
 
 feature --commands
-
+		--Set a random number of movable entites at each sector.
+		--Likelihood of each entity type is defined as:
+		--Asteroid (0,a_thresh], Janitaur [a_thresh,j_thresh],
+		--Malevolent [m_thresh,b_thresh], Benign[b_thresh,p_thresh] and
+		--Plent[p_thresh,101]
 	set_movable_items(a_thresh: INTEGER; j_thresh: INTEGER; m_thresh: INTEGER;
 					b_thresh: INTEGER; p_thresh: INTEGER)
+		require
+			valid_threshold:
+				0 < a_thresh and a_thresh <= j_thresh and j_thresh <= m_thresh
+				and m_thresh <= b_thresh and b_thresh <= p_thresh and p_thresh <= 101
 		local
 			threshold: INTEGER
 			number_items: INTEGER
@@ -212,6 +221,8 @@ feature --commands
 		end
 
 	inc_movable_id
+			--increments the movable id, used by model to
+			--set id of entities created in the reproduce phase of a turn
 		do
 			movable_id := movable_id + 1
 		end
@@ -219,6 +230,9 @@ feature --commands
 feature -- query
 
 	get_sector_desc: STRING
+			--Builds a string representation of all of the entity id's and
+			--sybmols at each quadrant of each sector
+			--Used for the 'Section' output in test mode
 		do
 			create Result.make_empty
 			across
@@ -233,6 +247,9 @@ feature -- query
 		end
 
 	get_entity_desc: STRING
+			--Build a string representing all stationary and
+			--movable entities currently on the board and the entities
+			--vital stats
 		do
 			create Result.make_empty
 

@@ -1,0 +1,13 @@
+--test landing multiple planets in same sector
+test(3,5,7,15,101)
+land
+move(S)
+land
+status
+move(E)
+liftoff
+status
+land
+status
+liftoff
+land

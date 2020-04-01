@@ -1,0 +1,6 @@
+--test few entities, explorer go corner to corner
+test(1,2,3,4)
+move(W)
+move(NE)
+move(SE)
+

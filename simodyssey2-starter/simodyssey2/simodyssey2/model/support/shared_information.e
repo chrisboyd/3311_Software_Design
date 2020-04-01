@@ -106,15 +106,4 @@ feature --commands
 		do
 			benign_threshold:=threshhold
 		end
-
---	inc_movable_id
---		do
---			movable_id := movable_id + 1
---		end
-
---	reset_movable_id
---		do
---			movable_id := 0
---		end
-
 end

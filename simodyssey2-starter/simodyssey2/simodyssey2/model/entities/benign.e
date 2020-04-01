@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {BENIGN}."
-	author: ""
+	description: "Entity that protects Explorer from Malevolent and kill Malevolents"
+	author: "Chris Boyd : 216 869 356 : chris360"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -33,6 +33,9 @@ feature --attributes
 
 feature --Commands
 	check_post_move
+		--check if the sector has a star to refuel from
+		--check if there are any blackholes that will devour malevolent in the sector
+		--if runs out of fuel entering a sector with a blackhole, dies due to out of fuel
 		local
 			stationary: ENTITY_STATIONARY
 		do
@@ -45,7 +48,7 @@ feature --Commands
 					end
 				end
 			--handle situation of out of fuel and in blackhole sector,
-			--explorer dies by out of fuel first
+			--entity dies by out of fuel first
 			elseif fuel = 0 then
 				life := 0
 				entity_msg.append ("Benign got lost in space - out of fuel at Sector:" + location.out)
@@ -66,6 +69,8 @@ feature --Commands
 		end
 
 	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
+		--if reproduce timer is up, create a new benign in
+		--current location (if not full)
 		local
 			temp: BENIGN
 			turns : INTEGER
@@ -85,9 +90,10 @@ feature --Commands
 			end
 		end
 
-	--destroy all malevolent in sector from low to high id
-	--Malevolent got destroyed by benign (id: Z) at Sector:X:Y
+
 	behave: LINKED_LIST [ENTITY_MOVABLE]
+		--destroy all malevolent in sector from low to high id
+		--Malevolent got destroyed by benign (id: Z) at Sector:X:Y
 		local
 			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
 			msg: STRING
@@ -116,11 +122,15 @@ feature --Commands
 feature --Queries
 
 	get_name: STRING
+		--Return string represation of this class
 		do
 			create Result.make_from_string ("Benign")
 		end
 
 	get_status: STRING
+		--Returns current status of the benign for
+		--outputing in test mode
+		--[id,B]->fuel:fF/3, actions_left_until_reproduction:A/1, turns_left:X
 		do
 			create Result.make_empty
 			Result.append ("    " + id_out + "->fuel:" + fuel.out + "/3, actions_left_until_reproduction:")
@@ -131,5 +141,9 @@ feature --Queries
 				Result.append(turns_left.out)
 			end
 		end
+
+invariant
+    allowable_symbols:
+		item = 'B'
 
 end

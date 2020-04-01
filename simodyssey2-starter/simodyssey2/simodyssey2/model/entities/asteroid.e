@@ -1,6 +1,6 @@
 note
-	description: "Summary description for {ASTEROID}."
-	author: ""
+	description: "Asteroids randomly move about the galaxy destroying"
+	author: "Chris Boyd : 216 869 356 : chris360"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -29,6 +29,8 @@ feature --Initialization
 feature --Commands
 
 	check_post_move
+		--Checks if asteroids new location contains a blackhole, which will
+		--kill the asteroid
 		do
 			if location.has_blackhole then
 				life := 0
@@ -39,13 +41,15 @@ feature --Commands
 		end
 
 	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
+		--Asteroids do not reproduce
 		do
 		end
 
-	--seeks out other movable_entities other than other asteroids
-	--and planets and destroys in ascending id order
-	--entity got destroyed by asteroid (id: Z) at Sector:X:Y
+
 	behave: LINKED_LIST [ENTITY_MOVABLE]
+		--seeks out movable_entities other than asteroids
+		--and planets and destroys in ascending id order
+		--entity got destroyed by asteroid (id: Z) at Sector:X:Y
 		local
 			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
 			msg: STRING
@@ -89,11 +93,14 @@ feature --Commands
 feature --Queries
 
 	get_name: STRING
+		--Return string represation of this class
 		do
 			create Result.make_from_string ("Asteroid")
 		end
 
 	get_status: STRING
+		--Returns current status of the asteroid for
+		--outputing in test mode [id,A]->turns_left:X
 		do
 			create Result.make_empty
 
@@ -104,5 +111,9 @@ feature --Queries
 				Result.append(turns_left.out)
 			end
 		end
+
+invariant
+    allowable_symbols:
+		item = 'A'
 
 end

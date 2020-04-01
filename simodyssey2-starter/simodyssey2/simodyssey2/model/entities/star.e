@@ -1,6 +1,6 @@
 note
 	description: "Summary description for {STAR}."
-	author: ""
+	author: "Chris Boyd : 216 869 356 : chris360"
 	date: "$Date$"
 	revision: "$Revision$"
 
@@ -25,5 +25,9 @@ feature --Queries
 			Result.append ("Luminosity:" + luminosity.out)
 
 		end
+
+invariant
+    allowable_symbols:
+        item = '*' or item = 'Y'
 
 end
