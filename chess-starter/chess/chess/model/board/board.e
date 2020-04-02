@@ -48,6 +48,7 @@ feature -- positions
     king_position: SQUARE
     knight_position: SQUARE
 
+feature --commands
     move_king(a_square: SQUARE)
     	do
     		implementation.put ('_', king_position.x, king_position.y)
