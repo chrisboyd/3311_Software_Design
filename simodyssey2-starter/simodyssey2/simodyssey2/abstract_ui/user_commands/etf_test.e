@@ -21,7 +21,7 @@ feature -- command
 						m_threshold <= b_threshold and b_threshold <= p_threshold and p_threshold <= 101) then
 				model.set_error ("Thresholds should be non-decreasing order.")
 			else
-				model.set_test (True)
+				model.set_test
 				model.initialize_game (a_threshold, j_threshold, m_threshold, b_threshold, p_threshold)
 			end
 

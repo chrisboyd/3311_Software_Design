@@ -18,7 +18,7 @@ feature -- command
 			if (model.play_mode or model.test_mode) then
 				model.set_error ("To start a new mission, please abort the current one first.")
 			else
-				model.set_play (True)
+				model.set_play
 				model.initialize_game (3, 5, 7, 15, 30)
 			end
 
