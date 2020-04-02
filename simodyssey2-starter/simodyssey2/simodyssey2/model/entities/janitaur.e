@@ -8,6 +8,7 @@ class
 	JANITAUR
 
 inherit
+
 	ENTITY_MOVABLE
 
 create
@@ -15,7 +16,7 @@ create
 
 feature -- Initialization
 
-	make(i: INTEGER; loc: SECTOR)
+	make (i: INTEGER; loc: SECTOR)
 			-- Initialization for `Current'.
 		do
 			item := 'J'
@@ -30,13 +31,16 @@ feature -- Initialization
 		end
 
 feature --attributes
+
 	repro_interval: INTEGER
+
 	load_level: INTEGER
+
 feature --Commands
 
 	check_post_move
-		--Check for a star to refuel at, if run out of fuel or enter
-		--sector with a blackhole, dies
+			--Check for a star to refuel at, if run out of fuel or enter
+			--sector with a blackhole, dies
 		local
 			stationary: ENTITY_STATIONARY
 		do
@@ -48,8 +52,8 @@ feature --Commands
 						fuel := 5
 					end
 				end
-			--handle situation of out of fuel and in blackhole sector,
-			-- dies by out of fuel first
+					--handle situation of out of fuel and in blackhole sector,
+					-- dies by out of fuel first
 			elseif fuel = 0 then
 				life := 0
 				entity_msg.append ("Janitaur got lost in space - out of fuel at Sector:" + location.out)
@@ -57,20 +61,18 @@ feature --Commands
 				life := 0
 				entity_msg.append ("Janitaur got devoured by blackhole (id: -1) at Sector:3:3")
 			end
-
 			if fuel = 0 and entity_msg.is_empty then
 				life := 0
 				entity_msg.append ("Janitaur got lost in space - out of fuel at Sector:" + location.out)
 			end
-
 			if life = 0 then
 				location.remove (Current)
 			end
 		end
 
-	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
-		--if reproduce timer is up, create a new janitaur in
-		--current location (if not full)
+	reproduce (next_id: INTEGER): detachable ENTITY_MOVABLE
+			--if reproduce timer is up, create a new janitaur in
+			--current location (if not full)
 		local
 			temp: JANITAUR
 			turns: INTEGER
@@ -90,14 +92,13 @@ feature --Commands
 			end
 		end
 
-
 	behave: LINKED_LIST [ENTITY_MOVABLE]
-		--Janitaur grabs up to two asteroids in the current sector
-		--taking them off the board until they can be dumped in a sector
-		--with a wormhole, from which they do not return
-		--Asteroid got imploded by janitaur (id: Z) at Sector:X:Y
+			--Janitaur grabs up to two asteroids in the current sector
+			--taking them off the board until they can be dumped in a sector
+			--with a wormhole, from which they do not return
+			--Asteroid got imploded by janitaur (id: Z) at Sector:X:Y
 		local
-			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
+			movables: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE]
 			msg: STRING
 		do
 			create Result.make
@@ -113,7 +114,7 @@ feature --Commands
 						entity.item.kill
 						msg.append ("Asteroid got imploded by janitaur (id: " + id.out)
 						msg.append (") at Sector:" + location.out)
-						move_info.append ("%N      destroyed "+ entity.item.id_out + " at " + entity.item.loc_out)
+						move_info.append ("%N      destroyed " + entity.item.id_out + " at " + entity.item.loc_out)
 						entity.item.set_entity_msg (msg)
 						location.remove (entity.item)
 						Result.extend (entity.item)
@@ -130,28 +131,27 @@ feature --Commands
 feature --Queries
 
 	get_name: STRING
-		--Return string represation of this class
+			--Return string represation of this class
 		do
 			create Result.make_from_string ("Janitaur")
 		end
 
 	get_status: STRING
-		--Returns current status of the benign for
-		--outputing in test mode
-		--[id,J]->fuel:fF/3, actions_left_until_reproduction:A/2, turns_left:X
+			--Returns current status of the benign for
+			--outputing in test mode
+			--[id,J]->fuel:fF/3, actions_left_until_reproduction:A/2, turns_left:X
 		do
 			create Result.make_empty
 			Result.append ("    " + id_out + "->fuel:" + fuel.out + "/5, load:" + load_level.out)
 			Result.append ("/2, actions_left_until_reproduction:" + repro_interval.out + "/2, turns_left:")
 			if life = 0 then
-				Result.append("N/A")
+				Result.append ("N/A")
 			else
-				Result.append(turns_left.out)
+				Result.append (turns_left.out)
 			end
 		end
 
 invariant
-    allowable_symbols:
-        item = 'J'
+	allowable_symbols: item = 'J'
 
 end

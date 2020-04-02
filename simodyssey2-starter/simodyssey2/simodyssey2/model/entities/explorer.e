@@ -8,6 +8,7 @@ class
 	EXPLORER
 
 inherit
+
 	ENTITY_MOVABLE
 
 create
@@ -15,7 +16,7 @@ create
 
 feature -- Initialization
 
-	make(i: INTEGER; loc: SECTOR)
+	make (i: INTEGER; loc: SECTOR)
 			-- Initialization for `Current'.
 		do
 			item := 'E'
@@ -29,15 +30,17 @@ feature -- Initialization
 		end
 
 feature --Attributes
+
 	landed: BOOLEAN
+
 	found_life: BOOLEAN
 
 feature --Commands
 
 	check_post_move
-		--Checks if explorers new location contains a blackhole, which will
-		--kill the explorer, checks for a star to refuel, if life or fuel
-		--reach 0, dies
+			--Checks if explorers new location contains a blackhole, which will
+			--kill the explorer, checks for a star to refuel, if life or fuel
+			--reach 0, dies
 		local
 			stationary: ENTITY_STATIONARY
 		do
@@ -52,8 +55,8 @@ feature --Commands
 			elseif landed then
 				fuel := 3
 				life := 3
-			--handle situation of out of fuel and in blackhole sector,
-			--explorer dies by out of fuel first
+					--handle situation of out of fuel and in blackhole sector,
+					--explorer dies by out of fuel first
 			elseif fuel = 0 then
 				life := 0
 				entity_msg.append ("Explorer got lost in space - out of fuel at Sector:" + location.out)
@@ -61,39 +64,36 @@ feature --Commands
 				life := 0
 				entity_msg.append ("Explorer got devoured by blackhole (id: -1) at Sector:3:3")
 			end
-
 			if fuel = 0 and entity_msg.is_empty then
 				life := 0
 				entity_msg.append ("Explorer got lost in space - out of fuel at Sector:" + location.out)
 			end
-
 			if life = 0 then
 				location.remove (Current)
 			end
-
 		end
 
-	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
-		--Explorer does not reproduce, sad explorer
+	reproduce (next_id: INTEGER): detachable ENTITY_MOVABLE
+			--Explorer does not reproduce, sad explorer
 		do
 		end
 
 	behave: LINKED_LIST [ENTITY_MOVABLE]
-		--Explorer does not behave without user input
+			--Explorer does not behave without user input
 		do
 			create Result.make
 			Result.compare_objects
 		end
 
 	land: STRING
-		--Attemp to land on an unvisited planet in the sector to seek out life
-		--must be a yellow star in the sector
-		--Can attempt to land during successive turns on each planet in current sector
-		--until all are visited
-		--Cannot move again until the explorer lifts off
+			--Attemp to land on an unvisited planet in the sector to seek out life
+			--must be a yellow star in the sector
+			--Can attempt to land during successive turns on each planet in current sector
+			--until all are visited
+			--Cannot move again until the explorer lifts off
 		local
 			valid_planet: BOOLEAN
-			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
+			movables: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE]
 		do
 			create Result.make_empty
 			movables := location.get_movables
@@ -116,15 +116,14 @@ feature --Commands
 									p.set_visited
 									valid_planet := True
 									landed := True
-									--Game will be over, found a planet to support life
+										--Game will be over, found a planet to support life
 									if p.supports_life then
 										found_life := True
 										entity_msg.append ("Tranquility base here - we've got a life!")
-									--Planet does not support life, heal and refuel
+											--Planet does not support life, heal and refuel
 									else
 										found_life := False
-										entity_msg.append ("Explorer found no life as we know it at Sector:"
-											+ location.out)
+										entity_msg.append ("Explorer found no life as we know it at Sector:" + location.out)
 										fuel := 3
 										life := 3
 									end
@@ -133,18 +132,17 @@ feature --Commands
 						end
 					end --if
 					movables.forth
-				end--loop
+				end --loop
 
 				if not landed then
-					Result.append("Negative on that request:no unvisited attached planet at Sector:")
+					Result.append ("Negative on that request:no unvisited attached planet at Sector:")
 					Result.append (location.out)
 				end
 			end
-
 		end
 
 	liftoff
-		--Explorer leaves the planet for new adventures
+			--Explorer leaves the planet for new adventures
 		require
 			landed
 		do
@@ -152,19 +150,18 @@ feature --Commands
 			entity_msg.append ("Explorer has lifted off from planet at Sector:" + location.out)
 		end
 
-
 feature --Queries
 
 	get_name: STRING
-		--Return string represation of this class
+			--Return string represation of this class
 		do
 			create Result.make_from_string ("Explorer")
 		end
 
 	get_status: STRING
-		--Returns current status of the benign for
-		--outputing in test mode
-		--[id,E]->fuel:F/3, life:L/3, landed?:t|f, turns_left:X
+			--Returns current status of the benign for
+			--outputing in test mode
+			--[id,E]->fuel:F/3, life:L/3, landed?:t|f, turns_left:X
 		do
 			create Result.make_empty
 			Result.append ("    " + id_out + "->fuel:" + fuel.out + "/3, life:" + life.out)
@@ -172,7 +169,6 @@ feature --Queries
 		end
 
 invariant
-    allowable_symbols:
-        item = 'E'
+	allowable_symbols: item = 'E'
 
 end

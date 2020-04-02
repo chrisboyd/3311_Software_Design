@@ -8,13 +8,15 @@ class
 	BLUE_GIANT
 
 inherit
+
 	STAR
 
 create
 	make
 
 feature --Initialization
-	make(i: INTEGER; loc: SECTOR)
+
+	make (i: INTEGER; loc: SECTOR)
 		do
 			item := '*'
 			id := i
@@ -23,7 +25,6 @@ feature --Initialization
 		end
 
 invariant
-    allowable_symbols:
-		item = '*'
+	allowable_symbols: item = '*'
 
 end

@@ -8,6 +8,7 @@ class
 	BENIGN
 
 inherit
+
 	ENTITY_MOVABLE
 
 create
@@ -15,7 +16,7 @@ create
 
 feature -- Initialization
 
-	make(i: INTEGER; loc: SECTOR)
+	make (i: INTEGER; loc: SECTOR)
 			-- Initialization for `Current'.
 		do
 			item := 'B'
@@ -29,13 +30,15 @@ feature -- Initialization
 		end
 
 feature --attributes
+
 	repro_interval: INTEGER
 
 feature --Commands
+
 	check_post_move
-		--check if the sector has a star to refuel from
-		--check if there are any blackholes that will devour malevolent in the sector
-		--if runs out of fuel entering a sector with a blackhole, dies due to out of fuel
+			--check if the sector has a star to refuel from
+			--check if there are any blackholes that will devour malevolent in the sector
+			--if runs out of fuel entering a sector with a blackhole, dies due to out of fuel
 		local
 			stationary: ENTITY_STATIONARY
 		do
@@ -47,8 +50,8 @@ feature --Commands
 						fuel := 3
 					end
 				end
-			--handle situation of out of fuel and in blackhole sector,
-			--entity dies by out of fuel first
+					--handle situation of out of fuel and in blackhole sector,
+					--entity dies by out of fuel first
 			elseif fuel = 0 then
 				life := 0
 				entity_msg.append ("Benign got lost in space - out of fuel at Sector:" + location.out)
@@ -56,24 +59,21 @@ feature --Commands
 				life := 0
 				entity_msg.append ("Benign got devoured by blackhole (id: -1) at Sector:3:3")
 			end
-
 			if fuel = 0 and entity_msg.is_empty then
 				life := 0
 				entity_msg.append ("Benign got lost in space - out of fuel at Sector:" + location.out)
 			end
-
 			if life = 0 then
 				location.remove (Current)
 			end
-
 		end
 
-	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
-		--if reproduce timer is up, create a new benign in
-		--current location (if not full)
+	reproduce (next_id: INTEGER): detachable ENTITY_MOVABLE
+			--if reproduce timer is up, create a new benign in
+			--current location (if not full)
 		local
 			temp: BENIGN
-			turns : INTEGER
+			turns: INTEGER
 		do
 			if repro_interval = 0 then
 				if not location.is_full then
@@ -90,12 +90,11 @@ feature --Commands
 			end
 		end
 
-
 	behave: LINKED_LIST [ENTITY_MOVABLE]
-		--destroy all malevolent in sector from low to high id
-		--Malevolent got destroyed by benign (id: Z) at Sector:X:Y
+			--destroy all malevolent in sector from low to high id
+			--Malevolent got destroyed by benign (id: Z) at Sector:X:Y
 		local
-			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
+			movables: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE]
 			msg: STRING
 		do
 			create Result.make
@@ -122,28 +121,27 @@ feature --Commands
 feature --Queries
 
 	get_name: STRING
-		--Return string represation of this class
+			--Return string represation of this class
 		do
 			create Result.make_from_string ("Benign")
 		end
 
 	get_status: STRING
-		--Returns current status of the benign for
-		--outputing in test mode
-		--[id,B]->fuel:fF/3, actions_left_until_reproduction:A/1, turns_left:X
+			--Returns current status of the benign for
+			--outputing in test mode
+			--[id,B]->fuel:fF/3, actions_left_until_reproduction:A/1, turns_left:X
 		do
 			create Result.make_empty
 			Result.append ("    " + id_out + "->fuel:" + fuel.out + "/3, actions_left_until_reproduction:")
 			Result.append (repro_interval.out + "/1, turns_left:")
 			if life = 0 then
-				Result.append("N/A")
+				Result.append ("N/A")
 			else
-				Result.append(turns_left.out)
+				Result.append (turns_left.out)
 			end
 		end
 
 invariant
-    allowable_symbols:
-		item = 'B'
+	allowable_symbols: item = 'B'
 
 end

@@ -412,3 +412,87 @@
 ->move(W)
   state:17.25, error
   Negative on that request:no mission in progress.
+->pass
+  state:17.26, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.27, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.28, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.29, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.30, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.31, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.32, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.33, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.34, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.35, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.36, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.37, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.38, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.39, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.40, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.41, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.42, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.43, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.44, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.45, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.46, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.47, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.48, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.49, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.50, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.51, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.52, error
+  Negative on that request:no mission in progress.
+->pass
+  state:17.53, error
+  Negative on that request:no mission in progress.

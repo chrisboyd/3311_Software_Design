@@ -56,3 +56,92 @@
 ->abort
   state:2.5, error
   Negative on that request:no mission in progress.
+->play
+  state:3.0, mode:play, ok
+  Movement:none
+    (1:1)  (1:2)  (1:3)  (1:4)  (1:5)  
+    EP--   PY--   A---   B---   W---   
+    (2:1)  (2:2)  (2:3)  (2:4)  (2:5)  
+    PM--   ----   ----   ----   P---   
+    (3:1)  (3:2)  (3:3)  (3:4)  (3:5)  
+    W---   *---   O---   PPBW   PY--   
+    (4:1)  (4:2)  (4:3)  (4:4)  (4:5)  
+    P*--   W---   B---   P---   ----   
+    (5:1)  (5:2)  (5:3)  (5:4)  (5:5)  
+    ----   ----   B*--   B---   Y---   
+->pass
+  state:4.0, mode:play, ok
+  Movement:
+    [3,A]:[1,3,1]->[2,2,1]
+    [4,B]:[1,4,1]->[1,3,1]
+    [13,B]:[4,3,1]->[5,4,2]
+    [14,P]:[4,4,1]->[4,5,1]
+    [15,B]:[5,3,1]->[1,3,2]
+    (1:1)  (1:2)  (1:3)  (1:4)  (1:5)  
+    EP--   PY--   BB--   ----   W---   
+    (2:1)  (2:2)  (2:3)  (2:4)  (2:5)  
+    PM--   A---   ----   ----   P---   
+    (3:1)  (3:2)  (3:3)  (3:4)  (3:5)  
+    W---   *---   O---   PPBW   PY--   
+    (4:1)  (4:2)  (4:3)  (4:4)  (4:5)  
+    P*--   W---   ----   ----   P---   
+    (5:1)  (5:2)  (5:3)  (5:4)  (5:5)  
+    ----   ----   -*--   BB--   Y---   
+->pass
+  state:5.0, mode:play, ok
+  Explorer got destroyed by asteroid (id: 3) at Sector:1:1
+  The game has ended. You can start a new game.
+  Movement:
+    [3,A]:[2,2,1]->[1,1,3]
+      destroyed [0,E] at [1,1,1]
+    [9,P]:[3,4,2]->[2,4,1]
+    [10,B]:[3,4,3]->[2,2,1]
+    [13,B]:[5,4,2]->[1,4,1]
+      reproduced [17,B] at [1,4,2]
+    [14,P]:[4,5,1]->[3,4,2]
+    (1:1)  (1:2)  (1:3)  (1:4)  (1:5)  
+    -PA-   PY--   BB--   BB--   W---   
+    (2:1)  (2:2)  (2:3)  (2:4)  (2:5)  
+    PM--   B---   ----   P---   P---   
+    (3:1)  (3:2)  (3:3)  (3:4)  (3:5)  
+    W---   *---   O---   PP-W   PY--   
+    (4:1)  (4:2)  (4:3)  (4:4)  (4:5)  
+    P*--   W---   ----   ----   ----   
+    (5:1)  (5:2)  (5:3)  (5:4)  (5:5)  
+    ----   ----   -*--   B---   Y---   
+->pass
+  state:5.1, error
+  Negative on that request:no mission in progress.
+->pass
+  state:5.2, error
+  Negative on that request:no mission in progress.
+->pass
+  state:5.3, error
+  Negative on that request:no mission in progress.
+->pass
+  state:5.4, error
+  Negative on that request:no mission in progress.
+->pass
+  state:5.5, error
+  Negative on that request:no mission in progress.
+->pass
+  state:5.6, error
+  Negative on that request:no mission in progress.
+->pass
+  state:5.7, error
+  Negative on that request:no mission in progress.
+->pass
+  state:5.8, error
+  Negative on that request:no mission in progress.
+->pass
+  state:5.9, error
+  Negative on that request:no mission in progress.
+->pass
+  state:5.10, error
+  Negative on that request:no mission in progress.
+->pass
+  state:5.11, error
+  Negative on that request:no mission in progress.
+->pass
+  state:5.12, error
+  Negative on that request:no mission in progress.

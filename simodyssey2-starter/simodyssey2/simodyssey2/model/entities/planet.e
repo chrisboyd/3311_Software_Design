@@ -8,6 +8,7 @@ class
 	PLANET
 
 inherit
+
 	ENTITY_MOVABLE
 		redefine
 			move
@@ -17,13 +18,18 @@ create
 	make
 
 feature --Attributes
+
 	orbiting: BOOLEAN
+
 	supports_life: BOOLEAN
+
 	has_set: BOOLEAN
+
 	visited: BOOLEAN
 
 feature --Initialization
-	make(i: INTEGER; loc: SECTOR)
+
+	make (i: INTEGER; loc: SECTOR)
 		do
 			item := 'P'
 			id := i
@@ -35,12 +41,12 @@ feature --Initialization
 
 feature --Commands
 
-	move(dest: SECTOR)
-		--Redefine move for planets because once they enter an orbit, don't
-		--move
+	move (dest: SECTOR)
+			--Redefine move for planets because once they enter an orbit, don't
+			--move if planet orbiting a sun
 		do
 			move_info.wipe_out
-			--remove from location, add to destination
+				--remove from location, add to destination
 			if not orbiting then
 				move_info.append ("    " + Current.id_out + ":" + Current.loc_out)
 				if not dest.is_full then
@@ -50,11 +56,10 @@ feature --Commands
 					move_info.append ("->" + Current.loc_out)
 				end
 			end
-
 		end
 
 	check_post_move
-		--if planet moves into a sector with blackhole, dies
+			--if planet moves into a sector with blackhole, dies
 		do
 			if location.has_blackhole then
 				life := 0
@@ -63,15 +68,15 @@ feature --Commands
 			end
 		end
 
-	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
-		--planets don't reproduce
+	reproduce (next_id: INTEGER): detachable ENTITY_MOVABLE
+			--planets don't reproduce
 		do
 		end
 
 	behave: LINKED_LIST [ENTITY_MOVABLE]
-		--If sector has a star, orbit it, if the star is a yellow dwarf
-		--randomly assign if planet supports life (50% chance)
-		--Once this value is set, it will not change
+			--If sector has a star, orbit it, if the star is a yellow dwarf
+			--randomly assign if planet supports life (50% chance)
+			--Once this value is set, it will not change
 		local
 			odds_life: INTEGER
 		do
@@ -92,19 +97,19 @@ feature --Commands
 		end
 
 	set_orbit
-		--Planet is now orbiting a star
+			--Planet is now orbiting a star
 		do
 			orbiting := True
 		end
 
 	set_life
-		--planet supports life
+			--planet supports life
 		do
 			supports_life := True
 		end
 
 	set_visited
-		--planet has been visited by explorer
+			--planet has been visited by explorer
 		do
 			visited := True
 		end
@@ -112,29 +117,28 @@ feature --Commands
 feature --Queries
 
 	get_name: STRING
-		--Return string represation of this class
+			--Return string represation of this class
 		do
 			create Result.make_from_string ("Planet")
 		end
 
 	get_status: STRING
-		--Returns current status of the benign for
-		--outputing in test mode
-		--[id,P]->attached?:t|f, support_life?:t|f, visited?:t|f, turns_left:X
+			--Returns current status of the benign for
+			--outputing in test mode
+			--[id,P]->attached?:t|f, support_life?:t|f, visited?:t|f, turns_left:X
 		do
 			create Result.make_empty
 			Result.append ("    " + id_out + "->attached?:" + orbiting.out.at (1).out + ", support_life?:")
 			Result.append (supports_life.out.at (1).out + ", visited?:" + visited.out.at (1).out)
 			Result.append (", turns_left:")
 			if orbiting or (life = 0) then
-				Result.append("N/A")
+				Result.append ("N/A")
 			else
 				Result.append (turns_left.out)
 			end
 		end
 
 invariant
-    allowable_symbols:
-        item = 'P'
+	allowable_symbols: item = 'P'
 
 end

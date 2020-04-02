@@ -8,13 +8,15 @@ class
 	WORMHOLE
 
 inherit
+
 	ENTITY_STATIONARY
 
 create
 	make
 
 feature --Initialization
-	make(i: INTEGER; loc: SECTOR)
+
+	make (i: INTEGER; loc: SECTOR)
 		do
 			item := 'W'
 			id := i
@@ -22,7 +24,6 @@ feature --Initialization
 		end
 
 invariant
-    allowable_symbols:
-        item = 'W'
+	allowable_symbols: item = 'W'
 
 end

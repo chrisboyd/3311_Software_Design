@@ -8,6 +8,7 @@ class
 	MALEVOLENT
 
 inherit
+
 	ENTITY_MOVABLE
 
 create
@@ -15,7 +16,7 @@ create
 
 feature --Initialization
 
-	make(i: INTEGER; loc: SECTOR)
+	make (i: INTEGER; loc: SECTOR)
 			-- Initialization for `Current'.
 		do
 			item := 'M'
@@ -29,11 +30,14 @@ feature --Initialization
 		end
 
 feature --attributes
+
 	repro_interval: INTEGER
 
 feature --Commands
 
 	check_post_move
+			--Refuel if there is a star in the sector, check if Malevolent ran out of fuel
+			--or if there is a blackhole, both of which kill the Malevolent.
 		local
 			stationary: ENTITY_STATIONARY
 		do
@@ -45,8 +49,8 @@ feature --Commands
 						fuel := 3
 					end
 				end
-			--handle situation of out of fuel and in blackhole sector,
-			--explorer dies by out of fuel first
+					--handle situation of out of fuel and in blackhole sector,
+					--explorer dies by out of fuel first
 			elseif fuel = 0 then
 				life := 0
 				entity_msg.append ("Malevolent got lost in space - out of fuel at Sector:" + location.out)
@@ -54,19 +58,18 @@ feature --Commands
 				life := 0
 				entity_msg.append ("Malevolent got devoured by blackhole (id: -1) at Sector:3:3")
 			end
-
 			if fuel = 0 and entity_msg.is_empty then
 				life := 0
 				entity_msg.append ("Malevolent got lost in space - out of fuel at Sector:" + location.out)
 			end
-
 			if life = 0 then
 				location.remove (Current)
 			end
-
 		end
 
-	reproduce(next_id: INTEGER): detachable ENTITY_MOVABLE
+	reproduce (next_id: INTEGER): detachable ENTITY_MOVABLE
+			--If the Malevolent has a repro_interval of 0, create a new Malevolent object
+			--in the current sector if there is space
 		local
 			temp: MALEVOLENT
 			turns: INTEGER
@@ -86,20 +89,17 @@ feature --Commands
 			end
 		end
 
-
 	behave: LINKED_LIST [ENTITY_MOVABLE]
-		--attack explorer, if present and not landed and no benign in sector
-		--Explorer got lost in space - out of life support at Sector:X:Y
+			--attack explorer, if present and not landed and no benign in sector
 		local
-			movables: SORTED_TWO_WAY_LIST[ENTITY_MOVABLE]
+			movables: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE]
 			msg: STRING
 		do
 			create Result.make
 			Result.compare_objects
-			--double check this all
+				--double check this all
 			movables := location.get_movables
 			create msg.make_empty
-
 			across
 				movables as entity
 			loop
@@ -125,28 +125,27 @@ feature --Commands
 feature --Queries
 
 	get_name: STRING
-		--Return string represation of this class
+			--Return string represation of this class
 		do
 			create Result.make_from_string ("Malevolent")
 		end
 
 	get_status: STRING
-		--Returns current status of the benign for
-		--outputing in test mode
-		--[id,M]->fuel:fF/3, actions_left_until_reproduction:A/1, turns_left:X
+			--Returns current status of the benign for
+			--outputing in test mode
+			--[id,M]->fuel:fF/3, actions_left_until_reproduction:A/1, turns_left:X
 		do
 			create Result.make_empty
 			Result.append ("    " + id_out + "->fuel:" + fuel.out + "/3, actions_left_until_reproduction:")
 			Result.append (repro_interval.out + "/1, turns_left:")
 			if life = 0 then
-				Result.append("N/A")
+				Result.append ("N/A")
 			else
-				Result.append(turns_left.out)
+				Result.append (turns_left.out)
 			end
 		end
 
 invariant
-    allowable_symbols:
-        item = 'M'
+	allowable_symbols: item = 'M'
 
 end

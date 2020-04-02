@@ -124,24 +124,21 @@ feature -- model operations
 			--[dest_row, dest_col]
 			--increment game state and reset error state
 			--complete a turn of all movable entities in the game
-		require
-			exp_not_landed: not board.explorer.landed
 		do
-				--board.explorer.move (board.grid[dest_row, dest_col])
 			board.explorer.move (board.get_sector (dest_row, dest_col))
 			move_list.append (board.explorer.get_move_info + "%N")
 			game_state := game_state + 1
 			error_state := 0
 			board.explorer.check_post_move
 			update_movables
+		ensure
+			game_state_updated: game_state = old game_state + 1
 		end
 
 	wormhole_explorer
 			--send the explorer through the wormhole to a random location
 			--increment game state and reset error state
 			--complete a turn of all movable entities in the game
-		require
-			sector_has_wormhole: board.explorer.location.has_wormhole
 		do
 			board.explorer.wormhole (board)
 			move_list.append (board.explorer.get_move_info + "%N")
@@ -149,6 +146,8 @@ feature -- model operations
 			error_state := 0
 			board.explorer.check_post_move
 			update_movables
+		ensure
+			game_state_updated: game_state = old game_state + 1
 		end
 
 	land_explorer
@@ -156,8 +155,6 @@ feature -- model operations
 			--sector and check to see if life was found
 			--increment game state and reset error state
 			--complete a turn for all movable entities if no life found
-		require
-			exp_not_landed: not board.explorer.landed
 		local
 			msg: STRING
 		do
@@ -172,23 +169,19 @@ feature -- model operations
 			else
 				set_error (msg)
 			end
-		ensure
-			exp_landed: board.explorer.landed
 		end
 
 	liftoff_explorer
 			--lift the explorer back into space in the current sector
 			--increment game state and reset error state
 			--complete a turn for all movable entities
-		require
-			exp_landed: board.explorer.landed
 		do
 			board.explorer.liftoff
 			game_state := game_state + 1
 			error_state := 0
 			update_movables
 		ensure
-			exp_lifted: not board.explorer.landed
+			game_state_updated: game_state = old game_state + 1
 		end
 
 	status
@@ -213,8 +206,6 @@ feature -- model operations
 			--the explorer does not move or act this turn
 			--increments the game state and resets the error state
 			--causes a turn for all movable entities to occur
-		require
-			active_game: play_mode or test_mode
 		do
 			game_state := game_state + 1
 			error_state := 0
@@ -226,8 +217,6 @@ feature -- model operations
 	abort
 			--quit the current game and remove all pieces from the board
 			--increment the error state
-		require
-			active_game: play_mode or test_mode
 		do
 			aborted := True
 			error_state := error_state + 1

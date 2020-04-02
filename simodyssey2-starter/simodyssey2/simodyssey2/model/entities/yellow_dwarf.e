@@ -8,13 +8,15 @@ class
 	YELLOW_DWARF
 
 inherit
+
 	STAR
 
 create
 	make
 
 feature --Initialization
-	make(i: INTEGER; loc: SECTOR)
+
+	make (i: INTEGER; loc: SECTOR)
 		do
 			item := 'Y'
 			id := i
@@ -23,7 +25,6 @@ feature --Initialization
 		end
 
 invariant
-    allowable_symbols:
-        item = 'Y'
+	allowable_symbols: item = 'Y'
 
 end
