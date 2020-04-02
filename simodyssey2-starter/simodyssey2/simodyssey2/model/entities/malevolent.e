@@ -105,7 +105,7 @@ feature --Commands
 			loop
 				if entity.item.is_explorer then
 					check attached {EXPLORER} entity.item as exp then
-						if not (exp.landed and location.has_benign) then
+						if not (exp.landed or location.has_benign) then
 							exp.take_life
 							move_info.append ("%N      attacked " + exp.id_out + " at " + exp.loc_out)
 							if exp.is_dead then

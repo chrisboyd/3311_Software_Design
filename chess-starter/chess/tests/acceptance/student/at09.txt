@@ -1,0 +1,13 @@
+--move knight, undo, move different redo
+play(8)
+move_knight([7,6])
+move_king([1,2])
+redo
+redo
+move_knight([6,4])
+move_king([2,2])
+undo
+undo
+undo
+redo
+
