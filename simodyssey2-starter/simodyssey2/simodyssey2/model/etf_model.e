@@ -32,27 +32,38 @@ feature {NONE} -- Initialization
 feature -- model attributes
 
 	board: GALAXY
+			--access to the board that contains all sectors and entities in the game
 
 	play_mode: BOOLEAN
+			--did the user start the game in play mode
 
 	test_mode: BOOLEAN
+			--did the user start the game in test mode, provides additional information
+			--about what happens each turn
 
 	error_msg: STRING
+			--set a message with regards to invalid command received
 
 	game_state: INTEGER
+			--the number of valid turns that have passed in the game
 
 	error_state: INTEGER
+			--the number of invalid commands that have been processed since
+			--the last valid turn
 
 	shared_info_access: SHARED_INFORMATION_ACCESS
-
-	move_list: STRING
-
-	status_msg: STRING
+			--ac
 
 	shared_info: SHARED_INFORMATION
 		attribute
 			Result := shared_info_access.shared_info
 		end
+
+	move_list: STRING
+
+	status_msg: STRING
+
+
 
 	deaths: LINKED_LIST [ENTITY_MOVABLE]
 
@@ -124,6 +135,9 @@ feature -- model operations
 			--[dest_row, dest_col]
 			--increment game state and reset error state
 			--complete a turn of all movable entities in the game
+		require
+			in_game: play_mode or test_mode
+			not_landed: not board.explorer.landed
 		do
 			board.explorer.move (board.get_sector (dest_row, dest_col))
 			move_list.append (board.explorer.get_move_info + "%N")
@@ -139,6 +153,8 @@ feature -- model operations
 			--send the explorer through the wormhole to a random location
 			--increment game state and reset error state
 			--complete a turn of all movable entities in the game
+		require
+			in_game: play_mode or test_mode
 		do
 			board.explorer.wormhole (board)
 			move_list.append (board.explorer.get_move_info + "%N")
@@ -155,6 +171,9 @@ feature -- model operations
 			--sector and check to see if life was found
 			--increment game state and reset error state
 			--complete a turn for all movable entities if no life found
+		require
+			not_landed: not board.explorer.landed
+			in_game: play_mode or test_mode
 		local
 			msg: STRING
 		do
@@ -175,6 +194,9 @@ feature -- model operations
 			--lift the explorer back into space in the current sector
 			--increment game state and reset error state
 			--complete a turn for all movable entities
+		require
+			landed: board.explorer.landed
+			in_game: play_mode or test_mode
 		do
 			board.explorer.liftoff
 			game_state := game_state + 1
@@ -189,6 +211,8 @@ feature -- model operations
 			--if explorer is flying, landed and their current life, fuel and location
 			--counts as an error state as it does not cause a turn of all the
 			--movable entities to occur
+		require
+			in_game: play_mode or test_mode
 		do
 			error_state := error_state + 1
 			if not board.explorer.landed then
@@ -206,6 +230,8 @@ feature -- model operations
 			--the explorer does not move or act this turn
 			--increments the game state and resets the error state
 			--causes a turn for all movable entities to occur
+		require
+			in_game: play_mode or test_mode
 		do
 			game_state := game_state + 1
 			error_state := 0
@@ -217,6 +243,8 @@ feature -- model operations
 	abort
 			--quit the current game and remove all pieces from the board
 			--increment the error state
+		require
+			in_game: play_mode or test_mode
 		do
 			aborted := True
 			error_state := error_state + 1

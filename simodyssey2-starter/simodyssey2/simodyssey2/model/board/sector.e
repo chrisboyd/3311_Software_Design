@@ -97,6 +97,8 @@ feature -- commands
 		do
 			index_remove := contents.index_of (entity, 1)
 			contents [index_remove] := Void
+		ensure
+			removed_entity: not has(entity)
 		end
 
 feature -- Queries
