@@ -1,0 +1,204 @@
+Output produced by oracle.exe wrote to log/student/at001.expected.txt.
+Output produced by oracle.exe wrote to log/student/at002.expected.txt.
+Output produced by oracle.exe wrote to log/student/at003.expected.txt.
+Output produced by oracle.exe wrote to log/student/at004.expected.txt.
+Output produced by oracle.exe wrote to log/student/at005.expected.txt.
+Output produced by oracle.exe wrote to log/student/at006.expected.txt.
+Output produced by oracle.exe wrote to log/student/at007.expected.txt.
+Output produced by oracle.exe wrote to log/student/at008.expected.txt.
+Output produced by oracle.exe wrote to log/student/at009.expected.txt.
+Output produced by oracle.exe wrote to log/student/at010.expected.txt.
+Output produced by oracle.exe wrote to log/student/at011.expected.txt.
+Output produced by oracle.exe wrote to log/student/at012.expected.txt.
+Output produced by oracle.exe wrote to log/student/at013.expected.txt.
+Output produced by oracle.exe wrote to log/student/at014.expected.txt.
+Output produced by oracle.exe wrote to log/student/at015.expected.txt.
+Output produced by oracle.exe wrote to log/student/at016.expected.txt.
+Output produced by oracle.exe wrote to log/student/at017.expected.txt.
+Output produced by oracle.exe wrote to log/student/at018.expected.txt.
+Output produced by oracle.exe wrote to log/student/at019.expected.txt.
+Output produced by oracle.exe wrote to log/student/at020.expected.txt.
+Output produced by oracle.exe wrote to log/student/at021.expected.txt.
+Output produced by oracle.exe wrote to log/student/at022.expected.txt.
+Output produced by oracle.exe wrote to log/student/at023.expected.txt.
+Output produced by oracle.exe wrote to log/student/at024.expected.txt.
+Output produced by oracle.exe wrote to log/student/at025.expected.txt.
+Output produced by oracle.exe wrote to log/student/at026.expected.txt.
+Output produced by oracle.exe wrote to log/student/at027.expected.txt.
+Output produced by oracle.exe wrote to log/instructor/at001.expected.txt.
+Output produced by oracle.exe wrote to log/instructor/at001.expected.txt.
+Output produced by oracle.exe wrote to log/instructor/at002.expected.txt.
+Output produced by oracle.exe wrote to log/instructor/at002.expected.txt.
+Output produced by oracle.exe wrote to log/instructor/at003.expected.txt.
+Output produced by oracle.exe wrote to log/instructor/at003.expected.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at001.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at001.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at001.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at002.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at002.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at002.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at003.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at003.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at003.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at004.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at004.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at004.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at005.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at005.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at005.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at006.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at006.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at006.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at007.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at007.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at007.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at008.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at008.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at008.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at009.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at009.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at009.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at010.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at010.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at010.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at011.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at011.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at011.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at012.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at012.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at012.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at013.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at013.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at013.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at014.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at014.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at014.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at015.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at015.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at015.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at016.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at016.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at016.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at017.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at017.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at017.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at018.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at018.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at018.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at019.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at019.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at019.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at020.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at020.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at020.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at021.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at021.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at021.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at022.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at022.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at022.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at023.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at023.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at023.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at024.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at024.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at024.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at025.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at025.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at025.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at026.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at026.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at026.actual.txt.
+========================================================================
+Running acceptance test from file ../tests/acceptance/student/at027.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/student/at027.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/student/at027.actual.txt.
+==================================================================================
+Running acceptance test from file ../tests/acceptance/instructor/at001.actual.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/instructor/at001.actual.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/instructor/at001.actual.txt.
+===========================================================================
+Running acceptance test from file ../tests/acceptance/instructor/at001.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/instructor/at001.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/instructor/at001.actual.txt.
+==================================================================================
+Running acceptance test from file ../tests/acceptance/instructor/at002.actual.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/instructor/at002.actual.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/instructor/at002.actual.txt.
+===========================================================================
+Running acceptance test from file ../tests/acceptance/instructor/at002.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/instructor/at002.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/instructor/at002.actual.txt.
+==================================================================================
+Running acceptance test from file ../tests/acceptance/instructor/at003.actual.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/instructor/at003.actual.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/instructor/at003.actual.txt.
+===========================================================================
+Running acceptance test from file ../tests/acceptance/instructor/at003.txt.
+/eecs/home/chris360/3311/simodyssey2/tests/acceptance/instructor/at003.txt
+Output produced by /tmp/chris360/EIFGENs/simodyssey2/W_code/simodyssey2 wrote to log/instructor/at003.actual.txt.
+===========================
+Test Results: 33/33 passed.
+===========================
+Success: log/student/at001.actual.txt and log/student/at001.expected.txt are identical.
+Success: log/student/at002.actual.txt and log/student/at002.expected.txt are identical.
+Success: log/student/at003.actual.txt and log/student/at003.expected.txt are identical.
+Success: log/student/at004.actual.txt and log/student/at004.expected.txt are identical.
+Success: log/student/at005.actual.txt and log/student/at005.expected.txt are identical.
+Success: log/student/at006.actual.txt and log/student/at006.expected.txt are identical.
+Success: log/student/at007.actual.txt and log/student/at007.expected.txt are identical.
+Success: log/student/at008.actual.txt and log/student/at008.expected.txt are identical.
+Success: log/student/at009.actual.txt and log/student/at009.expected.txt are identical.
+Success: log/student/at010.actual.txt and log/student/at010.expected.txt are identical.
+Success: log/student/at011.actual.txt and log/student/at011.expected.txt are identical.
+Success: log/student/at012.actual.txt and log/student/at012.expected.txt are identical.
+Success: log/student/at013.actual.txt and log/student/at013.expected.txt are identical.
+Success: log/student/at014.actual.txt and log/student/at014.expected.txt are identical.
+Success: log/student/at015.actual.txt and log/student/at015.expected.txt are identical.
+Success: log/student/at016.actual.txt and log/student/at016.expected.txt are identical.
+Success: log/student/at017.actual.txt and log/student/at017.expected.txt are identical.
+Success: log/student/at018.actual.txt and log/student/at018.expected.txt are identical.
+Success: log/student/at019.actual.txt and log/student/at019.expected.txt are identical.
+Success: log/student/at020.actual.txt and log/student/at020.expected.txt are identical.
+Success: log/student/at021.actual.txt and log/student/at021.expected.txt are identical.
+Success: log/student/at022.actual.txt and log/student/at022.expected.txt are identical.
+Success: log/student/at023.actual.txt and log/student/at023.expected.txt are identical.
+Success: log/student/at024.actual.txt and log/student/at024.expected.txt are identical.
+Success: log/student/at025.actual.txt and log/student/at025.expected.txt are identical.
+Success: log/student/at026.actual.txt and log/student/at026.expected.txt are identical.
+Success: log/student/at027.actual.txt and log/student/at027.expected.txt are identical.
+Success: log/instructor/at001.actual.txt and log/instructor/at001.expected.txt are identical.
+Success: log/instructor/at001.actual.txt and log/instructor/at001.expected.txt are identical.
+Success: log/instructor/at002.actual.txt and log/instructor/at002.expected.txt are identical.
+Success: log/instructor/at002.actual.txt and log/instructor/at002.expected.txt are identical.
+Success: log/instructor/at003.actual.txt and log/instructor/at003.expected.txt are identical.
+Success: log/instructor/at003.actual.txt and log/instructor/at003.expected.txt are identical.
+===========================
+Test Results: 33/33 passed.
+===========================

@@ -20,16 +20,23 @@ create
 feature --Attributes
 
 	orbiting: BOOLEAN
+			--is this planet orbiting a star
 
 	supports_life: BOOLEAN
+			--does this planet support life
 
 	has_set: BOOLEAN
+			--has this planet already randomly determined if it
+			--supports life, necessary to not re-determine during
+			--every behave operation
 
 	visited: BOOLEAN
+			--has the explorer already visited this planet
 
 feature --Initialization
 
 	make (i: INTEGER; loc: SECTOR)
+			-- Initialization for `planet'.
 		do
 			item := 'P'
 			id := i

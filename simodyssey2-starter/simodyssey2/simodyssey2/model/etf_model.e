@@ -1,5 +1,5 @@
 note
-	description: "Primary business logic of SimOdyssey2 Boardgame"
+	description: "Primary game logic of SimOdyssey2 Boardgame"
 	author: "Chris Boyd : 216 869 356 : chris360"
 	date: "$Date$"
 	revision: "$Revision$"
@@ -21,7 +21,7 @@ feature {NONE} -- Initialization
 
 	make
 		do
-			create board.make
+			create game_board.make
 			create error_msg.make_empty
 			create deaths.make
 			deaths.compare_objects
@@ -31,7 +31,7 @@ feature {NONE} -- Initialization
 
 feature -- model attributes
 
-	board: GALAXY
+	game_board: GALAXY
 			--access to the board that contains all sectors and entities in the game
 
 	play_mode: BOOLEAN
@@ -40,6 +40,17 @@ feature -- model attributes
 	test_mode: BOOLEAN
 			--did the user start the game in test mode, provides additional information
 			--about what happens each turn
+
+	shared_info_access: SHARED_INFORMATION_ACCESS
+			--access the base game state info like size of the board
+
+	shared_info: SHARED_INFORMATION
+			--singleton access to shared information
+		attribute
+			Result := shared_info_access.shared_info
+		end
+
+feature {NONE} --internal model attributes
 
 	error_msg: STRING
 			--set a message with regards to invalid command received
@@ -51,23 +62,18 @@ feature -- model attributes
 			--the number of invalid commands that have been processed since
 			--the last valid turn
 
-	shared_info_access: SHARED_INFORMATION_ACCESS
-			--ac
-
-	shared_info: SHARED_INFORMATION
-		attribute
-			Result := shared_info_access.shared_info
-		end
-
 	move_list: STRING
+			--list of moves that entities completed in a valid turn
 
 	status_msg: STRING
-
-
+			--string output when user enters status command
 
 	deaths: LINKED_LIST [ENTITY_MOVABLE]
+			--list of deaths that occurred during the current round,
+			--in order of occurrence
 
 	aborted: BOOLEAN
+			--did the user abort the current game
 
 feature -- model operations
 
@@ -124,10 +130,10 @@ feature -- model operations
 			--according to thresholds defined as input
 		do
 				--initialize board with all movable entities
-			board.set_movable_items (a_thresh, j_thresh, m_thresh, b_thresh, p_thresh)
+			game_board.set_movable_items (a_thresh, j_thresh, m_thresh, b_thresh, p_thresh)
 				--initialize board with all stationary entities
 				--do separate from movable due to random number generator
-			board.set_stationary_items
+			game_board.set_stationary_items
 		end
 
 	move_explorer (dest_row: INTEGER; dest_col: INTEGER)
@@ -137,13 +143,13 @@ feature -- model operations
 			--complete a turn of all movable entities in the game
 		require
 			in_game: play_mode or test_mode
-			not_landed: not board.explorer.landed
+			not_landed: not game_board.explorer.landed
 		do
-			board.explorer.move (board.get_sector (dest_row, dest_col))
-			move_list.append (board.explorer.get_move_info + "%N")
+			game_board.explorer.move (game_board.get_sector (dest_row, dest_col))
+			move_list.append (game_board.explorer.get_move_info + "%N")
 			game_state := game_state + 1
 			error_state := 0
-			board.explorer.check_post_move
+			game_board.explorer.check_post_move
 			update_movables
 		ensure
 			game_state_updated: game_state = old game_state + 1
@@ -156,11 +162,11 @@ feature -- model operations
 		require
 			in_game: play_mode or test_mode
 		do
-			board.explorer.wormhole (board)
-			move_list.append (board.explorer.get_move_info + "%N")
+			game_board.explorer.wormhole (game_board)
+			move_list.append (game_board.explorer.get_move_info + "%N")
 			game_state := game_state + 1
 			error_state := 0
-			board.explorer.check_post_move
+			game_board.explorer.check_post_move
 			update_movables
 		ensure
 			game_state_updated: game_state = old game_state + 1
@@ -172,17 +178,17 @@ feature -- model operations
 			--increment game state and reset error state
 			--complete a turn for all movable entities if no life found
 		require
-			not_landed: not board.explorer.landed
+			not_landed: not game_board.explorer.landed
 			in_game: play_mode or test_mode
 		local
 			msg: STRING
 		do
-			msg := board.explorer.land
+			msg := game_board.explorer.land
 			if msg.is_empty then
 				game_state := game_state + 1
 				error_state := 0
-				board.explorer.check_post_move
-				if not board.explorer.found_life then
+				game_board.explorer.check_post_move
+				if not game_board.explorer.found_life then
 					update_movables
 				end
 			else
@@ -195,10 +201,10 @@ feature -- model operations
 			--increment game state and reset error state
 			--complete a turn for all movable entities
 		require
-			landed: board.explorer.landed
+			landed: game_board.explorer.landed
 			in_game: play_mode or test_mode
 		do
-			board.explorer.liftoff
+			game_board.explorer.liftoff
 			game_state := game_state + 1
 			error_state := 0
 			update_movables
@@ -215,11 +221,11 @@ feature -- model operations
 			in_game: play_mode or test_mode
 		do
 			error_state := error_state + 1
-			if not board.explorer.landed then
-				status_msg.append ("  Explorer status report:Travelling at cruise speed at " + board.explorer.loc_out + "%N")
-				status_msg.append ("  Life units left:" + board.explorer.life.out + ", Fuel units left:" + board.explorer.fuel.out)
+			if not game_board.explorer.landed then
+				status_msg.append ("  Explorer status report:Travelling at cruise speed at " + game_board.explorer.loc_out + "%N")
+				status_msg.append ("  Life units left:" + game_board.explorer.life.out + ", Fuel units left:" + game_board.explorer.fuel.out)
 			else
-				status_msg.append ("  Explorer status report:Stationary on planet surface at " + board.explorer.loc_out + "%N")
+				status_msg.append ("  Explorer status report:Stationary on planet surface at " + game_board.explorer.loc_out + "%N")
 				status_msg.append ("  Life units left:3, Fuel units left:3")
 			end
 		ensure
@@ -280,14 +286,14 @@ feature -- queries
 				elseif not status_msg.is_empty then
 					Result.append (status_msg)
 				else
-					if board.explorer.is_dead then
-						Result.append ("  " + board.explorer.get_entity_msg + "%N")
+					if game_board.explorer.is_dead then
+						Result.append ("  " + game_board.explorer.get_entity_msg + "%N")
 						Result.append ("  The game has ended. You can start a new game.%N")
-					elseif board.explorer.found_life then
-						Result.append ("  " + board.explorer.get_entity_msg)
+					elseif game_board.explorer.found_life then
+						Result.append ("  " + game_board.explorer.get_entity_msg)
 						victory := True
-					elseif not board.explorer.entity_msg.is_empty then
-						Result.append ("  " + board.explorer.get_entity_msg + "%N")
+					elseif not game_board.explorer.entity_msg.is_empty then
+						Result.append ("  " + game_board.explorer.get_entity_msg + "%N")
 					end
 					if not victory then
 						Result.append ("  Movement:")
@@ -299,10 +305,10 @@ feature -- queries
 						if test_mode then
 								--sectors information
 							Result.append ("  Sectors:%N")
-							Result.append (board.get_sector_desc)
+							Result.append (game_board.get_sector_desc)
 								--entity descriptiones
 							Result.append ("  Descriptions:%N")
-							Result.append (board.get_entity_desc)
+							Result.append (game_board.get_entity_desc)
 								--deaths this turn
 							Result.append ("  Deaths This Turn:")
 							if deaths.is_empty then
@@ -313,9 +319,9 @@ feature -- queries
 						end
 
 							--output the game board
-						Result.append (board.out)
-						if test_mode and board.explorer.is_dead then
-							Result.append ("%N  " + board.explorer.get_entity_msg + "%N")
+						Result.append (game_board.out)
+						if test_mode and game_board.explorer.is_dead then
+							Result.append ("%N  " + game_board.explorer.get_entity_msg + "%N")
 							Result.append ("  The game has ended. You can start a new game.")
 						end
 					end
@@ -326,8 +332,8 @@ feature -- queries
 			move_list.wipe_out
 			deaths.wipe_out
 			status_msg.wipe_out
-			board.explorer.entity_msg.wipe_out
-			if board.explorer.is_dead or victory then
+			game_board.explorer.entity_msg.wipe_out
+			if game_board.explorer.is_dead or victory then
 				end_game
 			end
 		end
@@ -419,7 +425,7 @@ feature {NONE} --Internal operations
 			--Happens after the user aborts or the explorer lands
 			--on a planet with life.
 		do
-			create board.make
+			create game_board.make
 			play_mode := False
 			test_mode := False
 			error_msg.wipe_out
@@ -446,7 +452,7 @@ feature {NONE} --Internal operations
 			create created_entities.make
 			created_entities.compare_objects
 			across
-				board.movable_entities as entity
+				game_board.movable_entities as entity
 			loop
 				if not entity.item.is_explorer then
 					if entity.item.turns_left = 0 and not entity.item.is_dead then
@@ -458,7 +464,7 @@ feature {NONE} --Internal operations
 						else
 								--malevolent and benign entities always take the wormhole, if present
 							if entity.item.location.has_wormhole and (entity.item.is_malevolent or entity.item.is_benign) then
-								entity.item.wormhole (board)
+								entity.item.wormhole (game_board)
 							else
 									--choose direction 1-8
 								direction := gen.rchoose (1, 8)
@@ -466,21 +472,20 @@ feature {NONE} --Internal operations
 								start := create {PAIR [INTEGER, INTEGER]}.make (entity.item.location.row, entity.item.location.column)
 								dest := get_dest_coord (start, dir_coord)
 									--entity.item.move (board.grid[dest.first, dest.second])
-								entity.item.move (board.get_sector (dest.first, dest.second))
+								entity.item.move (game_board.get_sector (dest.first, dest.second))
 							end
 								--post move, check for refuel, out of fuel, devoured by blackhole
 							entity.item.check_post_move
 							if not entity.item.is_dead then
-								next_id := board.movable_id
+								next_id := game_board.movable_id
 								reproduce := entity.item.reproduce (next_id)
 								if attached reproduce as r then
-										--board.movable_entities.extend (r)
 										--add created entities to a separate list, then add
 										--all of the new entities to the movable list AFTER
 										--update_movables is done so they don't act in turn they are
 										--created
 									created_entities.extend (r)
-									board.inc_movable_id
+									game_board.inc_movable_id
 								end
 									--add all entities that current entity killed during its behave
 								create entities_killed.make_from_iterable (entity.item.behave)
@@ -489,8 +494,7 @@ feature {NONE} --Internal operations
 									deaths.merge_right (entities_killed)
 								end
 
-									--entity died during the turn
-							else
+							else --entity died during the turn
 								deaths.extend (entity.item)
 							end
 								--add current entities move information to the list
@@ -499,8 +503,8 @@ feature {NONE} --Internal operations
 						end --either not a planet or a planet and no star in sector
 					elseif entity.item.is_dead and not deaths.has (entity.item) then
 						deaths.extend (entity.item)
-							--remove a turn (entity did not act this round)
 					else
+						--remove a turn (entity did not act this round)
 						entity.item.set_turns (entity.item.turns_left - 1)
 					end
 				end -- end of if not explorer
@@ -518,11 +522,11 @@ feature {NONE} --Internal operations
 			across
 				created as to_add
 			loop
-				board.movable_entities.extend (to_add.item)
+				game_board.movable_entities.extend (to_add.item)
 			end
 		ensure
-			correct_num_added: board.movable_entities.count = old (board.movable_entities.count + created.count)
-			movable_contains_added: across created as c all board.movable_entities.has (c.item) end
+			correct_num_added: game_board.movable_entities.count = old (game_board.movable_entities.count + created.count)
+			movable_contains_added: across created as c all game_board.movable_entities.has (c.item) end
 		end
 
 	remove_dead_entities
@@ -530,18 +534,18 @@ feature {NONE} --Internal operations
 			--from the list of all movable entities
 		do
 			from
-				board.movable_entities.start
+				game_board.movable_entities.start
 			until
-				board.movable_entities.exhausted
+				game_board.movable_entities.exhausted
 			loop
-				if board.movable_entities.item.is_dead then
-					board.movable_entities.remove
+				if game_board.movable_entities.item.is_dead then
+					game_board.movable_entities.remove
 				else
-					board.movable_entities.forth
+					game_board.movable_entities.forth
 				end
 			end
 		ensure
-			no_dead: across board.movable_entities as entity all not entity.item.is_dead end
+			no_dead: across game_board.movable_entities as entity all not entity.item.is_dead end
 		end
 
 end

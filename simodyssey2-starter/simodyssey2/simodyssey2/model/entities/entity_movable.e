@@ -14,23 +14,25 @@ inherit
 feature --attributes
 
 	turns_left: INTEGER
+			--how many turns left until this entity acts
 
 	fuel: INTEGER
+			--how much fuel this entity has until it will die
 
 	life: INTEGER
+			--how many lives does this entity have left until death
 
 	entity_msg: STRING
+			--set by other entities that interac with this entity
+			--through their behave action
 
 	move_info: STRING
-
-	shared_info_access: SHARED_INFORMATION_ACCESS
-
-	shared_info: SHARED_INFORMATION
-		attribute
-			Result := shared_info_access.shared_info
-		end
+			--represents where this entity moved from and to during
+			--a turn
 
 	gen: RANDOM_GENERATOR_ACCESS
+			--deterministic random number generator used for
+			--travelling through wormholes and resetting number of turns
 
 feature --commands
 
@@ -88,24 +90,11 @@ feature --commands
 			end
 		end
 
-	get_entity_msg: STRING
-			--Return the entity's status message, likely set in the event
-			--of the entity being killed by something.
-		do
-			Result := entity_msg
-		end
-
 	set_entity_msg (msg: STRING)
 			--Set the entity's status message, used by other entities
 			--when interacting with this entity
 		do
 			entity_msg := msg
-		end
-
-	is_dead: BOOLEAN
-			--Is the entity out of life?
-		do
-			Result := life = 0
 		end
 
 	take_life
@@ -122,10 +111,24 @@ feature --commands
 			life := 0
 		end
 
+feature --Queries
 	get_move_info: STRING
 			--return the string of move entity performed during current turn
 		do
 			Result := move_info
+		end
+
+	is_dead: BOOLEAN
+			--Is the entity out of life?
+		do
+			Result := life = 0
+		end
+
+	get_entity_msg: STRING
+			--Return the entity's status message, likely set in the event
+			--of the entity being killed by something.
+		do
+			Result := entity_msg
 		end
 
 feature --deferred command
@@ -137,7 +140,8 @@ feature --deferred command
 		end
 
 	behave: LINKED_LIST [ENTITY_MOVABLE]
-			--perform inherited class behaviour
+			--perform inherited class behaviour, returns list
+			--of entities killed by Current during the turn (may be empty)
 		deferred
 		end
 
@@ -157,6 +161,6 @@ feature --deferred command
 		end
 
 invariant
-	allowable_symbols: item = 'E' or item = 'P' or item = 'A' or item = 'M' or item = 'J' or item = 'W' or item = 'B'
+	allowable_symbols: item = 'E' or item = 'P' or item = 'A' or item = 'M' or item = 'J' or item = 'B'
 
 end

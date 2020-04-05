@@ -25,6 +25,7 @@ feature {NONE} --hidden attributes
 feature -- attributes
 
 	movable_id: INTEGER
+		--value of the next id to assign to a new MOVABLE_ENTITY
 
 	gen: RANDOM_GENERATOR_ACCESS
 
@@ -36,10 +37,13 @@ feature -- attributes
 		end
 
 	movable_entities: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE]
+		--all of the movable entities in the galaxy, sorted by increasing id
 
 	stationary_entities: SORTED_TWO_WAY_LIST [ENTITY_STATIONARY]
+		--all of the stationary entities in the galaxy, sorted by increasing id
 
 	explorer: EXPLORER
+		--the galaxies intrepid explorer, the players regent
 
 feature --constructor
 

@@ -27,13 +27,13 @@ feature -- command
 		do
 			if not (model.play_mode or model.test_mode) then
 				model.set_error ("Negative on that request:no mission in progress.")
-			elseif model.board.explorer.landed then
-				model.set_error ("Negative on that request:you are currently landed at Sector:" + model.board.explorer.location.out)
+			elseif model.game_board.explorer.landed then
+				model.set_error ("Negative on that request:you are currently landed at Sector:" + model.game_board.explorer.location.out)
 			else
-				create start.make (model.board.explorer.location.row, model.board.explorer.location.column)
+				create start.make (model.game_board.explorer.location.row, model.game_board.explorer.location.column)
 				inc := model.map_direction (direction)
 				dest := model.get_dest_coord (start, inc)
-				if model.board.get_sector (dest.first, dest.second).is_full then
+				if model.game_board.get_sector (dest.first, dest.second).is_full then
 					model.set_error ("Cannot transfer to new location as it is full.")
 				else
 					model.move_explorer (dest.first, dest.second)

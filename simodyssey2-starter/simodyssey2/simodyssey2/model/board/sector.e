@@ -61,7 +61,7 @@ feature -- commands
 		end
 
 	put (entity: ENTITY_ALPHABET)
-			-- put `new_component' in contents array at the first available quadrant
+			-- put `entity' in contents array at the first available quadrant
 		local
 			loop_counter: INTEGER
 			found: BOOLEAN
@@ -85,11 +85,11 @@ feature -- commands
 				contents.extend (entity)
 			end
 		ensure
-			component_put: not is_full implies contents.has (entity)
+			entity_put: not is_full implies contents.has (entity)
 		end
 
 	remove (entity: ENTITY_ALPHABET)
-			--remove entity from the quadrant by setting the index of entity to void
+			--remove 'entity' from the quadrant by setting the index of entity to void
 		require
 			contains_entity: has (entity)
 		local
@@ -223,7 +223,6 @@ feature -- Queries
 				end -- if
 				loop_counter := loop_counter + 1
 			end
-				--ensure if true, counter > 0 and counter <= max
 		end
 
 	next_available_quad: INTEGER

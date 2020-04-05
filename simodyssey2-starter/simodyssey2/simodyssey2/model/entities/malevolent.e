@@ -17,7 +17,7 @@ create
 feature --Initialization
 
 	make (i: INTEGER; loc: SECTOR)
-			-- Initialization for `Current'.
+			-- Initialization for `malevolent'.
 		do
 			item := 'M'
 			id := i
@@ -32,6 +32,7 @@ feature --Initialization
 feature --attributes
 
 	repro_interval: INTEGER
+			----number of turns before Malevolent reproduces (default = 1)
 
 feature --Commands
 

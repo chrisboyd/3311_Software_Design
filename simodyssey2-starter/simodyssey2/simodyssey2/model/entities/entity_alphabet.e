@@ -26,10 +26,13 @@ inherit
 feature -- Attributes common to all entities
 
 	item: CHARACTER
+			--character that represents the entity
 
 	location: SECTOR
+			--location of the entity
 
 	id: INTEGER
+			--unique id of the entity
 
 feature --Comparison
 
@@ -40,7 +43,7 @@ feature --Comparison
 		end
 
 	is_equal (other: LIKE Current): BOOLEAN
-			--id and item must define equality
+			--id and item define equality
 		do
 			Result := Current.item.is_equal (other.item) and Current.id.is_equal (other.id)
 		end

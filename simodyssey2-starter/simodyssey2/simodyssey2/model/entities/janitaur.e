@@ -17,7 +17,7 @@ create
 feature -- Initialization
 
 	make (i: INTEGER; loc: SECTOR)
-			-- Initialization for `Current'.
+			-- Initialization for `Janitaur'.
 		do
 			item := 'J'
 			id := i
@@ -33,8 +33,10 @@ feature -- Initialization
 feature --attributes
 
 	repro_interval: INTEGER
+			--number of turns before Janitaur reproduces (default = 2)
 
 	load_level: INTEGER
+			--number of asteroids janitaur can transport, max 2
 
 feature --Commands
 

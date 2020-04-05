@@ -17,6 +17,7 @@ inherit
 feature --attributes
 
 	luminosity: INTEGER
+			--how much fuel does the star provide to passing entities
 
 feature --Queries
 

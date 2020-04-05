@@ -32,8 +32,10 @@ feature -- Initialization
 feature --Attributes
 
 	landed: BOOLEAN
+			--is the explorer landed on a planet
 
 	found_life: BOOLEAN
+			--did the explorer find life on a planet after landing
 
 feature --Commands
 
@@ -91,6 +93,8 @@ feature --Commands
 			--Can attempt to land during successive turns on each planet in current sector
 			--until all are visited
 			--Cannot move again until the explorer lifts off
+		require
+			not_landed: not landed
 		local
 			valid_planet: BOOLEAN
 			movables: SORTED_TWO_WAY_LIST [ENTITY_MOVABLE]
@@ -144,7 +148,7 @@ feature --Commands
 	liftoff
 			--Explorer leaves the planet for new adventures
 		require
-			landed
+			landed: landed
 		do
 			landed := False
 			entity_msg.append ("Explorer has lifted off from planet at Sector:" + location.out)
@@ -161,7 +165,7 @@ feature --Queries
 	get_status: STRING
 			--Returns current status of the benign for
 			--outputing in test mode
-			--[id,E]->fuel:F/3, life:L/3, landed?:t|f, turns_left:X
+			--[id,E]->fuel:F/3, life:L/3, landed?:t|f
 		do
 			create Result.make_empty
 			Result.append ("    " + id_out + "->fuel:" + fuel.out + "/3, life:" + life.out)
